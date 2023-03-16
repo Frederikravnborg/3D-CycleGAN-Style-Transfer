@@ -8,7 +8,7 @@ n_females = 1532
 
 def load_data(path):
     # Specify the path of the folder containing obj files
-    path = "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/SPRING_FEMALE"
+    path = "data/mesh_female/"
     # path = f"{path}SPRING_FEMALE"
     print(path)
     # List all the files with .obj extension in the path
@@ -22,8 +22,7 @@ def load_data(path):
         # Append the cloud to the list of point clouds
         female_meshes.append(mesh)
 
-    path = "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/SPRING_MALE"
-
+    path = "data/mesh_male/"
     # path = f"{path}SPRING_FEMALE"    
     # List all the files with .obj extension in the path
     files = glob.glob(path + "*.obj")
