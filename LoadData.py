@@ -6,6 +6,7 @@ import numpy as np
 n_males = 1518
 n_females = 1532
 
+
 def load_data():
     # Specify the path of the folder containing obj files
     path = "data/mesh_female/"
