@@ -8,9 +8,7 @@ n_females = 1532
 
 def load_data(path):
     # Specify the path of the folder containing obj files
-    path = "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/SPRING_FEMALE"
-    # path = f"{path}SPRING_FEMALE"
-    print(path)
+    path = f"{path}SPRING_FEMALE/"
     # List all the files with .obj extension in the path
     files = glob.glob(path + "*.obj")
     # Create an empty list to store meshes
@@ -22,9 +20,8 @@ def load_data(path):
         # Append the cloud to the list of point clouds
         female_meshes.append(mesh)
 
-    path = "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/SPRING_MALE"
-
-    # path = f"{path}SPRING_FEMALE"    
+    # Specify the path of the folder containing obj files
+    path = f"{path}SPRING_MALE/"    
     # List all the files with .obj extension in the path
     files = glob.glob(path + "*.obj")
     # Create an empty list to store meshes
@@ -77,11 +74,11 @@ def normalize_point_clouds(pcds):
     return normalized_pcds
 
 
-female_pcds, male_pcds = load_data("/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/x")
+female_pcds, male_pcds = load_data("/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/")
 normalized_females = normalize_point_clouds(female_pcds)
 
 
-# o3d.visualization.draw_geometries([female_pcds[0]])
+o3d.visualization.draw_geometries([female_pcds[0]])
 o3d.visualization.draw_geometries([normalized_females[0]])
 
 
