@@ -6,7 +6,7 @@ import numpy as np
 n_males = 1518
 n_females = 1532
 
-def load_data(path):
+def load_data():
     # Specify the path of the folder containing obj files
     path = "data/mesh_female/"
     # path = f"{path}SPRING_FEMALE"
@@ -44,14 +44,14 @@ def sample_points(female_meshes, male_meshes):
         # Create a point cloud object from the mesh
         pcd = mesh.sample_points_uniformly(number_of_points=2048)
         # Save it as a pcd file
-        pdc = o3d.io.write_point_cloud("example.pcd", pcd)
+        # pdc = o3d.io.write_point_cloud("example.pcd", pcd)
         female_pcds.append(pcd)
     
     for mesh in male_meshes:
         # Create a point cloud object from the mesh
         pcd = mesh.sample_points_uniformly(number_of_points=2048)
         # Save it as a pcd file
-        pdc = o3d.io.write_point_cloud("example.pcd", pcd)
+        # pdc = o3d.io.write_point_cloud("example.pcd", pcd)
         male_pcds.append(pcd)
 
     return female_pcds, male_pcds
@@ -76,7 +76,7 @@ def normalize_point_clouds(pcds):
     return normalized_pcds
 
 
-female_pcds, male_pcds = load_data("/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/x")
+female_pcds, male_pcds = load_data()
 normalized_females = normalize_point_clouds(female_pcds)
 
 
