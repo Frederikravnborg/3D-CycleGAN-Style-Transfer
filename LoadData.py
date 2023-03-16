@@ -1,4 +1,5 @@
 # Import open3d and glob packages
+import os
 import open3d as o3d
 import glob
 import numpy as np
@@ -8,7 +9,7 @@ n_females = 1532
 
 def load_data(path):
     # Specify the path of the folder containing obj files
-    path = "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/SPRING_FEMALE"
+    path = "data/mesh_female/"
     # path = f"{path}SPRING_FEMALE"
     print(path)
     # List all the files with .obj extension in the path
@@ -22,7 +23,7 @@ def load_data(path):
         # Append the cloud to the list of point clouds
         female_meshes.append(mesh)
 
-    path = "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/SPRING_MALE"
+    path = "data/mesh_male/"
 
     # path = f"{path}SPRING_FEMALE"    
     # List all the files with .obj extension in the path
@@ -45,14 +46,14 @@ def sample_points(female_meshes, male_meshes):
         # Create a point cloud object from the mesh
         pcd = mesh.sample_points_uniformly(number_of_points=2048)
         # Save it as a pcd file
-        pdc = o3d.io.write_point_cloud("example.pcd", pcd)
+        # pdc = o3d.io.write_point_cloud("example.pcd", pcd)
         female_pcds.append(pcd)
     
     for mesh in male_meshes:
         # Create a point cloud object from the mesh
         pcd = mesh.sample_points_uniformly(number_of_points=2048)
         # Save it as a pcd file
-        pdc = o3d.io.write_point_cloud("example.pcd", pcd)
+        # pdc = o3d.io.write_point_cloud("example.pcd", pcd)
         male_pcds.append(pcd)
 
     return female_pcds, male_pcds
@@ -72,16 +73,15 @@ def normalize_point_clouds(pcds):
     normalized_pcds = [o3d.geometry.PointCloud() for _ in range(len(pcds))]
     for i in range(len(pcds)):
         normalized_pcds[i].points = o3d.utility.Vector3dVector(normalized_points_list[i])
-    
     # Return the normalized point clouds
     return normalized_pcds
 
 
-female_pcds, male_pcds = load_data("/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git_Privat/x")
+female_pcds, male_pcds = load_data("data/")
 normalized_females = normalize_point_clouds(female_pcds)
 
 
-# o3d.visualization.draw_geometries([female_pcds[0]])
-o3d.visualization.draw_geometries([normalized_females[0]])
+o3d.visualization.draw_geometries([female_pcds[2]], point_show_normal = True)
+o3d.visualization.draw_geometries([normalized_females[2]])
 
 
