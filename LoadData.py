@@ -10,8 +10,6 @@ n_females = 1532
 def load_data():
     # Specify the path of the folder containing obj files
     path = "data/mesh_female/"
-    # path = f"{path}SPRING_FEMALE"
-    print(path)
     # List all the files with .obj extension in the path
     files = glob.glob(path + "*.obj")
     # Create an empty list to store meshes
@@ -24,7 +22,6 @@ def load_data():
         female_meshes.append(mesh)
 
     path = "data/mesh_male/"
-    # path = f"{path}SPRING_FEMALE"    
     # List all the files with .obj extension in the path
     files = glob.glob(path + "*.obj")
     # Create an empty list to store meshes
@@ -57,28 +54,34 @@ def sample_points(female_meshes, male_meshes):
 
     return female_pcds, male_pcds
 
-def normalize_point_clouds(pcds):
+def normalize_point_clouds(female_pcds, male_pcds):
     # Convert point clouds to numpy arrays
-    points_list = [np.asarray(pcd.points) for pcd in pcds]
+    points_list = [np.asarray(pcd.points) for pcd in female_pcds + male_pcds]
     
     # Compute the global centroid and the maximum distance from the centroid
     global_centroid = np.mean(np.concatenate(points_list, axis=0), axis=0)
     max_dist = np.max([np.max(np.linalg.norm(points - global_centroid, axis=1)) for points in points_list])
     
     # Translate and scale the points to fit within a unit circle
-    normalized_points_list = [(points - global_centroid) / max_dist for points in points_list]
-    
+    female_points = [np.asarray(pcd.points) for pcd in female_pcds]
+    male_points = [np.asarray(pcd.points) for pcd in male_pcds]
+    normalized_points_female = [(points - global_centroid) / max_dist for points in female_points]
+    normalized_points_male = [(points - global_centroid) / max_dist for points in male_points]
+
     # Create new point clouds with the normalized points
-    normalized_pcds = [o3d.geometry.PointCloud() for _ in range(len(pcds))]
-    for i in range(len(pcds)):
-        normalized_pcds[i].points = o3d.utility.Vector3dVector(normalized_points_list[i])
-    
+    normalized_pcds_female = [o3d.geometry.PointCloud() for _ in range(len(female_pcds))]
+    for i in range(len(female_pcds)):
+        normalized_pcds_female[i].points = o3d.utility.Vector3dVector(normalized_points_female[i])
+
+    normalized_pcds_male = [o3d.geometry.PointCloud() for _ in range(len(male_pcds))]
+    for i in range(len(male_pcds)):
+        normalized_pcds_male[i].points = o3d.utility.Vector3dVector(normalized_points_male[i])
     # Return the normalized point clouds
-    return normalized_pcds
+    return normalized_pcds_female, normalized_pcds_male
 
 
 female_pcds, male_pcds = load_data()
-normalized_females = normalize_point_clouds(female_pcds)
+normalized_females, normalized_males = normalize_point_clouds(female_pcds, male_pcds)
 
 
 # o3d.visualization.draw_geometries([female_pcds[0]])
