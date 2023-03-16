@@ -1,0 +1,13 @@
+### Install using --> pip install -r requirements.txt
+### Create your venv using python == 3.9.xx
+
+#Packages
+tensor
+tensorflow
+open3d
+glob
+pandas 
+numpy 
+torch 
+torchvision 
+torchaudio
