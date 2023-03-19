@@ -13,7 +13,7 @@ def load_data():
     # Create an empty list to store meshes
     female_meshes = []
     # Loop over each file name
-    for file in files[:4]:
+    for file in files:
         # Read a cloud from an obj file
         mesh = o3d.io.read_triangle_mesh(file)
         # Append the cloud to the list of point clouds
@@ -25,7 +25,7 @@ def load_data():
     # Create an empty list to store meshes
     male_meshes = []
     # Loop over each file name
-    for file in files[:4]:
+    for file in files:
         # Read a cloud from an obj file
         mesh = o3d.io.read_triangle_mesh(file)
         # Append the cloud to the list of clouds
@@ -132,12 +132,37 @@ female_pcds, male_pcds = normalize_point_clouds(female_pcds, male_pcds)
 
 # Augment data by flipping point clouds horizontally 
 female_pcds_augmented = augment_data(female_pcds)
-male_meshes_augmented = augment_data(male_pcds)
+male_pcds_augmented = augment_data(male_pcds)
 
 
-visualize_point_cloud(female_pcds[0])
-visualize_point_cloud(female_pcds_augmented[0])
+# visualize_point_cloud(female_pcds[0])
+# visualize_point_cloud(female_pcds_augmented[0])
 
 # o3d.io.write_point_cloud("female_pcds_0.pcd", female_pcds[0], write_ascii=True)
 
 # o3d.io.write_point_cloud("female_mesh_augmented_0.pcd", female_pcds_augmented[0], write_ascii=True)
+
+
+# Define a function that computes the root mean square error (RMSE) between two point clouds
+def rmse(pcd1, pcd2):
+    # Compute the distance from each point in pcd1 to the closest point in pcd2
+    dists = pcd1.compute_point_cloud_distance(pcd2)
+    # Convert the distance list to a numpy array
+    dists = np.asarray(dists)
+    # Square the distances and take the mean
+    mse = np.mean(dists**2)
+    # Take the square root and return it
+    return np.sqrt(mse)
+
+cummulative_sim = 0
+# Loop over each pair of original and augmented point clouds in the female meshes list
+for i in range(0, len(female_pcds_augmented), 2):
+    # Get the original point cloud at index i
+    original_pcd = female_pcds_augmented[i]
+    # Get the augmented point cloud at index i+1
+    augmented_pcd = female_pcds_augmented[i+1]
+    # Compute and print the RMSE between them
+    similarity = rmse(original_pcd, augmented_pcd)
+    cummulative_sim += similarity
+    # print(f"Similarity between original and augmented point cloud {i//2}: {similarity.round(5)}")
+print("cumsim:", cummulative_sim)
