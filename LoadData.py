@@ -2,11 +2,9 @@
 import open3d as o3d
 import glob
 import numpy as np
+import matplotlib.pyplot as plt
 
-n_males = 1518
-n_females = 1532
-
-
+# Define a function that loads data from obj files
 def load_data():
     # Specify the path of the folder containing obj files
     path = "data/mesh_female/"
@@ -35,6 +33,7 @@ def load_data():
     
     return sample_points(female_meshes, male_meshes)
 
+# Define a function that samples points from a list of meshes
 def sample_points(female_meshes, male_meshes):
     female_pcds = []
     male_pcds = []
@@ -54,6 +53,7 @@ def sample_points(female_meshes, male_meshes):
 
     return female_pcds, male_pcds
 
+# Define a function that normalizes a list of point clouds
 def normalize_point_clouds(female_pcds, male_pcds):
     # Convert point clouds to numpy arrays
     points_list = [np.asarray(pcd.points) for pcd in female_pcds + male_pcds]
@@ -79,12 +79,65 @@ def normalize_point_clouds(female_pcds, male_pcds):
     # Return the normalized point clouds
     return normalized_pcds_female, normalized_pcds_male
 
+# Define a function that flips a point cloud horizontally
+def flip_horizontal(pcd):
+    # Get the points of the point cloud as a numpy array
+    points = np.asarray(pcd.points)
+    # Flip the x-coordinates by multiplying them by -1
+    points[:, 0] = -points[:, 0]
+    # Create a new point cloud with the flipped points
+    flipped_pcd = o3d.geometry.PointCloud()
+    flipped_pcd.points = o3d.utility.Vector3dVector(points)
+    # Return the flipped point cloud
+    return flipped_pcd
 
+# Define a function that augments a list of point clouds by flipping them horizontally
+def augment_data(pcds):
+    # Create an empty list to store augmented point clouds
+    augmented_pcds = []
+    # Loop over each point cloud in the list
+    for pcd in pcds:
+        # Append the original point cloud to the augmented list
+        augmented_pcds.append(pcd)
+        # Flip the point cloud horizontally and append it to the augmented list
+        flipped_pcd = flip_horizontal(pcd)
+        augmented_pcds.append(flipped_pcd)
+    
+    # Return the augmented list of point clouds
+    return augmented_pcds
+
+# Define a function that visualizes a point cloud
+def visualize_point_cloud(pcd):
+    # Convert it to a numpy array
+    points = np.asarray(pcd.points)
+
+    # Plot it using matplotlib with tiny points and constrained axes
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    ax.scatter(points[:,0], points[:,1], points[:,2], s=0.1)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_box_aspect((1,1,1)) # Constrain the axes
+    ax.set_proj_type('ortho') # Use orthographic projection
+    ax.set_xlim(-1,1) # Set x-axis range
+    ax.set_ylim(-1,1) # Set y-axis range
+    ax.set_zlim(-1,1) # Set z-axis range
+    plt.show()
+
+# Load the data
 female_pcds, male_pcds = load_data()
-normalized_females, normalized_males = normalize_point_clouds(female_pcds, male_pcds)
+# Normalize the point clouds
+female_pcds, male_pcds = normalize_point_clouds(female_pcds, male_pcds)
+
+# Augment data by flipping point clouds horizontally 
+female_pcds_augmented = augment_data(female_pcds)
+male_meshes_augmented = augment_data(male_pcds)
 
 
-# o3d.visualization.draw_geometries([female_pcds[0]])
-o3d.visualization.draw_geometries([normalized_females[0]])
+visualize_point_cloud(female_pcds[0])
+visualize_point_cloud(female_pcds_augmented[0])
 
+# o3d.io.write_point_cloud("female_pcds_0.pcd", female_pcds[0], write_ascii=True)
 
+# o3d.io.write_point_cloud("female_mesh_augmented_0.pcd", female_pcds_augmented[0], write_ascii=True)
