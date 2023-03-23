@@ -3,6 +3,8 @@ import open3d as o3d
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
+import torch
+import torch.utils.data as data
 
 
 # Define a function that loads data from obj files
@@ -14,7 +16,7 @@ def load_data():
     # Create an empty list to store meshes
     female_meshes = []
     # Loop over each file name
-    for file in files:
+    for file in files[:4]:
         # Read a cloud from an obj file
         mesh = o3d.io.read_triangle_mesh(file)
         # Append the cloud to the list of point clouds
@@ -26,7 +28,7 @@ def load_data():
     # Create an empty list to store meshes
     male_meshes = []
     # Loop over each file name
-    for file in files:
+    for file in files[:4]:
         # Read a cloud from an obj file
         mesh = o3d.io.read_triangle_mesh(file)
         # Append the cloud to the list of clouds
@@ -77,8 +79,20 @@ def normalize_point_clouds(female_pcds, male_pcds):
     normalized_pcds_male = [o3d.geometry.PointCloud() for _ in range(len(male_pcds))]
     for i in range(len(male_pcds)):
         normalized_pcds_male[i].points = o3d.utility.Vector3dVector(normalized_points_male[i])
-    # Return the normalized point clouds
-    return normalized_pcds_female, normalized_pcds_male
+    
+    
+    pcds_female, pcds_male = [], []
+    for female in normalized_pcds_female:
+        # Return the normalized point clouds
+        pcd = np.asarray(female.points)
+        pcds_female.append(torch.from_numpy(pcd))
+
+    for male in normalized_pcds_male:
+        # Return the normalized point clouds
+        pcd = np.asarray(male.points)
+        pcds_male.append(torch.from_numpy(pcd))
+
+    return pcds_female, pcds_male
 
 # Define a function that flips a point cloud horizontally
 def flip_horizontal(pcd):
@@ -131,9 +145,36 @@ female_pcds, male_pcds = load_data()
 # Normalize the point clouds
 female_pcds, male_pcds = normalize_point_clouds(female_pcds, male_pcds)
 
+# Visualize the point cloud using plotly
+
+# Extract the x, y, z coordinates from the tensor
+x = female_pcds[2][:, 0].numpy()
+y = female_pcds[2][:, 1].numpy()
+z = female_pcds[2][:, 2].numpy()
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot the points with blue markers
+ax.scatter(x, y, z, c='b', marker='.')
+
+# Set the axis labels and title
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.set_title('Point Cloud Visualization')
+ax.set_box_aspect((1,1,1)) # Constrain the axes
+ax.set_proj_type('ortho') # Use orthographic projection
+ax.set_xlim(-1,1) # Set x-axis range
+ax.set_ylim(-1,1) # Set y-axis range
+ax.set_zlim(-1,1) # Set z-axis range
+
+# Show the figure
+plt.show()
+
 # Augment data by flipping point clouds horizontally 
-female_pcds_augmented = augment_data(female_pcds)
-male_pcds_augmented = augment_data(male_pcds)
+# female_pcds_augmented = augment_data(female_pcds)
+# male_pcds_augmented = augment_data(male_pcds)
 
 
 # visualize_point_cloud(female_pcds[0])
@@ -166,4 +207,4 @@ for i in range(0, len(female_pcds_augmented), 2):
     similarity = rmse(original_pcd, augmented_pcd)
     cummulative_sim += similarity
     # print(f"Similarity between original and augmented point cloud {i//2}: {similarity.round(5)}")
-print("cumsim:", cummulative_sim)
+# print("cumsim:", cummulative_sim)
