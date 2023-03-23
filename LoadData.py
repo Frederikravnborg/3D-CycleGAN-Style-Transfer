@@ -4,6 +4,7 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # Define a function that loads data from obj files
 def load_data():
     # Specify the path of the folder containing obj files
