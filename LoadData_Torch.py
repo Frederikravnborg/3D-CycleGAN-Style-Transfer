@@ -7,6 +7,9 @@ from pytorch3d.io import load_obj
 import warnings
 warnings.filterwarnings("ignore")
 
+max_dist_female = torch.tensor(1.0407)
+max_dist_male = torch.tensor(1.0428)
+
 # Define a custom dataset class that inherits from Dataset
 class ObjDataset(Dataset):
     # Initialize the dataset with the folder path and transform
@@ -40,15 +43,19 @@ def load(path):
     # Create an instance of the dataset with a given folder path and no transform
     dataset = ObjDataset(path)
 
-    # Compute the maximum distance of any vertex from the origin in the dataset
-    max_dist = 0 # Initialize max_dist with zero
-    with torch.no_grad(): # No need to track gradients for this computation
-        for verts in dataset: # Iterate over the dataset
-            dists = torch.norm(verts, dim=1) # Compute the Euclidean distances of vertices from origin
-            max_dist = max(max_dist, torch.max(dists)) # Update max_dist with the maximum distance in this item
+    ### Compute the maximum distance of any vertex from the origin in the dataset ###
+    # max_dist = 0 # Initialize max_dist with zero
+    # with torch.no_grad(): # No need to track gradients for this computation
+    #     for verts in dataset: # Iterate over the dataset
+    #         dists = torch.norm(verts, dim=1) # Compute the Euclidean distances of vertices from origin
+    #         max_dist = max(max_dist, torch.max(dists)) # Update max_dist with the maximum distance in this item
 
     # Create a normalize transform using the computed max_dist
-    print("Max distance: ", max_dist)
+    if "female" in path:
+        max_dist = max_dist_female
+    else:
+        max_dist = max_dist_male
+
     normalize = transforms.Lambda(lambda x: x / max_dist)
 
     # Create a new instance of the dataset with the same folder path and normalize transform
@@ -57,12 +64,14 @@ def load(path):
     return dataset
 
 # Define female and male data separately
-female_data = load("data/mesh_female")
-# male_data = load("data/mesh_male")
+female_train = load("data/female_train")
+male_train = load("data/male_train")
+female_test = load("data/female_test")
+male_test = load("data/male_test")
 
 # Create a data loader with a given batch size and shuffle option
-# female_data_loader = DataLoader(female_data, batch_size=32, shuffle=True)
+female_data_loader = DataLoader(female_train, batch_size=32, shuffle=True)
 
 # Iterate over the data loader and print the shapes of the batches
-# for batch in female_data_loader:
-#     print(batch.shape)
+for batch in female_data_loader:
+    print(batch.shape)
