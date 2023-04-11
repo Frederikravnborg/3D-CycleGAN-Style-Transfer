@@ -48,6 +48,7 @@ def load(path):
             max_dist = max(max_dist, torch.max(dists)) # Update max_dist with the maximum distance in this item
 
     # Create a normalize transform using the computed max_dist
+    print("Max distance: ", max_dist)
     normalize = transforms.Lambda(lambda x: x / max_dist)
 
     # Create a new instance of the dataset with the same folder path and normalize transform
@@ -56,12 +57,12 @@ def load(path):
     return dataset
 
 # Define female and male data separately
-female_data = load("data/mesh_female_10")
-male_data = load("data/mesh_male_10")
+female_data = load("data/mesh_female")
+# male_data = load("data/mesh_male")
 
 # Create a data loader with a given batch size and shuffle option
-female_data_loader = DataLoader(female_data, batch_size=32, shuffle=True)
+# female_data_loader = DataLoader(female_data, batch_size=32, shuffle=True)
 
 # Iterate over the data loader and print the shapes of the batches
-for batch in female_data_loader:
-    print(batch.shape)
+# for batch in female_data_loader:
+#     print(batch.shape)
