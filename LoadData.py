@@ -100,6 +100,7 @@ def flip_horizontal(pcd):
     points = np.asarray(pcd.points)
     # Flip the x-coordinates by multiplying them by -1
     points[:, 0] = -points[:, 0]
+    print(points - np.asarray(pcd.points))
     # Create a new point cloud with the flipped points
     flipped_pcd = o3d.geometry.PointCloud()
     flipped_pcd.points = o3d.utility.Vector3dVector(points)
@@ -175,7 +176,6 @@ plt.show()
 # Augment data by flipping point clouds horizontally 
 # female_pcds_augmented = augment_data(female_pcds)
 # male_pcds_augmented = augment_data(male_pcds)
-
 
 # visualize_point_cloud(female_pcds[0])
 # visualize_point_cloud(female_pcds_augmented[0])

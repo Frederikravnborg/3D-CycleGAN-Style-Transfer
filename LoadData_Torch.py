@@ -3,7 +3,7 @@ import os
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
-from pytorch3d.io import load_obj
+import open3d as o3d
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -28,11 +28,13 @@ class ObjDataset(Dataset):
     def __getitem__(self, index):
         # Get the file name at the index
         file_name = self.file_names[index]
-        # Load the obj file using pytorch3d's load_obj function
-        verts, faces, aux = load_obj(os.path.join(self.folder_path, file_name))
-        # Convert the vertices and faces to tensors
-        verts = torch.tensor(verts, dtype=torch.float32)
-        faces = torch.tensor(faces.verts_idx, dtype=torch.int64)
+
+        # Load the .obj file
+        mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
+
+        # Convert vertices and faces to PyTorch tensors
+        verts = torch.tensor(mesh.vertices).float()
+
         # Apply the transform if given
         if self.transform:
             verts = self.transform(verts)
