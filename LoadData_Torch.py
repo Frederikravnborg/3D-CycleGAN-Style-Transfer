@@ -1,6 +1,7 @@
 # Import libraries
 import os
 import torch
+import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 import open3d as o3d
@@ -13,11 +14,12 @@ max_dist_male = torch.tensor(1.0428)
 # Define a custom dataset class that inherits from Dataset
 class ObjDataset(Dataset):
     # Initialize the dataset with the folder path and transform
-    def __init__(self, folder_path, transform=None):
+    def __init__(self, folder_path, n_points, transform=None):
         # Get the list of obj file names in the folder
         self.file_names = [f for f in os.listdir(folder_path) if f.endswith(".obj")]
         # Store the folder path and transform
         self.folder_path = folder_path
+        self.n_points = n_points
         self.transform = transform
     
     # Return the length of the dataset
@@ -31,9 +33,14 @@ class ObjDataset(Dataset):
 
         # Load the .obj file
         mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
+        #for mesh in meshes:
+            # Down sample the mesh to n points
+        sampled_mesh = mesh.sample_points_uniformly(number_of_points=self.n_points)
 
         # Convert vertices and faces to PyTorch tensors
-        verts = torch.tensor(mesh.vertices).float()
+        np_mesh = np.asarray(sampled_mesh.points)
+        verts = torch.from_numpy(np_mesh).float()
+        #verts = torch.tensor(sampled_mesh.vertices).float()
 
         # Apply the transform if given
         if self.transform:
@@ -43,7 +50,7 @@ class ObjDataset(Dataset):
 
 def load(path):
     # Create an instance of the dataset with a given folder path and no transform
-    dataset = ObjDataset(path)
+    dataset = ObjDataset(path, n_points=2048)
 
     ### Compute the maximum distance of any vertex from the origin in the dataset ###
     # max_dist = 0 # Initialize max_dist with zero
@@ -61,7 +68,7 @@ def load(path):
     normalize = transforms.Lambda(lambda x: x / max_dist)
 
     # Create a new instance of the dataset with the same folder path and normalize transform
-    dataset = ObjDataset(path, transform=normalize)
+    dataset = ObjDataset(path, n_points=2048, transform=normalize)
     
     return dataset
 
@@ -72,8 +79,14 @@ female_test = load("data/female_test")
 male_test = load("data/male_test")
 
 # Create a data loader with a given batch size and shuffle option
-female_data_loader = DataLoader(female_train, batch_size=32, shuffle=True)
+batch_size = 32
+
+female_data_loader_train = DataLoader(female_train, batch_size=batch_size, shuffle=True)
+male_data_loader_train = DataLoader(male_train, batch_size=batch_size, shuffle=True)
+
+female_data_loader_test = DataLoader(female_test, batch_size=batch_size, shuffle=True)
+male_data_loader_test = DataLoader(male_test, batch_size=batch_size, shuffle=True)
 
 # Iterate over the data loader and print the shapes of the batches
-for batch in female_data_loader:
-    print(batch.shape)
+# for batch in female_data_loader:
+#     print(batch.shape)
