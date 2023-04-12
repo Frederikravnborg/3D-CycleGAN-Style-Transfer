@@ -7,9 +7,6 @@ import open3d as o3d
 import warnings
 warnings.filterwarnings("ignore")
 
-max_dist_female = torch.tensor(1.0407)
-max_dist_male = torch.tensor(1.0428)
-
 # Define a custom dataset class that inherits from Dataset
 class ObjDataset(Dataset):
     # Initialize the dataset with the folder path and transform
@@ -53,11 +50,8 @@ def load(path):
     #         max_dist = max(max_dist, torch.max(dists)) # Update max_dist with the maximum distance in this item
 
     # Create a normalize transform using the computed max_dist
-    if "female" in path:
-        max_dist = max_dist_female
-    else:
-        max_dist = max_dist_male
-
+    max_dist = torch.tensor(1.0428)
+    
     normalize = transforms.Lambda(lambda x: x / max_dist)
 
     # Create a new instance of the dataset with the same folder path and normalize transform
