@@ -48,9 +48,9 @@ class ObjDataset(Dataset):
         # Return the vertices and faces as a tuple
         return verts
 
-def load(path):
+def load(path, n_points=2048):
     # Create an instance of the dataset with a given folder path and no transform
-    dataset = ObjDataset(path, n_points=2048)
+    dataset = ObjDataset(path, n_points)
 
     ### Compute the maximum distance of any vertex from the origin in the dataset ###
     # max_dist = 0 # Initialize max_dist with zero
@@ -68,25 +68,31 @@ def load(path):
     normalize = transforms.Lambda(lambda x: x / max_dist)
 
     # Create a new instance of the dataset with the same folder path and normalize transform
-    dataset = ObjDataset(path, n_points=2048, transform=normalize)
+    dataset = ObjDataset(path, n_points, transform=normalize)
     
     return dataset
 
-# Define female and male data separately
-female_train = load("data/female_train")
-male_train = load("data/male_train")
-female_test = load("data/female_test")
-male_test = load("data/male_test")
+def data_split(n_points):
 
-# Create a data loader with a given batch size and shuffle option
-batch_size = 32
+    # Define female and male data separately
+    female_train = load("data/female_train", n_points)
+    male_train = load("data/male_train", n_points)
+    female_test = load("data/female_test", n_points)
+    male_test = load("data/male_test", n_points)
 
-female_data_loader_train = DataLoader(female_train, batch_size=batch_size, shuffle=True)
-male_data_loader_train = DataLoader(male_train, batch_size=batch_size, shuffle=True)
+    # Create a data loader with a given batch size and shuffle option
+    batch_size = 32
 
-female_data_loader_test = DataLoader(female_test, batch_size=batch_size, shuffle=True)
-male_data_loader_test = DataLoader(male_test, batch_size=batch_size, shuffle=True)
+    female_data_loader_train = DataLoader(female_train, batch_size=batch_size, shuffle=True)
+    male_data_loader_train = DataLoader(male_train, batch_size=batch_size, shuffle=True)
 
-# Iterate over the data loader and print the shapes of the batches
-# for batch in female_data_loader:
-#     print(batch.shape)
+    female_data_loader_test = DataLoader(female_test, batch_size=batch_size, shuffle=True)
+    male_data_loader_test = DataLoader(male_test, batch_size=batch_size, shuffle=True)
+
+    # Iterate over the data loader and print the shapes of the batches
+    # for batch in female_data_loader:
+    #     print(batch.shape)
+
+    return female_data_loader_train, female_data_loader_test, male_data_loader_train, male_data_loader_test
+
+print("Done")

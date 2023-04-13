@@ -1,4 +1,5 @@
 #%%
+from mpl_toolkits import mplot3d
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -51,23 +52,27 @@ def knn(x, k):
 
 # Define a function that visualizes a point cloud
 def visualize_point_cloud(pcd):
+    my_cmap = plt.get_cmap('hsv')
     # Convert it to a numpy array
     #points = np.asarray(pcd)
     points = pcd.detach().numpy()
+    print(pcd)
+    print(pcd.shape)
+    print(points)
     print(points.shape)
 
     # Plot it using matplotlib with tiny points and constrained axes
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    ax.scatter(points[0,:], points[1,:], points[2,:], s=0.1)
+    ax.scatter(points[0,:], points[1,:], points[2,:], s=0.1, cmap=my_cmap)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    ax.set_box_aspect((1,1,1)) # Constrain the axes
+    #ax.set_box_aspect((1,1,1)) # Constrain the axes
     ax.set_proj_type('ortho') # Use orthographic projection
-    ax.set_xlim(-1,1) # Set x-axis range
-    ax.set_ylim(-1,1) # Set y-axis range
-    ax.set_zlim(-1,1) # Set z-axis range
+    #ax.set_xlim(-1,1) # Set x-axis range
+    #ax.set_ylim(-1,1) # Set y-axis range
+    #ax.set_zlim(-1,1) # Set z-axis range
     plt.show()
 #%%
 
@@ -204,6 +209,10 @@ class Decoder(nn.Module):
 
         self.fold1 = FoldingLayer(in_channel + 2, [512, 512, 3])
         self.fold2 = FoldingLayer(in_channel + 3, [512, 512, 3])
+        self.fold3 = FoldingLayer(in_channel + 3, [512, 512, 3])
+        self.fold4 = FoldingLayer(in_channel + 3, [512, 512, 3])
+        self.fold5 = FoldingLayer(in_channel + 3, [512, 512, 3])
+        self.fold6 = FoldingLayer(in_channel + 3, [512, 512, 3])
 
     def forward(self, x):
         """
@@ -221,8 +230,12 @@ class Decoder(nn.Module):
         # two folding operations
         recon1 = self.fold1(grid, x)
         recon2 = self.fold2(recon1, x)
+        recon3 = self.fold3(recon2, x)
+        #recon4 = self.fold4(recon3, x)
+        #recon5 = self.fold5(recon4, x)
+        #recon6 = self.fold6(recon5, x)
         
-        return recon2
+        return recon3
 
 
 class AutoEncoder(nn.Module):
@@ -240,12 +253,13 @@ class AutoEncoder(nn.Module):
 #%%
 
 if __name__ == '__main__':
+    n: int = 1024*2
 
-    female_data_loader_train, _, _, _ = data_split()
+    female_data_loader_train, _, _, _ = data_split(n_points=n)
     for batch in female_data_loader_train:
-        visualize_point_cloud(batch[0, :, :])
-        pcs = batch.reshape(32, 3, 1024*2)
-        print(pcs.size())
+        #visualize_point_cloud(batch[0, :, :])
+        pcs = batch.reshape(32, 3, n)
+        #print(pcs.size())
         break
 
     encoder = Encoder()
@@ -263,11 +277,12 @@ if __name__ == '__main__':
 
 
 #%%
-
+x = 20
+print(pcs)
 visualize_point_cloud(pcs[0, :, :])
-visualize_point_cloud(codewords)
-visualize_point_cloud(recons[0, :, :])
-visualize_point_cloud(y[0, :, :])
+#visualize_point_cloud(codewords)
+#visualize_point_cloud(recons[:, :2, :])
+#visualize_point_cloud(y[:, :2, :])
 
 # %%
 print(pcs[0, :, :].size())
