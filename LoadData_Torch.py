@@ -5,6 +5,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 import open3d as o3d
+import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -89,6 +90,7 @@ def data_split(n_points):
     female_data_loader_train = DataLoader(female_train, batch_size=batch_size, shuffle=True)
     male_data_loader_train = DataLoader(male_train, batch_size=batch_size, shuffle=True)
 
+<<<<<<< Updated upstream
     female_data_loader_test = DataLoader(female_test, batch_size=batch_size, shuffle=True)
     male_data_loader_test = DataLoader(male_test, batch_size=batch_size, shuffle=True)
 
@@ -99,3 +101,25 @@ def data_split(n_points):
     return female_data_loader_train, female_data_loader_test, male_data_loader_train, male_data_loader_test
 
 print("Done")
+=======
+# Iterate over the data loader and print the shapes of the batches
+# for batch in female_data_loader:
+#     print(batch.shape)
+
+
+# Create a 3d tensor of shape (4, 4, 4) with random values
+tensor = female_train[0]
+
+# Convert the tensor to a numpy array
+array = tensor.numpy()
+
+# Plot the array as a 3d surface
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+x, y = np.meshgrid(np.arange(4), np.arange(4))
+ax.plot_surface(x, y, array[0], cmap='viridis')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+plt.show()
+>>>>>>> Stashed changes
