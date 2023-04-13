@@ -8,6 +8,9 @@ import open3d as o3d
 import warnings
 warnings.filterwarnings("ignore")
 
+# Set seed
+torch.manual_seed(0)
+
 max_dist_female = torch.tensor(1.0407)
 max_dist_male = torch.tensor(1.0428)
 

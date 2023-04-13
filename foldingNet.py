@@ -1,57 +1,26 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+@Author: An Tao
+@Contact: ta19@mails.tsinghua.edu.cn
+@File: model.py
+@Time: 2020/3/23 5:39 PM
+"""
 #%%
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 import torch.nn.functional as F
 import numpy as np
+import itertools
 import matplotlib.pyplot as plt
 from LoadData_Torch import data_split
-#from utils import index_points, knn
+
+#from loss import ChamferLoss, CrossEntropyLoss
 
 #%%
-
-def index_points(point_clouds, index):
-    """
-    Given a batch of tensor and index, select sub-tensor.
-    Input:
-        points: input points data, [B, N, C]
-        idx: sample index data, [B, N, k]
-    Return:
-        new_points:, indexed points data, [B, N, k, C]
-    """
-    device = point_clouds.device
-    batch_size = point_clouds.shape[0]
-    view_shape = list(index.shape)
-    view_shape[1:] = [1] * (len(view_shape) - 1)
-    repeat_shape = list(index.shape)
-    repeat_shape[0] = 1
-    batch_indices = torch.arange(batch_size, dtype=torch.long, device=device).view(view_shape).repeat(repeat_shape)
-    new_points = point_clouds[batch_indices, index, :]
-    return new_points
-
-def knn(x, k):
-    """
-    K nearest neighborhood.
-    Parameters
-    ----------
-        x: a tensor with size of (B, C, N)
-        k: the number of nearest neighborhoods
-    
-    Returns
-    -------
-        idx: indices of the k nearest neighborhoods with size of (B, N, k)
-    """
-    inner = -2 * torch.matmul(x.transpose(2, 1), x)  # (B, N, N)
-    xx = torch.sum(x ** 2, dim=1, keepdim=True)  # (B, 1, N)
-    pairwise_distance = -xx - inner - xx.transpose(2, 1)  # (B, 1, N), (B, N, N), (B, N, 1) -> (B, N, N)
-    
-    idx = pairwise_distance.topk(k=k, dim=-1)[1]   # (B, N, k)
-    
-    return idx
-
-
 # Define a function that visualizes a point cloud
 def visualize_point_cloud(pcd):
-    my_cmap = plt.get_cmap('hsv')
     # Convert it to a numpy array
     #points = np.asarray(pcd)
     points = pcd.detach().numpy()
@@ -59,188 +28,205 @@ def visualize_point_cloud(pcd):
     # Plot it using matplotlib with tiny points and constrained axes
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    ax.scatter(points[0,:], points[1,:], points[2,:], s=0.1, cmap=my_cmap)
+    ax.scatter(points[:,0], points[:,1], points[:,2], s=0.1, cmap='hsv')
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    #ax.set_box_aspect((1,1,1)) # Constrain the axes
-    ax.set_proj_type('ortho') # Use orthographic projection
+    ax.set_box_aspect((1,1,1)) # Constrain the axes
+    #ax.set_proj_type('ortho') # Use orthographic projection
     #ax.set_xlim(-1,1) # Set x-axis range
     #ax.set_ylim(-1,1) # Set y-axis range
     #ax.set_zlim(-1,1) # Set z-axis range
     plt.show()
-#%%
 
-class GraphLayer(nn.Module):
-    """
-    Graph layer.
+def knn(x, k):
+    batch_size = x.size(0)
+    num_points = x.size(2)
 
-    in_channel: it depends on the input of this network.
-    out_channel: given by ourselves.
-    """
-    def __init__(self, in_channel, out_channel, k=16):
-        super(GraphLayer, self).__init__()
-        self.k = k
-        self.conv = nn.Conv1d(in_channel, out_channel, 1)
-        self.bn = nn.BatchNorm1d(out_channel)
+    inner = -2*torch.matmul(x.transpose(2, 1), x)
+    xx = torch.sum(x**2, dim=1, keepdim=True)
+    pairwise_distance = -xx - inner - xx.transpose(2, 1)
+ 
+    idx = pairwise_distance.topk(k=16, dim=-1)[1]            # (batch_size, num_points, k)
 
-    def forward(self, x):
-        """
-        Parameters
-        ----------
-            x: tensor with size of (B, C, N)
-        """
-        # KNN
-        knn_idx = knn(x, k=self.k)  # (B, N, k)
-        knn_x = index_points(x.permute(0, 2, 1), knn_idx)  # (B, N, k, C)
+    if idx.get_device() == -1:
+        idx_base = torch.arange(0, batch_size).view(-1, 1, 1)*num_points
+    else:
+        idx_base = torch.arange(0, batch_size, device=idx.get_device()).view(-1, 1, 1)*num_points
+    idx = idx + idx_base
+    idx = idx.view(-1)
 
-        # Local Max Pooling
-        x = torch.max(knn_x, dim=2)[0].permute(0, 2, 1)  # (B, N, C)
-        
-        # Feature Map
-        x = F.relu(self.bn(self.conv(x)))
-        return x
+    return idx
 
 
-class Encoder(nn.Module):
-    """
-    Graph based encoder.
-    """
+def local_cov(pts, idx):
+    batch_size = pts.size(0)
+    num_points = pts.size(2)
+    pts = pts.view(batch_size, -1, num_points)              # (batch_size, 3, num_points)
+ 
+    _, num_dims, _ = pts.size()
+
+    x = pts.transpose(2, 1).contiguous()                    # (batch_size, num_points, 3)
+    x = x.view(batch_size*num_points, -1)[idx, :]           # (batch_size*num_points*2, 3)
+    x = x.view(batch_size, num_points, -1, num_dims)        # (batch_size, num_points, k, 3)
+
+    x = torch.matmul(x[:,:,0].unsqueeze(3), x[:,:,1].unsqueeze(2))  # (batch_size, num_points, 3, 1) * (batch_size, num_points, 1, 3) -> (batch_size, num_points, 3, 3)
+    # x = torch.matmul(x[:,:,1:].transpose(3, 2), x[:,:,1:])
+    x = x.view(batch_size, num_points, 9).transpose(2, 1)   # (batch_size, 9, num_points)
+
+    x = torch.cat((pts, x), dim=1)                          # (batch_size, 12, num_points)
+
+    return x
+
+
+def local_maxpool(x, idx):
+    batch_size = x.size(0)
+    num_points = x.size(2)
+    x = x.view(batch_size, -1, num_points)
+ 
+    _, num_dims, _ = x.size()
+
+    x = x.transpose(2, 1).contiguous()                      # (batch_size, num_points, num_dims)
+    x = x.view(batch_size*num_points, -1)[idx, :]           # (batch_size*n, num_dims) -> (batch_size*n*k, num_dims)
+    x = x.view(batch_size, num_points, -1, num_dims)        # (batch_size, num_points, k, num_dims)
+    x, _ = torch.max(x, dim=2)                              # (batch_size, num_points, num_dims)
+
+    return x
+
+
+def get_graph_feature(x, k=20, idx=None):
+    batch_size = x.size(0)
+    num_points = x.size(2)
+    x = x.view(batch_size, -1, num_points)      # (batch_size, num_dims, num_points)
+    if idx is None:
+        idx = knn(x, k=k)                       # (batch_size, num_points, k)
+ 
+    _, num_dims, _ = x.size()
+
+    x = x.transpose(2, 1).contiguous()          # (batch_size, num_points, num_dims)
+    feature = x.view(batch_size*num_points, -1)[idx, :]                 # (batch_size*n, num_dims) -> (batch_size*n*k, num_dims)
+    feature = feature.view(batch_size, num_points, k, num_dims)         # (batch_size, num_points, k, num_dims)
+    x = x.view(batch_size, num_points, 1, num_dims).repeat(1, 1, k, 1)  # (batch_size, num_points, k, num_dims)
+    
+    feature = torch.cat((feature-x, x), dim=3).permute(0, 3, 1, 2)      # (batch_size, num_points, k, 2*num_dims) -> (batch_size, 2*num_dims, num_points, k)
+  
+    return feature                              # (batch_size, 2*num_dims, num_points, k)
+
+class FoldNet_Encoder(nn.Module):
     def __init__(self):
-        super(Encoder, self).__init__()
+        super(FoldNet_Encoder, self).__init__()
+        self.k = 32
+        self.n = 2048   # input point cloud size
+        self.mlp1 = nn.Sequential(
+            nn.Conv1d(12, 64, 1),
+            nn.ReLU(),
+            nn.Conv1d(64, 64, 1),
+            nn.ReLU(),
+            nn.Conv1d(64, 64, 1),
+            nn.ReLU(),
+        )
+        self.linear1 = nn.Linear(64, 64)
+        self.conv1 = nn.Conv1d(64, 128, 1)
+        self.linear2 = nn.Linear(128, 128)
+        self.conv2 = nn.Conv1d(128, 1024, 1)
+        self.mlp2 = nn.Sequential(
+            nn.Conv1d(1024, 512, 1),
+            nn.ReLU(),
+            nn.Conv1d(512, 512, 1),
+        )
 
-        self.conv1 = nn.Conv1d(12, 64, 1)
-        self.conv2 = nn.Conv1d(64, 64, 1)
-        self.conv3 = nn.Conv1d(64, 64, 1)
-
-        self.bn1 = nn.BatchNorm1d(64)
-        self.bn2 = nn.BatchNorm1d(64)
-        self.bn3 = nn.BatchNorm1d(64)
-
-        self.graph_layer1 = GraphLayer(in_channel=64, out_channel=128, k=16)
-        self.graph_layer2 = GraphLayer(in_channel=128, out_channel=1024, k=16)
-
-        self.conv4 = nn.Conv1d(1024, 512, 1)
-        self.bn4 = nn.BatchNorm1d(512)
-
-    def forward(self, x):
-        b, c, n = x.size()
-
-        # get the covariances, reshape and concatenate with x
-        knn_idx = knn(x, k=16)
-        knn_x = index_points(x.permute(0, 2, 1), knn_idx)  # (B, N, 16, 3)
-        mean = torch.mean(knn_x, dim=2, keepdim=True)
-        knn_x = knn_x - mean
-        covariances = torch.matmul(knn_x.transpose(2, 3), knn_x).view(b, n, -1).permute(0, 2, 1)
-        x = torch.cat([x, covariances], dim=1)  # (B, 12, N)
-
-        # three layer MLP
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = F.relu(self.bn3(self.conv3(x)))
-
-
-        # two consecutive graph layers
-        x = self.graph_layer1(x)
-        x = self.graph_layer2(x)
-
-        x = self.bn4(self.conv4(x))
-
-        x = torch.max(x, dim=-1)[0]
+    def graph_layer(self, x, idx):           
+        x = local_maxpool(x, idx)    
+        x = self.linear1(x)  
+        x = x.transpose(2, 1)                                     
+        x = F.relu(self.conv1(x))                            
+        x = local_maxpool(x, idx)  
+        x = self.linear2(x) 
+        x = x.transpose(2, 1)                                   
+        x = self.conv2(x)                       
         return x
 
-
-class FoldingLayer(nn.Module):
-    """
-    The folding operation of FoldingNet
-    """
-
-    def __init__(self, in_channel: int, out_channels: list):
-        super(FoldingLayer, self).__init__()
-
-        layers = []
-        for oc in out_channels[:-1]:
-            conv = nn.Conv1d(in_channel, oc, 1)
-            bn = nn.BatchNorm1d(oc)
-            active = nn.ReLU(inplace=True)
-            layers.extend([conv, bn, active])
-            in_channel = oc
-        out_layer = nn.Conv1d(in_channel, out_channels[-1], 1)
-        layers.append(out_layer)
-        
-        self.layers = nn.Sequential(*layers)
-
-    def forward(self, grids, codewords):
-        """
-        Parameters
-        ----------
-            grids: reshaped 2D grids or intermediam reconstructed point clouds
-        """
-        # concatenate
-        x = torch.cat([grids, codewords], dim=1)
-        # shared mlp
-        x = self.layers(x)
-        
-        return x
+    def forward(self, pts):
+        pts = pts.transpose(2, 1)               # (batch_size, 3, num_points)
+        idx = knn(pts, k=self.k)
+        x = local_cov(pts, idx)                 # (batch_size, 3, num_points) -> (batch_size, 12, num_points])            
+        x = self.mlp1(x)                        # (batch_size, 12, num_points) -> (batch_size, 64, num_points])
+        x = self.graph_layer(x, idx)            # (batch_size, 64, num_points) -> (batch_size, 1024, num_points)
+        x = torch.max(x, 2, keepdim=True)[0]    # (batch_size, 1024, num_points) -> (batch_size, 1024, 1)
+        x = self.mlp2(x)                        # (batch_size, 1024, 1) -> (batch_size, feat_dims, 1)
+        feat = x.transpose(2,1)                 # (batch_size, feat_dims, 1) -> (batch_size, 1, feat_dims)
+        return feat                             # (batch_size, 1, feat_dims)
 
 
-class Decoder(nn.Module):
-    """
-    Decoder Module of FoldingNet
-    """
-
-    def __init__(self, in_channel=512):
-        super(Decoder, self).__init__()
-
-        # Sample the grids in 2D space
-        xx = np.linspace(-0.3, 0.3, 45, dtype=np.float32)
-        yy = np.linspace(-0.3, 0.3, 45, dtype=np.float32)
-        self.grid = np.meshgrid(xx, yy)   # (2, 45, 45)
-
-        # reshape
-        self.grid = torch.Tensor(self.grid).view(2, -1)  # (2, 45, 45) -> (2, 45 * 45)
-        
-        self.m = self.grid.shape[1]
-
-        self.fold1 = FoldingLayer(in_channel + 2, [512, 512, 3])
-        self.fold2 = FoldingLayer(in_channel + 3, [512, 512, 3])
-        self.fold3 = FoldingLayer(in_channel + 3, [512, 512, 3])
-        self.fold4 = FoldingLayer(in_channel + 3, [512, 512, 3])
-        self.fold5 = FoldingLayer(in_channel + 3, [512, 512, 3])
-        self.fold6 = FoldingLayer(in_channel + 3, [512, 512, 3])
-
-    def forward(self, x):
-        """
-        x: (B, C)
-        """
-        batch_size = x.shape[0]
-
-        # repeat grid for batch operation
-        grid = self.grid.to(x.device)                      # (2, 45 * 45)
-        grid = grid.unsqueeze(0).repeat(batch_size, 1, 1)  # (B, 2, 45 * 45)
-        
-        # repeat codewords
-        x = x.unsqueeze(2).repeat(1, 1, self.m)            # (B, 512, 45 * 45)
-        
-        # two folding operations
-        recon1 = self.fold1(grid, x)
-        recon2 = self.fold2(recon1, x)
-        recon3 = self.fold3(recon2, x)
-        
-        return recon2
-
-
-class AutoEncoder(nn.Module):
+class FoldNet_Decoder(nn.Module):
     def __init__(self):
-        super().__init__()
+        super(FoldNet_Decoder, self).__init__()
+        self.m = 2025  # 45 * 45.
+        self.shape = 'sphere'
+        self.meshgrid = [[-0.3, 0.3, 45], [-0.3, 0.3, 45]]
+        self.sphere = np.load("sphere.npy")
+        self.gaussian = np.load("gaussian.npy")
+        if self.shape == 'plane':
+            self.folding1 = nn.Sequential(
+                nn.Conv1d(512+2, 512, 1),
+                nn.ReLU(),
+                nn.Conv1d(512, 512, 1),
+                nn.ReLU(),
+                nn.Conv1d(512, 3, 1),
+            )
+        else:
+            self.folding1 = nn.Sequential(
+                nn.Conv1d(512+3, 512, 1),
+                nn.ReLU(),
+                nn.Conv1d(512, 512, 1),
+                nn.ReLU(),
+                nn.Conv1d(512, 3, 1),
+            )  
+        self.folding2 = nn.Sequential(
+            nn.Conv1d(512+3, 512, 1),
+            nn.ReLU(),
+            nn.Conv1d(512, 512, 1),
+            nn.ReLU(),
+            nn.Conv1d(512, 3, 1),
+        )
 
-        self.encoder = Encoder()
-        self.decoder = Decoder()
+    def build_grid(self, batch_size):
+        if self.shape == 'plane':
+            x = np.linspace(*self.meshgrid[0])
+            y = np.linspace(*self.meshgrid[1])
+            points = np.array(list(itertools.product(x, y)))
+        elif self.shape == 'sphere':
+            points = self.sphere
+        elif self.shape == 'gaussian':
+            points = self.gaussian
+        points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
+        points = torch.tensor(points)
+        return points.float()
 
     def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
+        x = x.transpose(1, 2).repeat(1, 1, self.m)      # (batch_size, feat_dims, num_points)
+        points = self.build_grid(x.shape[0]).transpose(1, 2)  # (batch_size, 2, num_points) or (batch_size, 3, num_points)
+        if x.get_device() != -1:
+            points = points.cuda(x.get_device())
+        cat1 = torch.cat((x, points), dim=1)            # (batch_size, feat_dims+2, num_points) or (batch_size, feat_dims+3, num_points)
+        folding_result1 = self.folding1(cat1)           # (batch_size, 3, num_points)
+        cat2 = torch.cat((x, folding_result1), dim=1)   # (batch_size, 515, num_points)
+        folding_result2 = self.folding2(cat2)           # (batch_size, 3, num_points)
+        return folding_result2.transpose(1, 2)          # (batch_size, num_points ,3)
+    
+class ReconstructionNet(nn.Module):
+    def __init__(self):
+        super(ReconstructionNet, self).__init__()
+        self.encoder = FoldNet_Encoder()
+        self.decoder = FoldNet_Decoder()
+
+    def forward(self, input):
+        feature = self.encoder(input)
+        output = self.decoder(feature)
+        return output, feature
+
+    def get_parameter(self):
+        return list(self.encoder.parameters()) + list(self.decoder.parameters())
 
 #%%
 
@@ -250,24 +236,17 @@ if __name__ == '__main__':
     female_data_loader_train, _, _, _ = data_split(n_points=n)
     for batch in female_data_loader_train:
         #visualize_point_cloud(batch[0, :, :])
-        pcs = batch.reshape(32, 3, n)
+        pcs = batch
         #print(pcs.size())
+
+        fNet = ReconstructionNet()
+        feature, parameters = fNet.forward(pcs)
         break
 
-    encoder = Encoder()
-    codewords = encoder(pcs)
-    print(codewords.size())
 
-    decoder = Decoder(codewords.size(1))
-    recons = decoder(codewords)
-    print(recons.size())
+# %%
+visualize_point_cloud(batch[0, :, :])
+visualize_point_cloud(feature[0, :, :])
 
-    ae = AutoEncoder()
-    y = ae(pcs)
-    print(y.size())
 
-#%%
-#visualize_point_cloud(pcs[0, :, :])
-#visualize_point_cloud(codewords)
-visualize_point_cloud(recons[0, :, :])
-#visualize_point_cloud(y[0, :, :])
+# %%
