@@ -1,5 +1,4 @@
 #%%
-from mpl_toolkits import mplot3d
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -56,10 +55,6 @@ def visualize_point_cloud(pcd):
     # Convert it to a numpy array
     #points = np.asarray(pcd)
     points = pcd.detach().numpy()
-    print(pcd)
-    print(pcd.shape)
-    print(points)
-    print(points.shape)
 
     # Plot it using matplotlib with tiny points and constrained axes
     fig = plt.figure()
@@ -231,11 +226,8 @@ class Decoder(nn.Module):
         recon1 = self.fold1(grid, x)
         recon2 = self.fold2(recon1, x)
         recon3 = self.fold3(recon2, x)
-        #recon4 = self.fold4(recon3, x)
-        #recon5 = self.fold5(recon4, x)
-        #recon6 = self.fold6(recon5, x)
         
-        return recon3
+        return recon2
 
 
 class AutoEncoder(nn.Module):
@@ -274,18 +266,8 @@ if __name__ == '__main__':
     y = ae(pcs)
     print(y.size())
 
-
-
 #%%
-x = 20
-print(pcs)
-visualize_point_cloud(pcs[0, :, :])
+#visualize_point_cloud(pcs[0, :, :])
 #visualize_point_cloud(codewords)
-#visualize_point_cloud(recons[:, :2, :])
-#visualize_point_cloud(y[:, :2, :])
-
-# %%
-print(pcs[0, :, :].size())
-print(recons[0, :, :])
-#print(y.size())
-# %%
+visualize_point_cloud(recons[0, :, :])
+#visualize_point_cloud(y[0, :, :])
