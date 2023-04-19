@@ -172,16 +172,7 @@ def main(args):
         classifier = classifier.train()
 
         scheduler.step()
-
-        #for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
-        for (points, target), batch_id in enumerate(trainDataLoader):
-        
-        # while True:
-            # try:
-            #     (points, target), batch_id = next(iter(trainDataLoader))
-            # except StopIteration:
-            #     break
-
+        for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
             optimizer.zero_grad()
 
             points = points.data.numpy()

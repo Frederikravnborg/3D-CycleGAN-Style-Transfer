@@ -55,7 +55,7 @@ def test(model, loader, num_class=2):
     class_acc = np.zeros((num_class, 3))
     classifier = model.eval()
     print("length: ", len(loader))
-    for (points, target), j in tqdm(enumerate(loader), total=len(loader)):
+    for j, (points, target) in tqdm(enumerate(loader), total=len(loader)):
 
         if not args.use_cpu:
             points, target = points.cuda(), target.cuda()
@@ -172,16 +172,7 @@ def main(args):
         classifier = classifier.train()
 
         scheduler.step()
-
-        #for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
-        for (points, target), batch_id in enumerate(trainDataLoader):
-        
-        # while True:
-            # try:
-            #     (points, target), batch_id = next(iter(trainDataLoader))
-            # except StopIteration:
-            #     break
-
+        for (points, target), batch_id in tqdm(enumerate(trainDataLoader, 0), total=len(trainDataLoader), smoothing=0.9):
             optimizer.zero_grad()
 
             points = points.data.numpy()

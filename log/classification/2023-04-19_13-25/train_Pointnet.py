@@ -173,8 +173,7 @@ def main(args):
 
         scheduler.step()
 
-        #for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
-        for (points, target), batch_id in enumerate(trainDataLoader):
+        for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
         
         # while True:
             # try:

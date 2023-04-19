@@ -172,15 +172,13 @@ def main(args):
         classifier = classifier.train()
 
         scheduler.step()
-
+        while True:
         #for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
-        for (points, target), batch_id in enumerate(trainDataLoader):
-        
-        # while True:
-            # try:
-            #     (points, target), batch_id = next(iter(trainDataLoader))
-            # except StopIteration:
-            #     break
+            
+            try:
+                (points, target), batch_id = next(iter(trainDataLoader))
+            except StopIteration:
+                break
 
             optimizer.zero_grad()
 
