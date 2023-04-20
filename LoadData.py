@@ -16,7 +16,8 @@ class ObjDataset(Dataset):
         # Store the folder path and transform
         self.folder_path = folder_path
         self.transform = transform
-        self.target = target
+        self.target = torch.tensor(target, dtype=torch.float32)
+        
     
     # Return the length of the dataset
     def __len__(self):
@@ -36,29 +37,29 @@ class ObjDataset(Dataset):
         # Return the point cloud and its index
         return (points, self.target)
 
-def load(path, target):
-    # Create an instance of the dataset with a given folder path and no transform
-    dataset = ObjDataset(path,target)
-    ### Compute the maximum distance of any vertex from the origin in the dataset ###
-    # max_dist = 0 # Initialize max_dist with zero
-    # with torch.no_grad(): # No need to track gradients for this computation
-    #     for verts in dataset: # Iterate over the dataset
-    #         dists = torch.norm(verts, dim=1) # Compute the Euclidean distances of vertices from origin
-    #         max_dist = max(max_dist, torch.max(dists)) # Update max_dist with the maximum distance in this item
-    # Define the maximum distance as a constant
-    max_dist = torch.tensor(1.0428)
-    # Define the transformation as a lambda function that takes a point cloud and normalizes it
-    normalize = transforms.Lambda(lambda x: x / max_dist)
-    # Create a new instance of the dataset with the same folder path and normalize transform
-    dataset = ObjDataset(path, transform=None)
-    return dataset
+
+
+### Compute the maximum distance of any vertex from the origin in the dataset ###
+# max_dist = 0 # Initialize max_dist with zero
+# with torch.no_grad(): # No need to track gradients for this computation
+#     for verts in dataset: # Iterate over the dataset
+#         dists = torch.norm(verts, dim=1) # Compute the Euclidean distances of vertices from origin
+#         max_dist = max(max_dist, torch.max(dists)) # Update max_dist with the maximum distance in this item
+# Define the maximum distance as a constant
+
+max_dist = torch.tensor(1.0428)
+# Define the transformation as a lambda function that takes a point cloud and normalizes it
+normalize = transforms.Lambda(lambda x: x / max_dist)
+transform = None
 
 
 # Define female and male data separately
-female_train = load("data/female_train", target=[1,0])
-male_train = load("data/male_train", target=[0,1])
-female_test = load("data/female_test", target=[1,0])
-male_test = load("data/male_test", target=[0,1])
+female_train = ObjDataset("data/female_train", transform = transform, target=0)
+male_train = ObjDataset("data/male_train", transform = transform, target=1)
+female_test = ObjDataset("data/female_test", transform = transform, target=0)
+male_test = ObjDataset("data/male_test", transform = transform, target=1)
+
+
 
 # Create a data loader with a given batch size and shuffle option
 batch_size = 32
