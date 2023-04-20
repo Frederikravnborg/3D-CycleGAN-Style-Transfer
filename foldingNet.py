@@ -9,7 +9,6 @@
 #%%
 import torch
 import torch.nn as nn
-import torch.nn.init as init
 import torch.nn.functional as F
 import numpy as np
 import itertools
@@ -21,8 +20,6 @@ from LoadData_Torch import data_split
 #%%
 # Define a function that visualizes a point cloud
 def visualize_point_cloud(pcd):
-    # Convert it to a numpy array
-    #points = np.asarray(pcd)
     points = pcd.detach().numpy()
 
     # Plot it using matplotlib with tiny points and constrained axes
@@ -33,10 +30,10 @@ def visualize_point_cloud(pcd):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.set_box_aspect((1,1,1)) # Constrain the axes
-    #ax.set_proj_type('ortho') # Use orthographic projection
-    #ax.set_xlim(-1,1) # Set x-axis range
-    #ax.set_ylim(-1,1) # Set y-axis range
-    #ax.set_zlim(-1,1) # Set z-axis range
+    ax.set_proj_type('ortho') # Use orthographic projection
+    ax.set_xlim(-1,1) # Set x-axis range
+    ax.set_ylim(-1,1) # Set y-axis range
+    ax.set_zlim(-1,1) # Set z-axis range
     plt.show()
 
 def knn(x, k):
@@ -47,7 +44,7 @@ def knn(x, k):
     xx = torch.sum(x**2, dim=1, keepdim=True)
     pairwise_distance = -xx - inner - xx.transpose(2, 1)
  
-    idx = pairwise_distance.topk(k=16, dim=-1)[1]            # (batch_size, num_points, k)
+    idx = pairwise_distance.topk(k=k, dim=-1)[1]            # (batch_size, num_points, k)
 
     if idx.get_device() == -1:
         idx_base = torch.arange(0, batch_size).view(-1, 1, 1)*num_points
@@ -115,7 +112,7 @@ def get_graph_feature(x, k=20, idx=None):
 class FoldNet_Encoder(nn.Module):
     def __init__(self):
         super(FoldNet_Encoder, self).__init__()
-        self.k = 32
+        self.k = 8
         self.n = 2048   # input point cloud size
         self.mlp1 = nn.Sequential(
             nn.Conv1d(12, 64, 1),
@@ -161,9 +158,13 @@ class FoldNet_Encoder(nn.Module):
 class FoldNet_Decoder(nn.Module):
     def __init__(self):
         super(FoldNet_Decoder, self).__init__()
-        self.m = 2025  # 45 * 45.
+        self.x1 = 2000
+        self.x2 = 2000
+        self.p = 45
+
+        self.m = self.p * self.p
         self.shape = 'sphere'
-        self.meshgrid = [[-0.3, 0.3, 45], [-0.3, 0.3, 45]]
+        self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = np.load("sphere.npy")
         self.gaussian = np.load("gaussian.npy")
         if self.shape == 'plane':
@@ -196,9 +197,9 @@ class FoldNet_Decoder(nn.Module):
             y = np.linspace(*self.meshgrid[1])
             points = np.array(list(itertools.product(x, y)))
         elif self.shape == 'sphere':
-            points = self.sphere
+            points = self.sphere * 100000
         elif self.shape == 'gaussian':
-            points = self.gaussian
+            points = self.gaussian * 1000
         points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
         points = torch.tensor(points)
         return points.float()
@@ -233,20 +234,32 @@ class ReconstructionNet(nn.Module):
 if __name__ == '__main__':
     n: int = 1024*2
 
+    i = 0
+
     female_data_loader_train, _, _, _ = data_split(n_points=n)
     for batch in female_data_loader_train:
-        #visualize_point_cloud(batch[0, :, :])
-        pcs = batch
+        print(i)
         #print(pcs.size())
 
         fNet = ReconstructionNet()
-        feature, parameters = fNet.forward(pcs)
-        break
+        output, codeword = fNet.forward(batch)
 
+        if i == 0:
+            break
+
+        i += 1
 
 # %%
-visualize_point_cloud(batch[0, :, :])
-visualize_point_cloud(feature[0, :, :])
+visualize_point_cloud(batch[1, :, :])
+visualize_point_cloud(output[1, :, :])
 
+# %%
+print(output.size())
+# %%
+sphere = np.load("sphere.npy")*10
+print(np.mean(sphere[:, 2]))
+print(np.mean(output[1, :, :].detach().numpy()[:, 0]))
+
+print(np.min(sphere[:,2]), np.max(sphere[:, 2]))
 
 # %%
