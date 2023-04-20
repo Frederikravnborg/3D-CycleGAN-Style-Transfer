@@ -29,12 +29,12 @@ class ObjDataset(Dataset):
         # Load the .obj file
         mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
         # Convert vertices and faces to PyTorch tensors
-        pcd = torch.tensor(mesh.vertices).float()
+        points = torch.tensor(mesh.vertices).float()
         # Apply the transform if given
         if self.transform:
-            pcd = self.transform(pcd)
+            points = self.transform(points)
         # Return the point cloud and its index
-        return (pcd, self.target), index
+        return (points, self.target)
 
 def load(path, target):
     # Create an instance of the dataset with a given folder path and no transform

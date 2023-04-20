@@ -55,8 +55,7 @@ def test(model, loader, num_class=2):
     class_acc = np.zeros((num_class, 3))
     classifier = model.eval()
     print("length: ", len(loader))
-    
-    for batch_id, (points, target) in tqdm(enumerate(loader), total=len(loader)):
+    for (points, target), j in tqdm(enumerate(loader), total=len(loader)):
 
         if not args.use_cpu:
             points, target = points.cuda(), target.cuda()
@@ -120,10 +119,10 @@ def main(args):
     log_string('Load dataset ...')
     data_path = 'data/modelnet40_normal_resampled/'
 
-    trainDataLoader = female_loader_train
-    testDataLoader = female_loader_test
-    # trainDataLoader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=10, drop_last=True)
-    # testDataLoader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=10)
+    train_dataset = female_loader_train
+    test_dataset = female_loader_test
+    trainDataLoader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=10, drop_last=True)
+    testDataLoader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=10)
 
     '''MODEL LOADING'''
     num_class = args.num_category
@@ -174,7 +173,7 @@ def main(args):
 
         scheduler.step()
 
-        for batch_id, (points, target) in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
+        for (points, target), batch_id in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
         # for (points, target), batch_id in enumerate(trainDataLoader):
         
         # while True:
