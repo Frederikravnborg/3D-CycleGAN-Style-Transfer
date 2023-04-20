@@ -10,13 +10,14 @@ warnings.filterwarnings("ignore")
 # Define a custom dataset class that inherits from Dataset
 class ObjDataset(Dataset):
     # Initialize the dataset with the folder path and transform
-    def __init__(self, folder_path, transform=None, target=None):
+    def __init__(self, folder_path, transform=None, target=None, n_points=2048):
         # Get the list of obj file names in the folder
         self.file_names = [f for f in os.listdir(folder_path) if f.endswith(".obj")]
         # Store the folder path and transform
         self.folder_path = folder_path
         self.transform = transform
         self.target = torch.tensor(target, dtype=torch.float32)
+        self.n_points = n_points
         
     
     # Return the length of the dataset
@@ -29,6 +30,7 @@ class ObjDataset(Dataset):
         file_name = self.file_names[index]
         # Load the .obj file
         mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
+        mesh = mesh.sample_points_uniformly(number_of_points=self.n_points)
         # Convert vertices and faces to PyTorch tensors
         points = torch.tensor(mesh.vertices).float()
         # Apply the transform if given
@@ -51,13 +53,13 @@ max_dist = torch.tensor(1.0428)
 # Define the transformation as a lambda function that takes a point cloud and normalizes it
 normalize = transforms.Lambda(lambda x: x / max_dist)
 transform = None
-
+n_points = 1024
 
 # Define female and male data separately
-female_train = ObjDataset("data/female_train", transform = transform, target=0)
-male_train = ObjDataset("data/male_train", transform = transform, target=1)
-female_test = ObjDataset("data/female_test", transform = transform, target=0)
-male_test = ObjDataset("data/male_test", transform = transform, target=1)
+female_train = ObjDataset("data/female_train",  transform = transform, target=0, n_points = n_points)
+male_train = ObjDataset("data/male_train",      transform = transform, target=1, n_points = n_points)
+female_test = ObjDataset("data/female_test",    transform = transform, target=0, n_points = n_points)
+male_test = ObjDataset("data/male_test",        transform = transform, target=1, n_points = n_points)
 
 
 

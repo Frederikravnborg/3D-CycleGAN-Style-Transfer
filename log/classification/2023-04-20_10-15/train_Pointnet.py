@@ -175,7 +175,13 @@ def main(args):
         scheduler.step()
 
         for batch_id, (points, target) in tqdm(enumerate(trainDataLoader), total=len(trainDataLoader), smoothing=0.9):
-
+        # for (points, target), batch_id in enumerate(trainDataLoader):
+        
+        # while True:
+            # try:
+            #     (points, target), batch_id = next(iter(trainDataLoader))
+            # except StopIteration:
+            #     break
 
             optimizer.zero_grad()
 
