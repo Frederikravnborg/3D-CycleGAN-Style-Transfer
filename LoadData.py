@@ -1,10 +1,11 @@
 # Import libraries
 import os
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, ConcatDataset
 from torchvision import transforms
 import open3d as o3d
 import warnings
+import numpy as np
 warnings.filterwarnings("ignore")
 
 # Define a custom dataset class that inherits from Dataset
@@ -31,8 +32,11 @@ class ObjDataset(Dataset):
         # Load the .obj file
         mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
         mesh = mesh.sample_points_uniformly(number_of_points=self.n_points)
-        # Convert vertices and faces to PyTorch tensors
-        points = torch.tensor(mesh.vertices).float()
+
+        np_mesh = np.asarray(mesh.points)
+        # Convert numpy point cloud to PyTorch tensor
+        points = torch.from_numpy(np_mesh).float()
+
         # Apply the transform if given
         if self.transform:
             points = self.transform(points)
@@ -41,7 +45,7 @@ class ObjDataset(Dataset):
 
 
 
-### Compute the maximum distance of any vertex from the origin in the dataset ###
+''' Compute the maximum distance of any vertex from the origin in the dataset (used to compute max_dist)'''
 # max_dist = 0 # Initialize max_dist with zero
 # with torch.no_grad(): # No need to track gradients for this computation
 #     for verts in dataset: # Iterate over the dataset
@@ -53,7 +57,7 @@ max_dist = torch.tensor(1.0428)
 # Define the transformation as a lambda function that takes a point cloud and normalizes it
 normalize = transforms.Lambda(lambda x: x / max_dist)
 transform = None
-n_points = 1024
+n_points = 200
 
 # Define female and male data separately
 female_train = ObjDataset("data/female_train",  transform = transform, target=0, n_points = n_points)
@@ -70,4 +74,5 @@ male_loader_train = DataLoader(     male_train,    batch_size=batch_size, shuffl
 female_loader_test = DataLoader(    female_test,   batch_size=batch_size, shuffle=True)
 male_loader_test = DataLoader(      male_test,     batch_size=batch_size, shuffle=True)
 
-
+all_train = DataLoader( ConcatDataset([female_train, male_train]), batch_size=batch_size, shuffle=True)
+all_test = DataLoader( ConcatDataset([female_test, male_test]), batch_size=batch_size, shuffle=True)
