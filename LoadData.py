@@ -33,8 +33,6 @@ class ObjDataset(Dataset):
         female_path = f"{self.root_female}/{female_pcd}"
         male_path = f"{self.root_male}/{male_pcd}"
 
-        male_path = os.path.join(self.root_male, male_pcd)
-
         # female_path = os.path.join(self.root_female, female_pcd)
         # male_path = os.path.join(self.root_male, male_pcd)
 
