@@ -57,7 +57,7 @@ max_dist = torch.tensor(1.0428)
 # Define the transformation as a lambda function that takes a point cloud and normalizes it
 normalize = transforms.Lambda(lambda x: x / max_dist)
 transform = None
-n_points = 200
+n_points = 2048
 
 # Define female and male data separately
 female_train = ObjDataset("data/female_train",  transform = transform, target=0, n_points = n_points)
