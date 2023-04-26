@@ -12,7 +12,7 @@ import argparse
 from pathlib import Path
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
-from LoadData import all_train, all_test
+from loaddata import all_train, all_test
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR

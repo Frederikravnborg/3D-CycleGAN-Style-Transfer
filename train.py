@@ -7,7 +7,7 @@ Programmed by Aladdin Persson <aladdin.persson at hotmail dot com>
 """
 
 import torch
-from dataset import HorseZebraDataset
+from loaddata import ObjDataset
 import sys
 from utils import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
@@ -148,20 +148,24 @@ def main():
         )
 
     #Create dataset
-    dataset = HorseZebraDataset(
-        root_horse=config.TRAIN_DIR + "/horses",
-        root_zebra=config.TRAIN_DIR + "/zebras",
+    dataset = ObjDataset(
+        root_male=config.TRAIN_DIR + "/male", 
+        root_female=config.TRAIN_DIR + "/female",
         transform=config.transforms,
+        n_points=config.N_POINTS
     )
-    val_dataset = HorseZebraDataset(
-        root_horse=config.VAL_DIR + "/horses",
-        root_zebra=config.VAL_DIR + "/zebras",
+    val_dataset = ObjDataset(
+        root_male=config.VAL_DIR + "/male",
+        root_female=config.VAL_DIR + "/female",
         transform=config.transforms,
+        n_points=config.N_POINTS
     )
+
+
     val_loader = DataLoader(
         val_dataset,
-        batch_size=1,
-        shuffle=False,
+        batch_size=config.BATCH_SIZE,
+        shuffle=True,
         pin_memory=True,
     )
     loader = DataLoader(
