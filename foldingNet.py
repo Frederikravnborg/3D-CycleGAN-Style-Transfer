@@ -1,11 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-@Author: An Tao
-@Contact: ta19@mails.tsinghua.edu.cn
-@File: model.py
-@Time: 2020/3/23 5:39 PM
-"""
+
 #%%
 import torch
 import torch.nn as nn
@@ -13,14 +6,13 @@ import torch.nn.functional as F
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
-from LoadData_Torch import data_split
-
-#from loss import ChamferLoss, CrossEntropyLoss
+from LoadData import female_loader_train, female_loader_test, male_loader_train, male_loader_test
 
 #%%
 # Define a function that visualizes a point cloud
 def visualize_point_cloud(pcd):
-    points = pcd.detach().numpy()
+    points = pcd
+    # points = pcd.detach().numpy()
 
     # Plot it using matplotlib with tiny points and constrained axes
     fig = plt.figure()
@@ -68,7 +60,6 @@ def local_cov(pts, idx):
     x = x.view(batch_size, num_points, -1, num_dims)        # (batch_size, num_points, k, 3)
 
     x = torch.matmul(x[:,:,0].unsqueeze(3), x[:,:,1].unsqueeze(2))  # (batch_size, num_points, 3, 1) * (batch_size, num_points, 1, 3) -> (batch_size, num_points, 3, 3)
-    # x = torch.matmul(x[:,:,1:].transpose(3, 2), x[:,:,1:])
     x = x.view(batch_size, num_points, 9).transpose(2, 1)   # (batch_size, 9, num_points)
 
     x = torch.cat((pts, x), dim=1)                          # (batch_size, 12, num_points)
@@ -91,7 +82,7 @@ def local_maxpool(x, idx):
     return x
 
 
-def get_graph_feature(x, k=20, idx=None):
+def get_graph_feature(x, k=16, idx=None):
     batch_size = x.size(0)
     num_points = x.size(2)
     x = x.view(batch_size, -1, num_points)      # (batch_size, num_dims, num_points)
@@ -109,10 +100,34 @@ def get_graph_feature(x, k=20, idx=None):
   
     return feature                              # (batch_size, 2*num_dims, num_points, k)
 
+class ChamferLoss(nn.Module):
+    def __init__(self):
+        super(ChamferLoss, self).__init__()
+        self.use_cuda = torch.cuda.is_available()
+
+    def batch_pairwise_dist(self, x, y):
+        bs, num_points_x, points_dim = x.size()
+        _, num_points_y, _ = y.size()
+        xx = x.pow(2).sum(dim=-1)
+        yy = y.pow(2).sum(dim=-1)
+        zz = torch.bmm(x, y.transpose(2, 1))
+        rx = xx.unsqueeze(1).expand_as(zz.transpose(2, 1))
+        ry = yy.unsqueeze(1).expand_as(zz)
+        P = (rx.transpose(2, 1) + ry - 2 * zz)
+        return P
+
+    def forward(self, preds, gts):
+        P = self.batch_pairwise_dist(gts, preds)
+        mins, _ = torch.min(P, 1)
+        loss_1 = torch.sum(mins)
+        mins, _ = torch.min(P, 2)
+        loss_2 = torch.sum(mins)
+        return loss_1 + loss_2
+
 class FoldNet_Encoder(nn.Module):
     def __init__(self):
         super(FoldNet_Encoder, self).__init__()
-        self.k = 8
+        self.k = 16
         self.n = 2048   # input point cloud size
         self.mlp1 = nn.Sequential(
             nn.Conv1d(12, 64, 1),
@@ -163,7 +178,7 @@ class FoldNet_Decoder(nn.Module):
         self.p = 45
 
         self.m = self.p * self.p
-        self.shape = 'sphere'
+        self.shape = 'plane'
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = np.load("sphere.npy")
         self.gaussian = np.load("gaussian.npy")
@@ -184,6 +199,13 @@ class FoldNet_Decoder(nn.Module):
                 nn.Conv1d(512, 3, 1),
             )  
         self.folding2 = nn.Sequential(
+            nn.Conv1d(512+3, 512, 1),
+            nn.ReLU(),
+            nn.Conv1d(512, 512, 1),
+            nn.ReLU(),
+            nn.Conv1d(512, 3, 1),
+        )
+        self.folding3 = nn.Sequential(
             nn.Conv1d(512+3, 512, 1),
             nn.ReLU(),
             nn.Conv1d(512, 512, 1),
@@ -220,11 +242,13 @@ class ReconstructionNet(nn.Module):
         super(ReconstructionNet, self).__init__()
         self.encoder = FoldNet_Encoder()
         self.decoder = FoldNet_Decoder()
+        self.loss = ChamferLoss()
 
     def forward(self, input):
         feature = self.encoder(input)
         output = self.decoder(feature)
-        return output, feature
+        loss = self.loss(input, output)
+        return output, feature, loss
 
     def get_parameter(self):
         return list(self.encoder.parameters()) + list(self.decoder.parameters())
@@ -232,34 +256,41 @@ class ReconstructionNet(nn.Module):
 #%%
 
 if __name__ == '__main__':
+    batch_size = 32
     n: int = 1024*2
 
-    i = 0
+    # Save output and loss in np array
+    output = np.zeros((batch_size, 2025, 3))
+    #codeword = torch.rand((batch_size, 512))
+    loss = np.zeros((batch_size, 1))
 
-    female_data_loader_train, _, _, _ = data_split(n_points=n)
-    for batch in female_data_loader_train:
-        print(i)
-        #print(pcs.size())
+    x = 0
 
-        fNet = ReconstructionNet()
-        output, codeword = fNet.forward(batch)
+    for batch in female_loader_train:
+        for i in range(batch_size):
+            generator = ReconstructionNet()
+            temp_output, temp_codeword, temp_loss = generator(batch[0][:, :, :])
+                #loss = generator.get_loss(batch[0], output)
+            # Save output and loss in np array
+            output[i, :, :] = temp_output[i,:,:].detach().numpy()
+            loss[i, :] = temp_loss.detach().numpy()
 
-        if i == 0:
+            #if i == 20:
+            #    break
+            
+            print(i)
+        
+        if x == 1:
             break
-
-        i += 1
-
-# %%
-visualize_point_cloud(batch[1, :, :])
-visualize_point_cloud(output[1, :, :])
+        
+        x += 1
+        
+        #break
 
 # %%
-print(output.size())
+visualize_point_cloud(batch[0][5, :, :])
+visualize_point_cloud(output[5, :, :])
 # %%
-sphere = np.load("sphere.npy")*10
-print(np.mean(sphere[:, 2]))
-print(np.mean(output[1, :, :].detach().numpy()[:, 0]))
-
-print(np.min(sphere[:,2]), np.max(sphere[:, 2]))
+print(loss)
 
 # %%
