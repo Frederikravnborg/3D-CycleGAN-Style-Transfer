@@ -30,11 +30,11 @@ class ObjDataset(Dataset):
         female_pcd = self.female_pcds[index % self.female_len]
         male_pcd = self.male_pcds[index % self.male_len]
 
-        female_path = f"{self.root_female}/{female_pcd}"
-        male_path = f"{self.root_male}/{male_pcd}"
+        #female_path = f"{self.root_female}/{female_pcd}"
+        #male_path = f"{self.root_male}/{male_pcd}"
 
-        # female_path = os.path.join(self.root_female, female_pcd)
-        # male_path = os.path.join(self.root_male, male_pcd)
+        female_path = os.path.join(self.root_female, female_pcd)
+        male_path = os.path.join(self.root_male, male_pcd)
 
         female_pcd = o3d.io.read_triangle_mesh(female_path)
         male_pcd = o3d.io.read_triangle_mesh(male_path)
@@ -42,16 +42,13 @@ class ObjDataset(Dataset):
         female_pcd = female_pcd.sample_points_uniformly(number_of_points=self.n_points)
         male_pcd = male_pcd.sample_points_uniformly(number_of_points=self.n_points)
        
-        female_pcd_np = np.asarray(female_pcd.points)        
-        male_pcd_np = np.asarray(male_pcd.points)
-       
-        female_pcd = np.asarray(female_pcd_np.points)
-        male_pcd = np.asarray(male_pcd_np.points)
+        female_pcd = np.asarray(female_pcd.points)
+        male_pcd = np.asarray(male_pcd.points)
 
-        if self.transform:
-            female = self.transform(female_pcd)
-            male = self.transform(male_pcd)
+        # if self.transform:
+        #     female_pcd = self.transform(female_pcd)
+        #     male_pcd = self.transform(male_pcd)
 
+        # print(type(female_pcd), type(male_pcd))
 
         return female_pcd, male_pcd
-

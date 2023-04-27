@@ -16,7 +16,7 @@ import torch.optim as optim
 import config
 from tqdm import tqdm
 from torchvision.utils import save_image
-from pointnet_model import Discriminator
+from discriminator_model import Discriminator
 from generator_model import Generator
 
 
@@ -33,10 +33,10 @@ def train_fn(
 
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast(): #Necessary for float16
-            # fake_horse = gen_H(zebra) #Creating fake input
-            # print(torch.transpose(horse,1,2).to(torch.float32))
-            D_H_real = disc_H(torch.transpose(horse,1,2).double()) #Giving discriminator real input
-            # D_H_fake = disc_H(fake_horse.detach()) #Giving discriminator fake input
+            print(type(horse))
+            fake_horse = gen_H(zebra) #Creating fake input
+            D_H_real = disc_H(horse) #Giving discriminator real input
+            D_H_fake = disc_H(fake_horse.detach()) #Giving discriminator fake input
             H_reals += D_H_real.mean().item()
             H_fakes += D_H_fake.mean().item()
             D_H_real_loss = mse(D_H_real, torch.ones_like(D_H_real)) #MSE of D_H_real, expect 1
@@ -104,8 +104,8 @@ def train_fn(
 
 def main():
     #Initializing Discriminators and Generators
-    disc_Z = Discriminator().to(config.DEVICE)
-    disc_H = Discriminator().to(config.DEVICE)
+    disc_H = Discriminator(in_channels=3).to(config.DEVICE)
+    disc_Z = Discriminator(in_channels=3).to(config.DEVICE)
     gen_Z = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
     gen_H = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
     opt_disc = optim.Adam(
