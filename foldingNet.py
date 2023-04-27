@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
@@ -82,7 +83,7 @@ def local_maxpool(x, idx):
     return x
 
 
-def get_graph_feature(x, k=16, idx=None):
+def get_graph_feature(x, k=3, idx=None):
     batch_size = x.size(0)
     num_points = x.size(2)
     x = x.view(batch_size, -1, num_points)      # (batch_size, num_dims, num_points)
@@ -178,7 +179,7 @@ class FoldNet_Decoder(nn.Module):
         self.p = 45
 
         self.m = self.p * self.p
-        self.shape = 'plane'
+        self.shape = 'sphere'
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = np.load("sphere.npy")
         self.gaussian = np.load("gaussian.npy")
@@ -262,25 +263,33 @@ if __name__ == '__main__':
     # Save output and loss in np array
     output = np.zeros((batch_size, 2025, 3))
     #codeword = torch.rand((batch_size, 512))
-    loss = np.zeros((batch_size, 1))
+    nploss = np.zeros((batch_size, 1))
 
     x = 0
 
+    generator = ReconstructionNet()
+    optimizer = optim.Adam(generator.parameters(), lr = 0.0001, weight_decay = 1e-6)
+
     for batch in female_loader_train:
         for i in range(batch_size):
-            generator = ReconstructionNet()
-            temp_output, temp_codeword, temp_loss = generator(batch[0][:, :, :])
-                #loss = generator.get_loss(batch[0], output)
+            
+            optimizer.zero_grad()
+            generator = generator.train()
+            print(np.shape(batch[0][1,:,:]))
+            temp_output, temp_codeword, loss = generator(batch[0])
+            
+            loss.backward()
+            optimizer.step()
             # Save output and loss in np array
             output[i, :, :] = temp_output[i,:,:].detach().numpy()
-            loss[i, :] = temp_loss.detach().numpy()
+            nploss[i, :] = loss.item()
 
-            #if i == 20:
-            #    break
+            if i == 0:
+                break
             
-            print(i)
+            print("Batch: ", x, " Iteration: ", i)
         
-        if x == 1:
+        if x == 0:
             break
         
         x += 1
@@ -288,9 +297,13 @@ if __name__ == '__main__':
         #break
 
 # %%
-visualize_point_cloud(batch[0][5, :, :])
-visualize_point_cloud(output[5, :, :])
+#visualize_point_cloud(batch[0][5, :, :])
+visualize_point_cloud(output[31, :, :])
 # %%
-print(loss)
+print(nploss)
 
+# %%
+# Plot loss
+plt.plot(nploss)
+plt.show()
 # %%
