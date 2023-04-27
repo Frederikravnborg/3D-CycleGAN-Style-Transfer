@@ -3,7 +3,6 @@ import os
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
-import numpy as np
 import open3d as o3d
 import warnings
 warnings.filterwarnings("ignore")
@@ -33,10 +32,7 @@ class ObjDataset(Dataset):
         mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
         mesh = mesh.sample_points_uniformly(number_of_points=self.n_points)
         # Convert vertices and faces to PyTorch tensors
-
-        np_mesh = np.asarray(mesh.points)
-        points = torch.from_numpy(np_mesh).float()
-
+        points = torch.tensor(mesh.vertices).float()
         # Apply the transform if given
         if self.transform:
             points = self.transform(points)
@@ -57,7 +53,7 @@ max_dist = torch.tensor(1.0428)
 # Define the transformation as a lambda function that takes a point cloud and normalizes it
 normalize = transforms.Lambda(lambda x: x / max_dist)
 transform = None
-n_points = 1024*2
+n_points = 1024
 
 # Define female and male data separately
 female_train = ObjDataset("data/female_train",  transform = transform, target=0, n_points = n_points)
