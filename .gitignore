@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
+
+log/
+
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -175,3 +179,4 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 *.xyz
+log/classification/2023-04-18_17-04/logs/pointnet_model 2.txt
