@@ -7,8 +7,7 @@ Programmed by Aladdin Persson <aladdin.persson at hotmail dot com>
 """
 
 import torch
-from loaddata import ObjDataset
-import sys
+from load_data import ObjDataset
 from utils import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
 import torch.nn as nn
@@ -73,21 +72,12 @@ def train_fn(
             cycle_zebra_loss = l1(zebra, cycle_zebra)
             cycle_horse_loss = l1(horse, cycle_horse)
 
-            ## Expect it to do nothing.
-            # identity loss (remove these for efficiency if you set lambda_identity=0, config.py)
-            # identity_zebra = gen_Z(zebra)
-            # identity_horse = gen_H(horse)
-            # identity_zebra_loss = l1(zebra, identity_zebra)
-            # identity_horse_loss = l1(horse, identity_horse)
-
-            # add all together
+            # add all losses together
             G_loss = (
                 loss_G_Z
                 + loss_G_H
                 + cycle_zebra_loss * config.LAMBDA_CYCLE
                 + cycle_horse_loss * config.LAMBDA_CYCLE
-                # + identity_horse_loss * config.LAMBDA_IDENTITY
-                # + identity_zebra_loss * config.LAMBDA_IDENTITY
             )
 
         opt_gen.zero_grad()
@@ -162,20 +152,9 @@ def main():
         n_points=config.N_POINTS
     )
 
-
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=config.BATCH_SIZE,
-        shuffle=True,
-        pin_memory=True,
-    )
-    loader = DataLoader(
-        dataset,
-        batch_size=config.BATCH_SIZE,
-        shuffle=True,
-        num_workers=config.NUM_WORKERS,
-        pin_memory=True,
-    )
+    val_loader = DataLoader( val_dataset, batch_size=config.BATCH_SIZE, shuffle=True, pin_memory=True)
+    loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
+    
     g_scaler = torch.cuda.amp.GradScaler() #Scaler to run in float 16, if removed we run in float 32
     d_scaler = torch.cuda.amp.GradScaler() #Scaler to run in float 16, if removed we run in float 32
 
