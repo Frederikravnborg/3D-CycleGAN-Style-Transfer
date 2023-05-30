@@ -32,7 +32,7 @@ class ObjDataset(Dataset):
         mesh = o3d.io.read_triangle_mesh(os.path.join(self.folder_path, file_name))
         mesh = mesh.sample_points_uniformly(number_of_points=self.n_points)
         # Convert vertices and faces to PyTorch tensors
-        points = torch.tensor(mesh.vertices).float()
+        points = torch.tensor(mesh.points).float()
         # Apply the transform if given
         if self.transform:
             points = self.transform(points)

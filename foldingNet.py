@@ -30,8 +30,8 @@ def visualize_point_cloud(pcd):
     plt.show()
 
 def knn(x, k):
-    batch_size = x.size(0)
-    num_points = x.size(2)
+    batch_size = 32
+    num_points = 1024
 
     inner = -2*torch.matmul(x.transpose(2, 1), x)
     xx = torch.sum(x**2, dim=1, keepdim=True)
@@ -179,7 +179,7 @@ class FoldNet_Decoder(nn.Module):
         self.p = 45
 
         self.m = self.p * self.p
-        self.shape = 'sphere'
+        self.shape = 'target'
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = np.load("sphere.npy")
         self.gaussian = np.load("gaussian.npy")
@@ -206,15 +206,8 @@ class FoldNet_Decoder(nn.Module):
             nn.ReLU(),
             nn.Conv1d(512, 3, 1),
         )
-        self.folding3 = nn.Sequential(
-            nn.Conv1d(512+3, 512, 1),
-            nn.ReLU(),
-            nn.Conv1d(512, 512, 1),
-            nn.ReLU(),
-            nn.Conv1d(512, 3, 1),
-        )
 
-    def build_grid(self, batch_size):
+    def build_grid(self, batch_size, target):
         if self.shape == 'plane':
             x = np.linspace(*self.meshgrid[0])
             y = np.linspace(*self.meshgrid[1])
@@ -223,20 +216,21 @@ class FoldNet_Decoder(nn.Module):
             points = self.sphere * 100000
         elif self.shape == 'gaussian':
             points = self.gaussian * 1000
+        elif self.shape == "target":
+            points = target * 10
         points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
         points = torch.tensor(points)
         return points.float()
 
-    def forward(self, x):
+    def forward(self, x, target):
         x = x.transpose(1, 2).repeat(1, 1, self.m)      # (batch_size, feat_dims, num_points)
-        points = self.build_grid(x.shape[0]).transpose(1, 2)  # (batch_size, 2, num_points) or (batch_size, 3, num_points)
-        if x.get_device() != -1:
-            points = points.cuda(x.get_device())
+        target = target.transpose(1, 2).repeat(1, 1, self.m)  # (batch_size, 3, num_points)
+        points = self.build_grid(x.shape[0], target).transpose(1, 2)  # (batch_size, 2, num_points) or (batch_size, 3, num_points)
         cat1 = torch.cat((x, points), dim=1)            # (batch_size, feat_dims+2, num_points) or (batch_size, feat_dims+3, num_points)
         folding_result1 = self.folding1(cat1)           # (batch_size, 3, num_points)
         cat2 = torch.cat((x, folding_result1), dim=1)   # (batch_size, 515, num_points)
         folding_result2 = self.folding2(cat2)           # (batch_size, 3, num_points)
-        return folding_result2.transpose(1, 2)          # (batch_size, num_points ,3)
+        return folding_result2.transpose(1, 2)        # (batch_size, num_points ,3)
     
 class ReconstructionNet(nn.Module):
     def __init__(self):
@@ -245,10 +239,13 @@ class ReconstructionNet(nn.Module):
         self.decoder = FoldNet_Decoder()
         self.loss = ChamferLoss()
 
-    def forward(self, input):
+    def forward(self, input, target):
         feature = self.encoder(input)
-        output = self.decoder(feature)
+        print(feature.shape)
+        output = self.decoder(feature, target)
+        print(output.shape)
         loss = self.loss(input, output)
+        print(output.shape, feature.shape, loss.shape)
         return output, feature, loss
 
     def get_parameter(self):
@@ -270,16 +267,22 @@ if __name__ == '__main__':
     generator = ReconstructionNet()
     optimizer = optim.Adam(generator.parameters(), lr = 0.0001, weight_decay = 1e-6)
 
-    for batch in female_loader_train:
+
+    # Get both a batch from female_loader_train and male_loader_train
+    
+
+
+    for batch in zip(female_loader_test, male_loader_test):
+        print(np.shape(batch[0]))
         for i in range(batch_size):
+            print(batch[0][i].shape, batch[1][i].shape)
             
-            optimizer.zero_grad()
+            #optimizer.zero_grad()
             generator = generator.train()
-            print(np.shape(batch[0][1,:,:]))
-            temp_output, temp_codeword, loss = generator(batch[0])
+            temp_output, temp_codeword, loss = generator(batch[0][i], batch[1][i])
             
-            loss.backward()
-            optimizer.step()
+            #loss.backward()
+            #optimizer.step()
             # Save output and loss in np array
             output[i, :, :] = temp_output[i,:,:].detach().numpy()
             nploss[i, :] = loss.item()
