@@ -1,5 +1,5 @@
 """
-Discriminator model for CycleGAN - Test, Replaced later
+Discriminator model for CycleGAN
 
 Programmed by Aladdin Persson <aladdin.persson at hotmail dot com>
 * 2020-11-05: Initial coding

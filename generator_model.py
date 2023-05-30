@@ -1,5 +1,5 @@
 """
-Generator model for CycleGAN - Test, Replaced later
+Generator model for CycleGAN
 
 Programmed by Aladdin Persson <aladdin.persson at hotmail dot com>
 * 2020-11-05: Initial coding
