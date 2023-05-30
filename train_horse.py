@@ -157,7 +157,7 @@ def main():
     )
     val_dataset = HorseZebraDataset(
         root_horse=config.VAL_DIR + "/horses/n02381460_20",
-        root_zebra=config.VAL_DIR+ "/zebras/n02391049_80",
+        root_zebra=config.VAL_DIR + "/zebras/n02391049_80",
         transform=config.transforms,
     )
 
