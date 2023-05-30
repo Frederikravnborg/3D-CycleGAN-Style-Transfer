@@ -220,7 +220,7 @@ class FoldNet_Decoder(nn.Module):
             y = np.linspace(*self.meshgrid[1])
             points = np.array(list(itertools.product(x, y)))
         elif self.shape == 'sphere':
-            points = self.sphere * 100000
+            points = self.sphere * 100000 #var that might be interessting to look at later
         elif self.shape == 'gaussian':
             points = self.gaussian * 1000
         points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
@@ -238,9 +238,9 @@ class FoldNet_Decoder(nn.Module):
         folding_result2 = self.folding2(cat2)           # (batch_size, 3, num_points)
         return folding_result2.transpose(1, 2)          # (batch_size, num_points ,3)
     
-class ReconstructionNet(nn.Module):
+class Generator(nn.Module):
     def __init__(self):
-        super(ReconstructionNet, self).__init__()
+        super(Generator, self).__init__()
         self.encoder = FoldNet_Encoder()
         self.decoder = FoldNet_Decoder()
         self.loss = ChamferLoss()
@@ -267,7 +267,7 @@ if __name__ == '__main__':
 
     x = 0
 
-    generator = ReconstructionNet()
+    generator = Generator()
     optimizer = optim.Adam(generator.parameters(), lr = 0.0001, weight_decay = 1e-6)
 
     for batch in female_loader_train:

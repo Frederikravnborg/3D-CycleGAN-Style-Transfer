@@ -4,8 +4,10 @@ from torchvision import transforms
 from albumentations.pytorch import ToTensorV2
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train"
-VAL_DIR = "data/val"
+# TRAIN_DIR = "data/train"
+# VAL_DIR = "data/val"
+TRAIN_DIR = "data/horse/train"
+VAL_DIR = "data/horse/val"
 BATCH_SIZE = 32
 LEARNING_RATE = 1e-5
 LAMBDA_IDENTITY = 0.0
