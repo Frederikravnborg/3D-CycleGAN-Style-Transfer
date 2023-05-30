@@ -151,8 +151,8 @@ def main():
         transform=config.transforms,
     )
     val_dataset = HorseZebraDataset(
-        root_horse="data/val/horses/n02381460_1000.jpg",
-        root_zebra="data/val/zebras/n02391049_80.jpg",
+        root_horse="data/val/horses",
+        root_zebra="data/val/zebras",
         transform=config.transforms,
     )
     val_loader = DataLoader(
