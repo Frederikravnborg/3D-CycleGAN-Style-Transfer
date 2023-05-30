@@ -7,7 +7,7 @@ import torch.optim as optim
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
-from LoadData import female_loader_train, female_loader_test, male_loader_train, male_loader_test
+from load_data import ObjDataset
 
 #%%
 # Define a function that visualizes a point cloud
@@ -206,13 +206,6 @@ class FoldNet_Decoder(nn.Module):
             nn.ReLU(),
             nn.Conv1d(512, 3, 1),
         )
-        self.folding3 = nn.Sequential(
-            nn.Conv1d(512+3, 512, 1),
-            nn.ReLU(),
-            nn.Conv1d(512, 512, 1),
-            nn.ReLU(),
-            nn.Conv1d(512, 3, 1),
-        )
 
     def build_grid(self, batch_size):
         if self.shape == 'plane':
@@ -256,45 +249,36 @@ class Generator(nn.Module):
 
 #%%
 
+# load female data
+dataloader = ObjDataset(root_female ="data/female_test" , root_male="data/male_test")
+
+female_loader_train = torch.utils.data.DataLoader(dataloader, batch_size=32, shuffle=True, num_workers=0)
+
+#%%
+
 if __name__ == '__main__':
-    batch_size = 32
-    n: int = 1024*2
+    with torch.cuda.amp.autocast(): #Necessary for float16
+        batch_size = 2
+        n: int = 1024*2
+        generator = Generator()
 
-    # Save output and loss in np array
-    output = np.zeros((batch_size, 2025, 3))
-    #codeword = torch.rand((batch_size, 512))
-    nploss = np.zeros((batch_size, 1))
+        # Save output and loss in np array
+        output = np.zeros((batch_size, 2025, 3))
+        #codeword = torch.rand((batch_size, 512))
+        nploss = np.zeros((batch_size, 1))
 
-    x = 0
+        for batch in female_loader_train:
+            for i in range(batch_size):
+                print(np.shape(batch[0][1,:,:]))
+                input = batch[0].float()
+                temp_output, temp_codeword, loss = generator(input)
+                
+                # Save output and loss in np array
+                output[i, :, :] = temp_output[i,:,:].detach().numpy()
+                nploss[i, :] = loss.item()
 
-    generator = Generator()
-    optimizer = optim.Adam(generator.parameters(), lr = 0.0001, weight_decay = 1e-6)
-
-    for batch in female_loader_train:
-        for i in range(batch_size):
-            
-            optimizer.zero_grad()
-            generator = generator.train()
-            print(np.shape(batch[0][1,:,:]))
-            temp_output, temp_codeword, loss = generator(batch[0])
-            
-            loss.backward()
-            optimizer.step()
-            # Save output and loss in np array
-            output[i, :, :] = temp_output[i,:,:].detach().numpy()
-            nploss[i, :] = loss.item()
-
-            if i == 0:
-                break
-            
-            print("Batch: ", x, " Iteration: ", i)
-        
-        if x == 0:
-            break
-        
-        x += 1
-        
-        #break
+                if i == 0:
+                    break
 
 # %%
 #visualize_point_cloud(batch[0][5, :, :])
