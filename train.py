@@ -16,7 +16,8 @@ import config
 from tqdm import tqdm
 from torchvision.utils import save_image
 from pointnet_model import Discriminator
-from generator_model import Generator
+# from generator_model import Generator
+from foldingnet_model import Generator
 
 
 def train_fn(
@@ -27,21 +28,22 @@ def train_fn(
     loop = tqdm(loader, leave=True) #Progress bar
 
     for idx, (zebra, horse) in enumerate(loop):
-        zebra = zebra.to(config.DEVICE)
-        horse = horse.to(config.DEVICE)
+        zebra = zebra.to(config.DEVICE).float()
+        horse = horse.to(config.DEVICE).float()
 
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast(): #Necessary for float16
-            fake_horse = gen_H(zebra) #Creating fake input
+            fake_horse, _, _ = gen_H(zebra) #Creating fake input
             # print(torch.transpose(horse,1,2).to(torch.float32))
-            D_H_real = disc_H(torch.transpose(horse,1,2).float()) #Giving discriminator real input
+            D_H_real = disc_H(torch.transpose(horse,1,2)) #Giving discriminator real input
             D_H_fake = disc_H(fake_horse.detach()) #Giving discriminator fake input
             H_reals += D_H_real.mean().item()
-            # H_fakes += D_H_fake.mean().item()
+            H_fakes += D_H_fake.mean().item()
             D_H_real_loss = mse(D_H_real, torch.ones_like(D_H_real)) #MSE of D_H_real, expect 1
-            # D_H_fake_loss = mse(D_H_fake, torch.zeros_like(D_H_fake)) #MSE of D_H_fake, expect 0
-            # D_H_loss = D_H_real_loss + D_H_fake_loss #Sum of loss
+            D_H_fake_loss = mse(D_H_fake, torch.zeros_like(D_H_fake)) #MSE of D_H_fake, expect 0
+            D_H_loss = D_H_real_loss + D_H_fake_loss #Sum of loss
             print(D_H_real_loss)
+
             fake_zebra = gen_Z(horse)
             D_Z_real = disc_Z(zebra)
             D_Z_fake = disc_Z(fake_zebra.detach())
@@ -96,8 +98,8 @@ def main():
     #Initializing Discriminators and Generators
     disc_Z = Discriminator().to(config.DEVICE)
     disc_H = Discriminator().to(config.DEVICE)
-    gen_Z = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
-    gen_H = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
+    gen_Z = Generator().to(config.DEVICE)
+    gen_H = Generator().to(config.DEVICE)
     opt_disc = optim.Adam(
         list(disc_H.parameters()) + list(disc_Z.parameters()),
         lr=config.LEARNING_RATE,

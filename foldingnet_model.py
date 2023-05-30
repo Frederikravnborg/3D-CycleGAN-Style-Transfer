@@ -2,11 +2,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-import numpy as np
+import numpy as np 
 import itertools
-import matplotlib.pyplot as plt
-from load_data import ObjDataset
 
 def knn(x, k):
     batch_size = x.size(0)
@@ -205,7 +202,7 @@ class FoldNet_Decoder(nn.Module):
         folding_result1 = self.folding1(cat1)           # (batch_size, 3, num_points)
         cat2 = torch.cat((x, folding_result1), dim=1)   # (batch_size, 515, num_points)
         folding_result2 = self.folding2(cat2)           # (batch_size, 3, num_points)
-        return folding_result2.transpose(1, 2)          # (batch_size, num_points ,3)
+        return folding_result2.transpose(1,2)          # (batch_size, num_points ,3)
     
 class Generator(nn.Module):
     def __init__(self):
@@ -218,7 +215,8 @@ class Generator(nn.Module):
         feature = self.encoder(input)
         output = self.decoder(feature)
         loss = self.loss(input, output)
+        print(output.shape)
         return output, feature, loss
 
-    def get_parameter(self):
+    def parameters(self):
         return list(self.encoder.parameters()) + list(self.decoder.parameters())
