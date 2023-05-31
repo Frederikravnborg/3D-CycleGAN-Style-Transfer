@@ -34,7 +34,7 @@ def train_fn(
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast(): #Necessary for float16
             fake_horse, _, _ = gen_H(zebra) #Creating fake input
-            fake_horse = fake_horse.transpose(2,1)
+            #fake_horse = fake_horse.transpose(2,1)
             # print(torch.transpose(horse,1,2).to(torch.float32))
             D_H_real = disc_H(torch.transpose(horse,1,2)) #Giving discriminator real input
             D_H_fake = disc_H(fake_horse.detach()) #Giving discriminator fake input
@@ -46,14 +46,14 @@ def train_fn(
             print(D_H_real_loss)
 
             fake_zebra, _, _ = gen_Z(horse)
-            fake_zebra = fake_zebra.transpose(2,1)
+            #fake_zebra = fake_zebra.transpose(2,1)
             D_Z_real = disc_Z(torch.transpose(zebra,1,2))
             D_Z_fake = disc_Z(fake_zebra.detach())
             D_Z_real_loss = mse(D_Z_real, torch.ones_like(D_Z_real))
             D_Z_fake_loss = mse(D_Z_fake, torch.zeros_like(D_Z_fake))
             D_Z_loss = D_Z_real_loss + D_Z_fake_loss
 
-            # put it togethor
+            # put it together
             D_loss = (D_H_loss + D_Z_loss) / 2
 
         #Standard update of weights
@@ -71,10 +71,12 @@ def train_fn(
             loss_G_Z = mse(D_Z_fake, torch.ones_like(D_Z_fake)) #Real = 1, trick discriminator
 
             # cycle loss
-            cycle_zebra = gen_Z(fake_horse)
-            cycle_horse = gen_H(fake_zebra)
-            cycle_zebra_loss = l1(zebra, cycle_zebra)
-            cycle_horse_loss = l1(horse, cycle_horse)
+            fake_horse = fake_horse.transpose(2,1)
+            fake_zebra = fake_zebra.transpose(2,1)
+            cycle_zebra, _, _ = gen_Z(fake_horse)
+            cycle_horse, _, _ = gen_H(fake_zebra)
+            cycle_zebra_loss = l1(zebra, cycle_zebra.transpose(2,1))
+            cycle_horse_loss = l1(horse, cycle_horse.transpose(2,1))
 
             # add all losses together
             G_loss = (
@@ -89,9 +91,9 @@ def train_fn(
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        if idx == idx:
-            save_image(fake_horse * 0.5 + 0.5, f"saved_images/horse_{idx}.png")
-            save_image(fake_zebra * 0.5 + 0.5, f"saved_images/zebra_{idx}.png")
+        #if idx == idx:
+        #    save_image(fake_horse * 0.5 + 0.5, f"saved_images/horse_{idx}.png")
+        #    save_image(fake_zebra * 0.5 + 0.5, f"saved_images/zebra_{idx}.png")
 
         loop.set_postfix(H_real=H_reals / (idx + 1), H_fake=H_fakes / (idx + 1))
 

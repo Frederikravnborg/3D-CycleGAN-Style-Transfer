@@ -18,7 +18,7 @@ CHECKPOINT_GEN_H = "genh.pth.tar"
 CHECKPOINT_GEN_Z = "genz.pth.tar"
 CHECKPOINT_CRITIC_H = "critich.pth.tar"
 CHECKPOINT_CRITIC_Z = "criticz.pth.tar"
-N_POINTS = 2048
+N_POINTS = 1024
 MAX_DISTANCE = torch.tensor(1.0428)
 
 transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)

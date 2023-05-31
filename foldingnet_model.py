@@ -149,10 +149,10 @@ class FoldNet_Decoder(nn.Module):
         super(FoldNet_Decoder, self).__init__()
         self.x1 = 2000
         self.x2 = 2000
-        self.p = 45
+        self.p = 32
 
         self.m = self.p * self.p
-        self.shape = 'sphere'
+        self.shape = 'plane'
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = np.load("sphere.npy")
         self.gaussian = np.load("gaussian.npy")
@@ -216,7 +216,7 @@ class Generator(nn.Module):
         output = self.decoder(feature)
         loss = self.loss(input, output)
         print(output.shape)
-        return output, feature, loss
+        return output.transpose(2,1), feature, loss
 
     def parameters(self):
         return list(self.encoder.parameters()) + list(self.decoder.parameters())
