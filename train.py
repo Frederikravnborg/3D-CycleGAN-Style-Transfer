@@ -34,6 +34,7 @@ def train_fn(
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast(): #Necessary for float16
             fake_horse, _, _ = gen_H(zebra) #Creating fake input
+            fake_horse = fake_horse.transpose(2,1)
             # print(torch.transpose(horse,1,2).to(torch.float32))
             D_H_real = disc_H(torch.transpose(horse,1,2)) #Giving discriminator real input
             D_H_fake = disc_H(fake_horse.detach()) #Giving discriminator fake input
@@ -44,8 +45,9 @@ def train_fn(
             D_H_loss = D_H_real_loss + D_H_fake_loss #Sum of loss
             print(D_H_real_loss)
 
-            fake_zebra = gen_Z(horse)
-            D_Z_real = disc_Z(zebra)
+            fake_zebra, _, _ = gen_Z(horse)
+            fake_zebra = fake_zebra.transpose(2,1)
+            D_Z_real = disc_Z(torch.transpose(zebra,1,2))
             D_Z_fake = disc_Z(fake_zebra.detach())
             D_Z_real_loss = mse(D_Z_real, torch.ones_like(D_Z_real))
             D_Z_fake_loss = mse(D_Z_fake, torch.zeros_like(D_Z_fake))

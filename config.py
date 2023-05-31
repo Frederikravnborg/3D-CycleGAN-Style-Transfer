@@ -1,7 +1,7 @@
 import torch
-import albumentations as A
+#import albumentations as A
 from torchvision import transforms
-from albumentations.pytorch import ToTensorV2
+#from albumentations.pytorch import ToTensorV2
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TRAIN_DIR = "data/train"

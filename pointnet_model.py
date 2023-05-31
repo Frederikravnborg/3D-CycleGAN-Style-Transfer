@@ -17,8 +17,8 @@ class Discriminator(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = x.transpose(2, 1)
-        print(x.shape)
+        #x = x.transpose(2, 1)
+        #print(x.shape)
         x, trans, trans_feat = self.feat(x)
         x = F.relu(self.bn1(self.fc1(x)))
         x = F.relu(self.bn2(self.dropout(self.fc2(x))))
