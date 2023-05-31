@@ -215,7 +215,6 @@ class Generator(nn.Module):
         feature = self.encoder(input)
         output = self.decoder(feature)
         loss = self.loss(input, output)
-        print(output.shape)
         return output.transpose(2,1), feature, loss
 
     def parameters(self):
