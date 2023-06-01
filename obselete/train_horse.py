@@ -17,8 +17,8 @@ import torch.optim as optim
 import config
 from tqdm import tqdm
 from torchvision.utils import save_image
-from discriminator_model import Discriminator
-from generator_model import Generator
+from obselete.discriminator_model import Discriminator
+from obselete.generator_model import Generator
 
 
 def train_fn(
