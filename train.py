@@ -16,7 +16,6 @@ import config
 from tqdm import tqdm
 from torchvision.utils import save_image
 from pointnet_model import Discriminator
-# from generator_model import Generator
 from foldingnet_model import Generator
 
 

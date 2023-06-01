@@ -90,12 +90,20 @@ class ChamferLoss(nn.Module):
         P = (rx.transpose(2, 1) + ry - 2 * zz)
         return P
 
+    #def forward(self, preds, gts):
+    #    P = self.batch_pairwise_dist(gts, preds)
+    #    mins, _ = torch.min(P, 1)
+    #    loss_1 = torch.sum(mins)
+    #    mins, _ = torch.min(P, 2)
+    #    loss_2 = torch.sum(mins)
+    #    return loss_1 + loss_2
+    
     def forward(self, preds, gts):
         P = self.batch_pairwise_dist(gts, preds)
         mins, _ = torch.min(P, 1)
-        loss_1 = torch.sum(mins)
+        loss_1 = torch.mean(torch.clamp(mins, min = 1e-10))
         mins, _ = torch.min(P, 2)
-        loss_2 = torch.sum(mins)
+        loss_2 = torch.mean(torch.clamp(mins, min = 1e-10))
         return loss_1 + loss_2
 
 class FoldNet_Encoder(nn.Module):
