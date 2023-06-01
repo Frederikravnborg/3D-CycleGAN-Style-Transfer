@@ -1,9 +1,9 @@
 # Import libraries
 import os
 from torch.utils.data import Dataset
-import open3d as o3d
 import warnings
 import numpy as np
+import trimesh
 warnings.filterwarnings("ignore")
 
 # Define a custom dataset class that inherits from Dataset
@@ -23,31 +23,22 @@ class ObjDataset(Dataset):
             
     def __len__(self):
         return self.length_dataset
- 
+    
     # Return the item at the given index
     def __getitem__(self, index):
         female_pcd = self.female_pcds[index % self.female_len]
         male_pcd = self.male_pcds[index % self.male_len]
 
-        #female_path = f"{self.root_female}/{female_pcd}"
-        #male_path = f"{self.root_male}/{male_pcd}"
-
         female_path = os.path.join(self.root_female, female_pcd)
         male_path = os.path.join(self.root_male, male_pcd)
 
-        female_pcd = o3d.io.read_triangle_mesh(female_path)
-        male_pcd = o3d.io.read_triangle_mesh(male_path)
+        female_pcd = trimesh.load(female_path)
+        male_pcd = trimesh.load(male_path)
 
-        female_pcd = female_pcd.sample_points_uniformly(number_of_points=self.n_points)
-        male_pcd = male_pcd.sample_points_uniformly(number_of_points=self.n_points)
-       
-        female_pcd = np.asarray(female_pcd.points)
-        male_pcd = np.asarray(male_pcd.points)
+        female_pcd = female_pcd.sample(self.n_points)
+        male_pcd = male_pcd.sample(self.n_points)
 
-        # if self.transform:
-        #     female_pcd = self.transform(female_pcd)
-        #     male_pcd = self.transform(male_pcd)
-
-        # print(type(female_pcd), type(male_pcd))
+        # female_pcd = female_pcd.vertices
+        # male_pcd = male_pcd.vertices
 
         return female_pcd, male_pcd
