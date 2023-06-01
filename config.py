@@ -3,10 +3,10 @@ import torch
 from torchvision import transforms
 #from albumentations.pytorch import ToTensorV2
 
-#DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+TRAIN_DIR = "data/train_test"
 VAL_DIR = "data/val"
-BATCH_SIZE = 32
+BATCH_SIZE = 2
 LEARNING_RATE = 1e-5
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
