@@ -116,25 +116,25 @@ def main():
 
     if config.LOAD_MODEL: #True/False defined in config
         load_checkpoint(
-            config.CHECKPOINT_gen_M,
+            config.CHECKPOINT_GEN_M,
             gen_M,
             opt_gen,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_gen_F,
+            config.CHECKPOINT_GEN_F,
             gen_F,
             opt_gen,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_H,
+            config.CHECKPOINT_CRITIC_M,
             disc_M,
             opt_disc,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_Z,
+            config.CHECKPOINT_CRITIC_F,
             disc_F,
             opt_disc,
             config.LEARNING_RATE,
