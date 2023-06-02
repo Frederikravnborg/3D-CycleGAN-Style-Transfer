@@ -100,7 +100,7 @@ def train_fn(
         # if idx == idx:
         #    save_image(fake_male * 0.5 + 0.5, f"saved_images/male_{idx}.png")
         #    save_image(fake_female * 0.5 + 0.5, f"saved_images/female_{idx}.png")
-        
+        test = f"{idx=}"
         #save idx, D_loss, G_loss, mse, L1 in csv file
         with open('loss.csv', 'a') as f:
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
