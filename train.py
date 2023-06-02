@@ -106,7 +106,7 @@ def train_fn(
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
         
         #Update progress bar
-        loop.set_postfix(H_real=M_reals / (idx + 1), H_fake=M_fakes / (idx + 1))
+        loop.set_postfix(M_real=M_reals / (idx + 1), M_fake=M_fakes / (idx + 1))
 
 
 def main():
