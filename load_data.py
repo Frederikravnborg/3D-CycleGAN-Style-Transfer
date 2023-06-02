@@ -2,8 +2,8 @@
 import os
 from torch.utils.data import Dataset
 import warnings
-import numpy as np
 import torch
+import numpy as np
 import trimesh
 warnings.filterwarnings("ignore")
 
