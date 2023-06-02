@@ -100,10 +100,10 @@ def train_fn(
 
         if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
             female = trimesh.Trimesh(vertices=female.detach().numpy())
-            female.export(f"saved_images/female_{idx}.obj")
+            female.export(f"saved_pcds/female_{idx}.obj")
 
             male = trimesh.Trimesh(vertices=male.detach().numpy())
-            male.export(f"saved_images/male_{idx}.obj")
+            male.export(f"saved_pcds/male_{idx}.obj")
 
         #save idx, D_loss, G_loss, mse, L1 in csv file
         with open('loss.csv', 'a') as f:
