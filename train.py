@@ -99,10 +99,10 @@ def train_fn(
         g_scaler.update()
 
         if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
-            female = trimesh.Trimesh(vertices=female.detach().numpy())
+            female = trimesh.Trimesh(vertices=female[0].detach().numpy())
             female.export(f"saved_pcds/female_{idx}.obj")
 
-            male = trimesh.Trimesh(vertices=male.detach().numpy())
+            male = trimesh.Trimesh(vertices=male[0].detach().numpy())
             male.export(f"saved_pcds/male_{idx}.obj")
 
         #save idx, D_loss, G_loss, mse, L1 in csv file
