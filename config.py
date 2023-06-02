@@ -20,5 +20,7 @@ CHECKPOINT_CRITIC_M = "critich.pth.tar"
 CHECKPOINT_CRITIC_F = "criticz.pth.tar"
 N_POINTS = 2048
 MAX_DISTANCE = torch.tensor(1.0428)
+SAVE_OBJ = True
+SAVE_RATE = 20 # Save every SAVE_RATE batches
 
 transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)
