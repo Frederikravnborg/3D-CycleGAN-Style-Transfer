@@ -3,6 +3,7 @@ import os
 from torch.utils.data import Dataset
 import warnings
 import numpy as np
+import torch
 import trimesh
 warnings.filterwarnings("ignore")
 
@@ -40,5 +41,9 @@ class ObjDataset(Dataset):
 
         # female_pcd = female_pcd.vertices
         # male_pcd = male_pcd.vertices
+
+        # transform from numpy to tensor
+        female_pcd = torch.from_numpy(female_pcd)
+        male_pcd = torch.from_numpy(male_pcd)
 
         return female_pcd, male_pcd
