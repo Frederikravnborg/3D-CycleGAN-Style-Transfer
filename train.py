@@ -73,10 +73,10 @@ def train_fn(
             # cycle loss
             fake_male = fake_male.transpose(2,1)
             fake_female = fake_female.transpose(2,1)
-            cycle_female, _, _ = gen_F(fake_male)
-            cycle_male, _, _ = gen_M(fake_female)
-            cycle_female_loss = l1(female, cycle_female.transpose(2,1))
-            cycle_male_loss = l1(male, cycle_male.transpose(2,1))
+            cycle_female, _, cycle_female_loss = gen_F(fake_male)
+            cycle_male, _, cycle_male_loss = gen_M(fake_female)
+            # cycle_female_loss = l1(female, cycle_female.transpose(2,1))
+            # cycle_male_loss = l1(male, cycle_male.transpose(2,1))
 
             # add all losses together (Full Objective)
             G_loss = (
