@@ -6,19 +6,19 @@ from torchvision import transforms
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TRAIN_DIR = "data/train_test_100"
 VAL_DIR = "data/val"
-BATCH_SIZE = 6
+BATCH_SIZE = 2
 LEARNING_RATE = 1e-5
 LAMBDA_IDENTITY = 0.0
-LAMBDA_CYCLE = 10
+LAMBDA_CYCLE = 0.01
 NUM_WORKERS = 0
-NUM_EPOCHS = 11
-LOAD_MODEL = True
+NUM_EPOCHS = 3
+LOAD_MODEL = False
 SAVE_MODEL = True
 CHECKPOINT_GEN_M = "genh.pth.tar"
 CHECKPOINT_GEN_F = "genz.pth.tar"
 CHECKPOINT_CRITIC_M = "critich.pth.tar"
 CHECKPOINT_CRITIC_F = "criticz.pth.tar"
-N_POINTS = 1024
+N_POINTS = 2048
 MAX_DISTANCE = torch.tensor(1.0428)
 
 transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)
