@@ -183,3 +183,9 @@ log/classification/2023-04-18_17-04/logs/pointnet_model 2.txt
 
 #checkpoints
 .tar
+criticF.pth.tar
+criticM.pth.tar
+genF.pth.tar
+genM.pth.tar
+output/loss_06.02.15.32.28.csv
+output/loss_06.02.15.35.32.csv
