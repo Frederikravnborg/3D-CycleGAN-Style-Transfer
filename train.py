@@ -78,26 +78,26 @@ def train_fn(
             cycle_female_loss = l1(female, cycle_female.transpose(2,1))
             cycle_male_loss = l1(male, cycle_male.transpose(2,1))
 
-            # add all losses together (Full Objective)
-            G_loss = (
-                loss_G_F
-                + loss_G_M
-                + cycle_female_loss * config.LAMBDA_CYCLE
-                + cycle_male_loss * config.LAMBDA_CYCLE
-            )
-
             #cycle loss
             cycle_loss = (
                 cycle_female_loss * config.LAMBDA_CYCLE
                 + cycle_male_loss * config.LAMBDA_CYCLE
             )
 
+            # add all losses together (full generator loss)
+            G_loss = (
+                loss_G_F
+                + loss_G_M
+                + cycle_loss
+            )
+
+
         opt_gen.zero_grad()
         g_scaler.scale(G_loss).backward()
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        #if idx == idx:
+        # if idx == idx:
         #    save_image(fake_male * 0.5 + 0.5, f"saved_images/male_{idx}.png")
         #    save_image(fake_female * 0.5 + 0.5, f"saved_images/female_{idx}.png")
         
