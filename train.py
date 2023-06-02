@@ -6,6 +6,7 @@ Code partly based on Aladdin Persson <aladdin.persson at hotmail dot com>
 import torch
 import csv
 import os
+from datetime import datetime
 from load_data import ObjDataset
 from utils import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
@@ -19,7 +20,7 @@ from foldingnet_model import Generator
 
 
 def train_fn(
-    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler, epoch
+    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler, epoch, currentTime
 ):
     M_reals = 0
     M_fakes = 0
@@ -100,9 +101,8 @@ def train_fn(
         # if idx == idx:
         #    save_image(fake_male * 0.5 + 0.5, f"saved_images/male_{idx}.png")
         #    save_image(fake_female * 0.5 + 0.5, f"saved_images/female_{idx}.png")
-        test = f"{idx=}"
         #save idx, D_loss, G_loss, mse, L1 in csv file
-        with open('loss.csv', 'a') as f:
+        with open(f'output/loss_{currentTime}.csv', 'a') as f: 
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
         
         #Update progress bar
@@ -176,7 +176,11 @@ def main():
     d_scaler = torch.cuda.amp.GradScaler() #Scaler to run in float 16, if removed we run in float 32
 
     #create csv file to store losses
-    with open('loss.csv', 'w') as f: 
+    currentDateAndTime = datetime.now()
+    currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
+
+    with open(f'output/loss_{currentTime}.csv', 'w') as f: 
+        f.write(f"meta:{config.TRAIN_DIR=},{config.BATCH_SIZE=},{config.NUM_EPOCHS=},{config.LEARNING_RATE=},{config.LAMBDA_IDENTITY=},{config.LAMBDA_CYCLE},{config.NUM_EPOCHS},{config.LOAD_MODEL=},{config.N_POINTS=}\n")
         f.write('idx,D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch\n')
 
 
@@ -194,6 +198,7 @@ def main():
             d_scaler,
             g_scaler,
             epoch,
+            currentTime
         )
 
         #Save model for every epoch 

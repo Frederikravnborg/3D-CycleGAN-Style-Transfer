@@ -180,3 +180,6 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 *.xyz
 log/classification/2023-04-18_17-04/logs/pointnet_model 2.txt
+
+#checkpoints
+.tar
