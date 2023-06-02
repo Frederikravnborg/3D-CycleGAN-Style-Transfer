@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from pointnet_utils import PointNetEncoder, feature_transform_regularizer
 
 class Discriminator(nn.Module):
-    def __init__(self, k=40):
+    def __init__(self, k=2):
         super(Discriminator, self).__init__()
         channel = 3
         self.feat = PointNetEncoder(global_feat=True, feature_transform=True, channel=channel)
