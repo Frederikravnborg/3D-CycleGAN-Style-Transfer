@@ -14,11 +14,13 @@ NUM_WORKERS = 0
 NUM_EPOCHS = 3
 LOAD_MODEL = False
 SAVE_MODEL = True
-CHECKPOINT_GEN_M = "genh.pth.tar"
-CHECKPOINT_GEN_F = "genz.pth.tar"
-CHECKPOINT_CRITIC_M = "critich.pth.tar"
-CHECKPOINT_CRITIC_F = "criticz.pth.tar"
+CHECKPOINT_GEN_M = "genM.pth.tar"
+CHECKPOINT_GEN_F = "genF.pth.tar"
+CHECKPOINT_CRITIC_M = "criticM.pth.tar"
+CHECKPOINT_CRITIC_F = "criticF.pth.tar"
 N_POINTS = 2048
 MAX_DISTANCE = torch.tensor(1.0428)
+SAVE_OBJ = True
+SAVE_RATE = 20 # Save every SAVE_RATE batches
 
 transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)

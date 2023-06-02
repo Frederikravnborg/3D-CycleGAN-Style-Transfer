@@ -17,6 +17,7 @@ from tqdm import tqdm
 from torchvision.utils import save_image
 from pointnet_model import Discriminator
 from foldingnet_model import Generator
+import trimesh
 
 
 def train_fn(
@@ -98,9 +99,13 @@ def train_fn(
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        # if idx == idx:
-        #    save_image(fake_male * 0.5 + 0.5, f"saved_images/male_{idx}.png")
-        #    save_image(fake_female * 0.5 + 0.5, f"saved_images/female_{idx}.png")
+        if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
+            female = trimesh.Trimesh(vertices=female.detach().numpy())
+            female.export(f"saved_pcds/female_{idx}.obj")
+
+            male = trimesh.Trimesh(vertices=male.detach().numpy())
+            male.export(f"saved_pcds/male_{idx}.obj")
+
         #save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
