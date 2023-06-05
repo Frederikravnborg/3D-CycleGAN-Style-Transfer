@@ -96,6 +96,7 @@ class FoldNet_Decoder(nn.Module):
         self.shape = 'sphere'
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = utils.create_sphere(self.m)
+        self.gaussian = utils.create_gaussian(self.m)
         if self.shape == 'plane':
             self.folding1 = nn.Sequential(
                 nn.Conv1d(512+2, 512, 1),
@@ -128,7 +129,7 @@ class FoldNet_Decoder(nn.Module):
         elif self.shape == 'sphere':
             points = self.sphere #var that might be interessting to look at later
         elif self.shape == 'gaussian':
-            points = self.gaussian * 1000
+            points = self.gaussian
         points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
         points = torch.tensor(points)
         return points.float()
