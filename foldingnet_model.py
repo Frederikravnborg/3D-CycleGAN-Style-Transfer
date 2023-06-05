@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import numpy as np 
 import itertools
 import config
-import foldingnet_model_utils as utils
+import utils.foldingnet_model_utils as utils
 
 class ChamferLoss(nn.Module):
     def __init__(self):
