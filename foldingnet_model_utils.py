@@ -21,6 +21,10 @@ def create_sphere(n_points):
 
     return np.array(points)
 
+# Create gaussian noise in 3D space space with n_points points
+def create_gaussian(n_points):
+    return np.random.normal(size=(n_points, 3))
+
 def knn(x, k):
     batch_size = x.size(0)
     num_points = x.size(2)
