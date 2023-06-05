@@ -17,3 +17,5 @@ def visualize_point_cloud(pcd):
     #ax.set_ylim(-1,1) # Set y-axis range
     #ax.set_zlim(-1,1) # Set z-axis range
     plt.show()
+
+

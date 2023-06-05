@@ -21,7 +21,7 @@ import trimesh
 
 
 def train_fn(
-    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler, epoch, currentTime
+    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler, epoch, currentTime, folder_name
 ):
     M_reals = 0
     M_fakes = 0
@@ -100,11 +100,11 @@ def train_fn(
         g_scaler.update()
 
         if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
-            fake_female = trimesh.Trimesh(vertices=fake_female[0].detach().numpy())
-            fake_female.export(f"saved_pcds/female_{idx}.obj")
+            fake_female = trimesh.Trimesh(vertices=fake_female[0].detach().cpu().numpy())
+            fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
 
-            fake_male = trimesh.Trimesh(vertices=fake_male[0].detach().numpy())
-            fake_male.export(f"saved_pcds/male_{idx}.obj")
+            fake_male = trimesh.Trimesh(vertices=fake_male[0].detach().cpu().numpy())
+            fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
 
         #save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
@@ -187,7 +187,9 @@ def main():
     with open(f'output/loss_{currentTime}.csv', 'w') as f: 
         f.write(f"meta:{config.TRAIN_DIR=},{config.BATCH_SIZE=},{config.NUM_EPOCHS=},{config.LEARNING_RATE=},{config.LAMBDA_IDENTITY=},{config.LAMBDA_CYCLE},{config.NUM_EPOCHS},{config.LOAD_MODEL=},{config.N_POINTS=}\n")
         f.write('idx,D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch\n')
-
+    
+    folder_name = f"saved_pcds/{currentTime}"
+    os.makedirs(folder_name)
 
     for epoch in range(config.NUM_EPOCHS):
         train_fn(
@@ -203,7 +205,8 @@ def main():
             d_scaler,
             g_scaler,
             epoch,
-            currentTime
+            currentTime,
+            folder_name
         )
 
         #Save model for every epoch 
