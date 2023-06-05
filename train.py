@@ -19,48 +19,52 @@ from pointnet_model import Discriminator
 from foldingnet_model import Generator
 import trimesh
 
-
+# define the training function
 def train_fn(
     disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, d_scaler, g_scaler, epoch, currentTime, folder_name
 ):
+    # initialize variables to keep track of discriminator outputs
     M_reals = 0
     M_fakes = 0
     loop = tqdm(loader, leave=True) #Progress bar
 
+    # loop through the data loader
     for idx, (female, male) in enumerate(loop):
+        # define data to fit either on cpu or gpu (DEVICE parameter)
         female = female.to(config.DEVICE).float()
         male = male.to(config.DEVICE).float()
 
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast(): #Necessary for float16
+            """  FEMALE -> MALE  """
             fake_male, _, _ = gen_M(female) #Creating fake input
-            #fake_male = fake_male.transpose(2,1)
-            # print(torch.transpose(male,1,2).to(torch.float32))
             D_M_real = disc_M(torch.transpose(male,1,2)) #Giving discriminator real input
             D_M_fake = disc_M(fake_male.detach()) #Giving discriminator fake input
             M_reals += D_M_real.mean().item()
             M_fakes += D_M_fake.mean().item()
+            # error between discriminator output and expected output
             D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real)) #MSE of D_M_real, expect 1
             D_M_fake_loss = mse(D_M_fake, torch.zeros_like(D_M_fake)) #MSE of D_M_fake, expect 0
             D_M_loss = D_M_real_loss + D_M_fake_loss #Sum of loss
-            print(D_M_real_loss)
 
+            """  MALE -> FEMALE  """
             fake_female, _, _ = gen_F(male)
             #fake_female = fake_female.transpose(2,1)
             D_F_real = disc_F(torch.transpose(female,1,2))
             D_F_fake = disc_F(fake_female.detach())
-            D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real))
-            D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake))
-            D_F_loss = D_F_real_loss + D_F_fake_loss
+            # error between discriminator output and expected output
+            D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real)) #MSE of D_F_real, expect 1
+            D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake)) #MSE of D_F_fake, expect 0
+            D_F_loss = D_F_real_loss + D_F_fake_loss #Sum of loss
 
-            # put it together
+            # define total discriminator loss as the average of the two
             D_loss = (D_M_loss + D_F_loss) / 2
 
         #Standard update of weights
-        opt_disc.zero_grad()
-        d_scaler.scale(D_loss).backward()
-        d_scaler.step(opt_disc)
-        d_scaler.update()
+        opt_disc.zero_grad() #compute zero gradients
+        d_scaler.scale(D_loss).backward() #backpropagate
+        d_scaler.step(opt_disc) #update weights
+        d_scaler.update() #update scaler
 
         # Train Generators H and Z
         with torch.cuda.amp.autocast(): #Necessary for float16
@@ -115,11 +119,13 @@ def train_fn(
 
 
 def main():
-    #Initializing Discriminators and Generators
+    # initialize Discriminators and Generators
     disc_F = Discriminator().to(config.DEVICE)
     disc_M = Discriminator().to(config.DEVICE)
     gen_F = Generator().to(config.DEVICE)
     gen_M = Generator().to(config.DEVICE)
+
+    # define optimizers for Discriminators and Generators
     opt_disc = optim.Adam(
         list(disc_M.parameters()) + list(disc_F.parameters()),
         lr=config.LEARNING_RATE,
@@ -131,9 +137,11 @@ def main():
         betas=(0.5, 0.999),
     )
 
-    L1 = nn.L1Loss() #Cycle consistensy loss and Identity loss
+    # define loss functions for cycle loss and adverserial loss
+    L1 = nn.L1Loss() #Cycle consistency loss
     mse = nn.MSELoss() #Adverserial loss
 
+    # load previously trained model if LOAD_MODEL is True
     if config.LOAD_MODEL: #True/False defined in config
         load_checkpoint(
             config.CHECKPOINT_GEN_M,
@@ -160,13 +168,14 @@ def main():
             config.LEARNING_RATE,
         )
 
-    #Create dataset
+    # define train dataset
     dataset = ObjDataset(
         root_male=config.TRAIN_DIR + "/male", 
         root_female=config.TRAIN_DIR + "/female",
         transform=config.transforms,
         n_points=config.N_POINTS
     )
+    # define validation dataset
     val_dataset = ObjDataset(
         root_male=config.VAL_DIR + "/male",
         root_female=config.VAL_DIR + "/female",
@@ -174,23 +183,28 @@ def main():
         n_points=config.N_POINTS
     )
 
+    # define dataloader for train and validation dataset
     loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
     val_loader = DataLoader( val_dataset, batch_size=config.BATCH_SIZE, shuffle=True, pin_memory=True)
     
-    g_scaler = torch.cuda.amp.GradScaler() #Scaler to run in float 16, if removed we run in float 32
-    d_scaler = torch.cuda.amp.GradScaler() #Scaler to run in float 16, if removed we run in float 32
+    # scalers to run in float 16. Handles overflow and underflow
+    g_scaler = torch.cuda.amp.GradScaler() 
+    d_scaler = torch.cuda.amp.GradScaler()
 
     #create csv file to store losses
     currentDateAndTime = datetime.now()
     currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
+    # save loss in csv file
     with open(f'output/loss_{currentTime}.csv', 'w') as f: 
         f.write(f"meta:{config.TRAIN_DIR=},{config.BATCH_SIZE=},{config.NUM_EPOCHS=},{config.LEARNING_RATE=},{config.LAMBDA_IDENTITY=},{config.LAMBDA_CYCLE},{config.NUM_EPOCHS},{config.LOAD_MODEL=},{config.N_POINTS=}\n")
         f.write('idx,D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch\n')
     
+    # create folder to save generated point clouds in
     folder_name = f"saved_pcds/{currentTime}"
     os.makedirs(folder_name)
 
+    # train the model
     for epoch in range(config.NUM_EPOCHS):
         train_fn(
             disc_M,
