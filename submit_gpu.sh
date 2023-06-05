@@ -2,12 +2,12 @@
 #BSUB -J torch_gpu
 #BSUB -o torch_%J.out
 #BSUB -e torch_%J.err
-#BSUB -q gpuv100
+#BSUB -q gpua100
 #BSUB -gpu "num=1:mode=exclusive_process"
 #BSUB -n 1,16
 #BSUB -u s214617@dtu.dk
 #BSUB -B
-#BSUB -R "rusage[mem=4G]"
+#BSUB -R "rusage[mem=2G]"
 #BSUB -R "span[hosts=1]"
 #BSUB -W 1440
 # end of BSUB options
