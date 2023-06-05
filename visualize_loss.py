@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 def visualize_loss():
     # read data from csv file using pandas
-    data = pd.read_csv('loss.csv')
+    data = pd.read_csv('output/loss_06.05.10.59.18.csv')
     # extract data from dataframe
     epoch = data['epoch']
     G_loss = []
