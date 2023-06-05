@@ -4,7 +4,6 @@ Code partly based on Aladdin Persson <aladdin.persson at hotmail dot com>
 """
 
 import torch
-import csv
 import os
 from datetime import datetime
 from load_data import ObjDataset
@@ -14,7 +13,6 @@ import torch.nn as nn
 import torch.optim as optim
 import config
 from tqdm import tqdm
-from torchvision.utils import save_image
 from pointnet_model import Discriminator
 from foldingnet_model import Generator
 import trimesh
@@ -60,7 +58,7 @@ def train_fn(
             # define total discriminator loss as the average of the two
             D_loss = (D_M_loss + D_F_loss) / 2
 
-        #Standard update of weights
+        # update of weights
         opt_disc.zero_grad() #compute zero gradients
         d_scaler.scale(D_loss).backward() #backpropagate
         d_scaler.step(opt_disc) #update weights
@@ -84,25 +82,26 @@ def train_fn(
             # cycle_female_loss = l1(female, cycle_female.transpose(2,1))
             # cycle_male_loss = l1(male, cycle_male.transpose(2,1))
 
-            #cycle loss
+            # cycle loss scaled by lambda
             cycle_loss = (
                 cycle_female_loss * config.LAMBDA_CYCLE
                 + cycle_male_loss * config.LAMBDA_CYCLE
             )
 
-            # add all losses together (full generator loss)
+            # add all generator losses together to obtain full generator loss
             G_loss = (
                 loss_G_F
                 + loss_G_M
                 + cycle_loss
             )
 
+        # update of weights
+        opt_gen.zero_grad()  #compute zero gradients
+        g_scaler.scale(G_loss).backward() #backpropagate
+        g_scaler.step(opt_gen) #update weights
+        g_scaler.update() #update scaler
 
-        opt_gen.zero_grad()
-        g_scaler.scale(G_loss).backward()
-        g_scaler.step(opt_gen)
-        g_scaler.update()
-
+        # save point clouds every SAVE_RATE iterations
         if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
             fake_female = trimesh.Trimesh(vertices=fake_female[0].detach().cpu().numpy())
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
@@ -110,11 +109,11 @@ def train_fn(
             fake_male = trimesh.Trimesh(vertices=fake_male[0].detach().cpu().numpy())
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
 
-        #save idx, D_loss, G_loss, mse, L1 in csv file
+        # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
         
-        #Update progress bar
+        # update progress bar
         loop.set_postfix(M_real=M_reals / (idx + 1), M_fake=M_fakes / (idx + 1))
 
 
@@ -142,7 +141,7 @@ def main():
     mse = nn.MSELoss() #Adverserial loss
 
     # load previously trained model if LOAD_MODEL is True
-    if config.LOAD_MODEL: #True/False defined in config
+    if config.LOAD_MODEL:
         load_checkpoint(
             config.CHECKPOINT_GEN_M,
             gen_M,
@@ -222,7 +221,7 @@ def main():
             folder_name
         )
 
-        #Save model for every epoch 
+        # save model for every epoch 
         if config.SAVE_MODEL:
             save_checkpoint(gen_M, opt_gen, filename=config.CHECKPOINT_GEN_M)
             save_checkpoint(gen_F, opt_gen, filename=config.CHECKPOINT_GEN_F)

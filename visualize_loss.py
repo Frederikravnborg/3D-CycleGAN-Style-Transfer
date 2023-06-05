@@ -1,5 +1,4 @@
 import pandas as pd
-from pprint import pprint
 import matplotlib.pyplot as plt
 
 def visualize_loss():
