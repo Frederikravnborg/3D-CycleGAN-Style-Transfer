@@ -1,0 +1,529 @@
+tensor(0.2593, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2733, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2748, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2638, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2725, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2725, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2682, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2760, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2644, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2623, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2660, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2628, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2600, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2645, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2677, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2539, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2648, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2739, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2543, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2670, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2684, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2645, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2626, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2606, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2621, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2726, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2587, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2688, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2595, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2647, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2604, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2707, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2678, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2636, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2626, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2618, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2570, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2596, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2705, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2623, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2582, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2679, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2566, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2647, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2569, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2660, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2645, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2637, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2599, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2606, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2560, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2583, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2570, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2527, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2590, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2600, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2613, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2508, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2581, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2608, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2547, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2590, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2622, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2600, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2588, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2562, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2539, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2543, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2515, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2464, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2552, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2530, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2581, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2614, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2564, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2497, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2597, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2727, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2471, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2581, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2505, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2592, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2641, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2505, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2582, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2466, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2522, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2561, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2546, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2490, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2537, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2544, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2539, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2511, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2416, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2510, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2492, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2505, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2514, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2446, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2464, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2509, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2457, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2413, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2460, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2481, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2520, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2545, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2502, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2464, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2440, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2465, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2452, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2474, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2583, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2428, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2565, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2463, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2516, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2414, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2489, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2433, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2378, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2555, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2423, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2358, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2466, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2492, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2525, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2507, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2414, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2478, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2442, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2333, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2352, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2462, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2344, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2442, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2339, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2374, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2404, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2369, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2373, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2380, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2452, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2454, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2445, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2428, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2332, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2558, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2361, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2374, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2382, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2336, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2409, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2742, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2369, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2314, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2481, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2367, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2325, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2385, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2266, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2377, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2453, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2399, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2270, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2447, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2397, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2340, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2271, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2336, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2281, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2338, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2280, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2345, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2379, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2486, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2471, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2299, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2449, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2322, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2364, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2236, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2324, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2390, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2292, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2276, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2278, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2386, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2422, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2352, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2432, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2257, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2633, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2413, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2315, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2405, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2295, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2473, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2169, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2283, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2326, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2187, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2234, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2246, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2158, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2475, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2306, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2282, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2205, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2217, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2372, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2366, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2230, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2539, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2142, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2502, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2239, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2273, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2163, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2234, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2355, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2282, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2342, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2257, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2334, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2234, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2323, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2191, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2234, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2299, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2399, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2730, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2321, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2278, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2223, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2234, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2311, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2234, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2121, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2331, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2243, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2261, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2207, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2285, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2309, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2383, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2273, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2243, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2171, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2199, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2299, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2279, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2231, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2239, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2163, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2161, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2177, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2414, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2206, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2096, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2166, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2257, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2185, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2233, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2201, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2181, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2181, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2293, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2123, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2168, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2920, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2291, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2266, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2222, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2119, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2256, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2099, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2054, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2112, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2130, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2134, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2259, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2292, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2103, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2328, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2168, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2229, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2074, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2300, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2162, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2184, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2126, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2192, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2269, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2173, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2183, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2291, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2114, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2232, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2174, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2388, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2125, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2131, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2270, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2198, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2043, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2051, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2227, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2058, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2842, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2439, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2124, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2411, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2188, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2233, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2036, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2318, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2108, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2372, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2250, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2281, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2077, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2213, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2213, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2138, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2155, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2116, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2098, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2239, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2166, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2205, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2036, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2174, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2013, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2107, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2211, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2123, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2293, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2173, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2359, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2188, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2081, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2146, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2066, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2150, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2038, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1999, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2039, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2722, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.1960, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2265, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2058, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2253, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2090, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2146, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2233, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2091, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2150, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2206, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2161, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2166, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2105, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2038, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2120, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2072, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2050, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2171, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2453, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2069, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2129, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2221, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2304, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2058, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2123, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2156, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2265, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2280, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2023, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2007, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2262, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2005, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2050, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2068, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2209, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2033, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2279, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2199, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2655, device='cuda:0', grad_fn=<MseLossBackward0>)
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+tensor(0.2079, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2060, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2335, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1972, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2195, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2301, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2007, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2292, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2045, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1950, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2191, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2141, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2170, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1879, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1973, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1915, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2008, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1981, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1972, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2050, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2224, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1917, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1952, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1965, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1955, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1996, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2065, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2072, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2304, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2039, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.1980, device='cuda:0', grad_fn=<MseLossBackward0>)
+tensor(0.2019, device='cuda:0', grad_fn=<MseLossBackward0>)
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 16806267: <torch_gpu> in cluster <dcc> Exited
+
+Job <torch_gpu> was submitted from host <n-62-30-1> by user <s214617> in cluster <dcc> at Mon Jun  5 10:18:17 2023
+Job was executed on host(s) <n-62-20-3>, in queue <gpuv100>, as user <s214617> in cluster <dcc> at Mon Jun  5 10:18:19 2023
+</zhome/52/b/167847> was used as the home directory.
+</zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git> was used as the working directory.
+Started at Mon Jun  5 10:18:19 2023
+Terminated at Mon Jun  5 10:58:37 2023
+Results reported at Mon Jun  5 10:58:37 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/sh
+#BSUB -J torch_gpu
+#BSUB -o torch_%J.out
+#BSUB -e torch_%J.err
+#BSUB -q gpuv100
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -n 1
+#BSUB -u s214617@dtu.dk
+#BSUB -B
+#BSUB -R "rusage[mem=10G]"
+#BSUB -R "span[hosts=1]"
+#BSUB -W 1440
+# end of BSUB options
+
+# load a scipy module
+# replace VERSION and uncomment
+module load scipy/1.10.1-python-3.9.16
+
+# activate the virtual environment
+# NOTE: needs to have been built with the same SciPy version above!
+source 02466/bin/activate
+
+python train.py
+
+------------------------------------------------------------
+
+TERM_OWNER: job killed by owner.
+Exited with exit code 130.
+
+Resource usage summary:
+
+    CPU time :                                   2203.25 sec.
+    Max Memory :                                 3265 MB
+    Average Memory :                             2846.14 MB
+    Total Requested Memory :                     10240.00 MB
+    Delta Memory :                               6975.00 MB
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                9
+    Run time :                                   2440 sec.
+    Turnaround time :                            2420 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <torch_16806267.err> for stderr output of this job.
+
