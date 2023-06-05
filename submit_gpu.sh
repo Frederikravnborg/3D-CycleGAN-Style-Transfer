@@ -1,15 +1,15 @@
 #!/bin/sh
 #BSUB -J torch_gpu
-#BSUB -o torch_gpu_%J.out
-#BSUB -e torch_gpu_%J.err
-#BSUB -q gpuv100
+#BSUB -o torch_%J.out
+#BSUB -e torch_%J.err
+#BSUB -q gpuaq10
 #BSUB -gpu "num=1:mode=exclusive_process"
 #BSUB -n 1
 #BSUB -u s214617@dtu.dk
 #BSUB -B
-#BSUB -R "rusage[mem=10G]"
+#BSUB -R "rusage[mem=5G]"
 #BSUB -R "span[hosts=1]"
-#BSUB -W 10
+#BSUB -W 60
 # end of BSUB options
 
 # load a scipy module

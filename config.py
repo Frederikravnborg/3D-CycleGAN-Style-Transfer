@@ -4,7 +4,7 @@ from torchvision import transforms
 #from albumentations.pytorch import ToTensorV2
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train"
+TRAIN_DIR = "data/train_test_100"
 VAL_DIR = "data/val"
 BATCH_SIZE = 2
 LEARNING_RATE = 1e-5

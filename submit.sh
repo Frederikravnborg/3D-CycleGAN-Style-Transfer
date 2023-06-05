@@ -1,7 +1,7 @@
 #!/bin/sh
 #BSUB -J torch
-#BSUB -o torch_%J.out
-#BSUB -e torch_%J.err
+#BSUB -o /output/torch_%J.out
+#BSUB -e /output/torch_%J.err
 #BSUB -q hpc
 #BSUB -n 1
 #BSUB -u "s214617@dtu.dk"
