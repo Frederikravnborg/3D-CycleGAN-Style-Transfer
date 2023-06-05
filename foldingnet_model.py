@@ -37,7 +37,7 @@ class ChamferLoss(nn.Module):
         loss_1 = torch.mean(mins)
         mins, _ = torch.min(P, 2)
         loss_2 = torch.mean(mins)
-        return (loss_1 + loss_2) * 100
+        return (loss_1 + loss_2)
 
 class FoldNet_Encoder(nn.Module):
     def __init__(self):
