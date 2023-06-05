@@ -21,7 +21,7 @@ import trimesh
 
 
 def train_fn(
-    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler, epoch, currentTime, folder_name
+    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, d_scaler, g_scaler, epoch, currentTime, folder_name
 ):
     M_reals = 0
     M_fakes = 0
@@ -200,7 +200,6 @@ def main():
             loader,
             opt_disc,
             opt_gen,
-            L1,
             mse,
             d_scaler,
             g_scaler,
