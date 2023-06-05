@@ -34,9 +34,9 @@ class ChamferLoss(nn.Module):
     def forward(self, preds, gts):
         P = self.batch_pairwise_dist(gts, preds)
         mins, _ = torch.min(P, 1)
-        loss_1 = torch.mean(torch.clamp(mins, min = 1e-10))
+        loss_1 = torch.mean(mins)
         mins, _ = torch.min(P, 2)
-        loss_2 = torch.mean(torch.clamp(mins, min = 1e-10))
+        loss_2 = torch.mean(mins)
         return (loss_1 + loss_2) * 100
 
 class FoldNet_Encoder(nn.Module):
