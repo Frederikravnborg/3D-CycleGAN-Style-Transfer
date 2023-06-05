@@ -1,9 +1,15 @@
 import pandas as pd
+from pprint import pprint
 import matplotlib.pyplot as plt
 
 def visualize_loss():
+    filename = "output/loss_06.05.10.59.18.csv"
+
     # read data from csv file using pandas
-    data = pd.read_csv('output/loss_06.05.10.59.18.csv')
+    meta = pd.read_csv(filename, nrows=1)
+    data = pd.read_csv(filename ,skiprows=1)
+    print(meta)
+
     # extract data from dataframe
     epoch = data['epoch']
     G_loss = []
@@ -22,7 +28,7 @@ def visualize_loss():
     # generate 2 plots side by side
     fig, (ax1, ax2) = plt.subplots(1, 2)
     ax1.plot(G_loss, label='G_loss')
-    ax1.plot(cycle_loss, label='cycle_loss')
+    # ax1.plot(cycle_loss, label='cycle_loss')
     ax1.legend()
     # add labels
     ax1.set(xlabel='Epoch', ylabel='Loss', title='Losses')
