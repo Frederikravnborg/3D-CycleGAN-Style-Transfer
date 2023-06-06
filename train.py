@@ -37,22 +37,22 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
                 (female_cycle_loss + male_cycle_loss) * config.LAMBDA_CYCLE
             )
         
-        # update of weights
-        opt_gen.zero_grad()  #compute zero gradients
-        g_scaler.scale(cycle_loss).backward() #backpropagate
-        g_scaler.step(opt_gen) #update weights
-        g_scaler.update() #update scaler
+    # update of weights
+    opt_gen.zero_grad()  #compute zero gradients
+    g_scaler.scale(cycle_loss).backward() #backpropagate
+    g_scaler.step(opt_gen) #update weights
+    g_scaler.update() #update scaler
 
-        # save point clouds every SAVE_RATE iterations
-        if config.FOLD_SAVE_OBJ and idx % config.SAVE_RATE == 0:
+    # save point clouds every SAVE_RATE iterations
+    if config.FOLD_SAVE_OBJ and idx % config.SAVE_RATE == 0:
 
-            female_vertices = female[0].detach().cpu().numpy()
-            female = trimesh.Trimesh(vertices=female_vertices)
-            female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
-            
-            male_vertices = male[0].detach().cpu().numpy()
-            male = trimesh.Trimesh(vertices=male_vertices)
-            male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
+        female_vertices = female[0].detach().cpu().numpy()
+        female = trimesh.Trimesh(vertices=female_vertices)
+        female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
+        
+        male_vertices = male[0].detach().cpu().numpy()
+        male = trimesh.Trimesh(vertices=male_vertices)
+        male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
 
         # update progress bar
         loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
