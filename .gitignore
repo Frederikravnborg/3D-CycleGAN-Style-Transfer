@@ -182,5 +182,6 @@ pyrightconfig.json
 log/classification/2023-04-18_17-04/logs/pointnet_model 2.txt
 
 #checkpoints
+.tar
 
 .DS_Store
