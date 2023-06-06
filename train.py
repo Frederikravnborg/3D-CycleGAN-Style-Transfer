@@ -24,7 +24,7 @@ def train_fn(
     # initialize variables to keep track of discriminator outputs
     M_reals = 0
     M_fakes = 0
-    loop = tqdm(loader, leave=True) #Progress bar
+    loop = tqdm(loader, leave=True) #Progress barq
 
     # loop through the data loader
     for idx, (female, male) in enumerate(loop):

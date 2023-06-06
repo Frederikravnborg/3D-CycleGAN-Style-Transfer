@@ -1,2 +1,0 @@
-meta:config.TRAIN_DIR='data/train',config.BATCH_SIZE=128,config.NUM_EPOCHS=100,config.LEARNING_RATE=0.001,config.LAMBDA_IDENTITY=0.0,10,100,config.LOAD_MODEL=False,config.N_POINTS=2048
-idx,D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch
