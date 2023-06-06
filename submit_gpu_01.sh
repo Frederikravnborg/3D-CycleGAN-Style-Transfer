@@ -4,7 +4,7 @@
 #BSUB -e torch_01_%J.err
 #BSUB -q gpua100
 #BSUB -gpu "num=1:mode=exclusive_process"
-#BSUB -n 1,16
+#BSUB -n 1,12
 #BSUB -u s214617@dtu.dk
 #BSUB -B
 #BSUB -R "rusage[mem=2G]"
