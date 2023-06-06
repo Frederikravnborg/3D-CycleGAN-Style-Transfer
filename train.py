@@ -7,7 +7,7 @@ import torch
 import os
 from datetime import datetime
 from load_data import ObjDataset
-from utils.utils import save_checkpoint, load_checkpoint
+from utilities.utilities import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
@@ -16,6 +16,46 @@ from tqdm import tqdm
 from pointnet_model import Discriminator
 from foldingnet_model import Generator
 import trimesh
+
+
+def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
+    loop = tqdm(loader, leave=True) #Progress bar
+
+    # loop through the data loader
+    for idx, (female, male) in enumerate(loop):
+        female = female.to(config.DEVICE).float()
+        male = male.to(config.DEVICE).float()
+
+        # Train Generators
+        with torch.cuda.amp.autocast(): #Necessary for float16
+            # Generate fake images
+            _, _, female_cycle_loss = gen_F(female)
+            _, _, male_cycle_loss = gen_M(male)
+
+            # Compute generator losses
+            cycle_loss = (
+                (female_cycle_loss + male_cycle_loss) * config.LAMBDA_CYCLE
+            )
+        
+        # update of weights
+        opt_gen.zero_grad()  #compute zero gradients
+        g_scaler.scale(cycle_loss).backward() #backpropagate
+        g_scaler.step(opt_gen) #update weights
+        g_scaler.update() #update scaler
+
+        # save point clouds every SAVE_RATE iterations
+        if config.FOLD_SAVE_OBJ and idx % config.SAVE_RATE == 0:
+
+            female_vertices = female[0].detach().cpu().numpy()
+            female = trimesh.Trimesh(vertices=female_vertices)
+            female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
+            
+            male_vertices = male[0].detach().cpu().numpy()
+            male = trimesh.Trimesh(vertices=male_vertices)
+            male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
+
+        # update progress bar
+        loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
 
 # define the training function
 def train_fn(
@@ -117,7 +157,7 @@ def train_fn(
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
         
         # update progress bar
-        loop.set_postfix(M_real=M_reals / (idx + 1), M_fake=M_fakes / (idx + 1))
+        loop.set_postfix(M_real=M_reals / (idx + 1), M_fake=M_fakes / (idx + 1), epoch=epoch)
 
 
 def main():
@@ -205,30 +245,50 @@ def main():
 
     # save loss in csv file
     with open(f'output/loss_{currentTime}.csv', 'w') as f: 
-        f.write(f"meta:{config.TRAIN_DIR=},{config.BATCH_SIZE=},{config.NUM_EPOCHS=},{config.LEARNING_RATE=},{config.LAMBDA_IDENTITY=},{config.LAMBDA_CYCLE},{config.NUM_EPOCHS},{config.LOAD_MODEL=},{config.N_POINTS=}\n")
+        f.write(f"meta:{config.TRAIN_DIR=},{config.BATCH_SIZE=},{config.GAN_NUM_EPOCHS=},{config.LEARNING_RATE=},{config.LAMBDA_CYCLE},{config.GAN_NUM_EPOCHS},{config.LOAD_MODEL=},{config.N_POINTS=}\n")
         f.write('idx,D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch\n')
-    
+
+    # create folder to save generated point clouds in
+    folder_name = f"pre_saved_models/pcds/{currentTime}"
+    os.makedirs(folder_name)
+
+    if config.TRAIN_FOLD:
+        for epoch in range(config.FOLD_NUM_EPOCH):
+            train_fold(
+                gen_F,
+                gen_M,
+                loader,
+                opt_gen,
+                g_scaler,
+                epoch,
+                folder_name
+            )
+    if config.SAVE_MODEL:
+            save_checkpoint(gen_M, opt_gen, filename="pre_" + GEN_M_filename)
+            save_checkpoint(gen_F, opt_gen, filename="pre_" + GEN_F_filename)
+
     # create folder to save generated point clouds in
     folder_name = f"saved_pcds/{currentTime}"
     os.makedirs(folder_name)
 
+    if config.TRAIN_GAN:
     # train the model
-    for epoch in range(config.NUM_EPOCHS):
-        train_fn(
-            disc_M,
-            disc_F,
-            gen_F,
-            gen_M,
-            loader,
-            opt_disc,
-            opt_gen,
-            mse,
-            d_scaler,
-            g_scaler,
-            epoch,
-            currentTime,
-            folder_name
-        )
+        for epoch in range(config.GAN_NUM_EPOCHS):
+            train_fn(
+                disc_M,
+                disc_F,
+                gen_F,
+                gen_M,
+                loader,
+                opt_disc,
+                opt_gen,
+                mse,
+                d_scaler,
+                g_scaler,
+                epoch,
+                currentTime,
+                folder_name
+            )
 
         # save model for every epoch 
         if config.SAVE_MODEL:
