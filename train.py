@@ -17,6 +17,36 @@ from pointnet_model import Discriminator
 from foldingnet_model import Generator
 import trimesh
 
+
+def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, currentTime, folder_name):
+    loop = tqdm(loader, leave=True) #Progress bar
+
+    # loop through the data loader
+    for idx, (female, male) in enumerate(loop):
+        female = female.to(config.DEVICE).float()
+        male = male.to(config.DEVICE).float()
+
+        # Train Generators
+        with torch.cuda.amp.autocast(): #Necessary for float16
+            # Generate fake images
+            _, _, female_cycle_loss = gen_F(female)
+            _, _, male_cycle_loss = gen_M(male)
+
+            # Compute generator losses
+            cycle_loss = (
+                (female_cycle_loss + male_cycle_loss) * config.LAMBDA_CYCLE
+
+            )
+        
+        # update of weights
+        opt_gen.zero_grad()  #compute zero gradients
+        g_scaler.scale(cycle_loss).backward() #backpropagate
+        g_scaler.step(opt_gen) #update weights
+        g_scaler.update() #update scaler
+
+        # update progress bar
+        loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
+
 # define the training function
 def train_fn(
     disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, d_scaler, g_scaler, epoch, currentTime, folder_name
@@ -212,8 +242,24 @@ def main():
     folder_name = f"saved_pcds/{currentTime}"
     os.makedirs(folder_name)
 
+    if config.TRAIN_FOLD:
+        for epoch in range(config.FOLD_EPOCH):
+            train_fold(
+                gen_F,
+                gen_M,
+                loader,
+                opt_gen,
+                g_scaler,
+                epoch,
+                currentTime,
+                folder_name
+            )
+    if config.SAVE_MODEL:
+            save_checkpoint(gen_M, opt_gen, filename="pre_" + GEN_M_filename)
+            save_checkpoint(gen_F, opt_gen, filename="pre_" + GEN_F_filename)
+
     # train the model
-    for epoch in range(config.NUM_EPOCHS):
+    for epoch in range(config.GAN_NUM_EPOCHS):
         train_fn(
             disc_M,
             disc_F,
