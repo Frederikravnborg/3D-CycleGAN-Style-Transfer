@@ -88,13 +88,13 @@ class FoldNet_Encoder(nn.Module):
 class FoldNet_Decoder(nn.Module):
     def __init__(self):
         super(FoldNet_Decoder, self).__init__()
-        self.x1 = -10
-        self.x2 = 10
+        self.x1 = -1 * config.PLANE_SIZE
+        self.x2 = 1 * config.PLANE_SIZE
         self.p = 45
 
-        self.m = 2048
         self.shape = config.FOLD_SHAPE
-        self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
+        self.m = self.p**2 if self.shape == 'plane' else 2048
+        self.meshgrid = [[self.x1, self.x2, self.p], [self.x1, self.x2, self.p]]
         self.sphere = utils.create_sphere(self.m)
         self.gaussian = utils.create_gaussian(self.m)
         if self.shape == 'plane':
