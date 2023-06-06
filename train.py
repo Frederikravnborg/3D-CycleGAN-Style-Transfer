@@ -103,12 +103,9 @@ def train_fn(
 
         # save point clouds every SAVE_RATE iterations
         if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
-<<<<<<< HEAD
-            fake_female = trimesh.Trimesh(vertices=fake_female[0].detach().cpu().numpy())
-=======
+
             fake_female_vertices = fake_female[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
->>>>>>> 4f9f14c9384c01d124961f77b44e0d650b131b62
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
             
             fake_male_vertices = fake_male[0].detach().cpu().numpy()

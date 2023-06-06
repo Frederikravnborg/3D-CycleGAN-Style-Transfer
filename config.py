@@ -5,26 +5,16 @@ currentDateAndTime = datetime.now()
 currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train_test_10"
+TRAIN_DIR = "data/train"
 VAL_DIR = "data/val"
-<<<<<<< HEAD
 BATCH_SIZE = 128
 LEARNING_RATE = 1e-4
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
 NUM_WORKERS = 14
 NUM_EPOCHS = 300
-=======
-BATCH_SIZE = 2
-LEARNING_RATE = 1e-3
-LAMBDA_IDENTITY = 0.0
-LAMBDA_CYCLE = 10
-NUM_WORKERS = 0
-NUM_EPOCHS = 600
->>>>>>> 4f9f14c9384c01d124961f77b44e0d650b131b62
 LOAD_MODEL = False
 SAVE_MODEL = True
-f'output/loss_{currentTime}.csv'
 CHECKPOINT_GEN_M = f"saved_models/genM_{currentTime}.pth.tar"
 CHECKPOINT_GEN_F = f"saved_models/genF_{currentTime}.pth.tar"
 CHECKPOINT_DISC_M = f"saved_models/discM_{currentTime}.pth.tar"
