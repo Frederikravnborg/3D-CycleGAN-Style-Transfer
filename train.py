@@ -103,10 +103,16 @@ def train_fn(
 
         # save point clouds every SAVE_RATE iterations
         if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
+<<<<<<< HEAD
             fake_female = trimesh.Trimesh(vertices=fake_female[0].detach().cpu().numpy())
+=======
+            fake_female_vertices = fake_female[0].detach().cpu().numpy()
+            fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
+>>>>>>> 4f9f14c9384c01d124961f77b44e0d650b131b62
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
             
-            fake_male = trimesh.Trimesh(vertices=fake_male[0].detach().cpu().numpy())
+            fake_male_vertices = fake_male[0].detach().cpu().numpy()
+            fake_male = trimesh.Trimesh(vertices=fake_male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
@@ -140,6 +146,12 @@ def main():
     L1 = nn.L1Loss() #Cycle consistency loss
     mse = nn.MSELoss() #Adverserial loss
 
+    if config.SAVE_MODEL:
+        GEN_M_filename = config.CHECKPOINT_GEN_M
+        GEN_F_filename = config.CHECKPOINT_GEN_F
+        DISC_M_filename = config.CHECKPOINT_DISC_M
+        DISC_F_filename = config.CHECKPOINT_DISC_F
+
     # load previously trained model if LOAD_MODEL is True
     if config.LOAD_MODEL:
         load_checkpoint(
@@ -155,13 +167,13 @@ def main():
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_M,
+            config.CHECKPOINT_DISC_M,
             disc_M,
             opt_disc,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_F,
+            config.CHECKPOINT_DISC_F,
             disc_F,
             opt_disc,
             config.LEARNING_RATE,
@@ -223,10 +235,10 @@ def main():
 
         # save model for every epoch 
         if config.SAVE_MODEL:
-            save_checkpoint(gen_M, opt_gen, filename=config.CHECKPOINT_GEN_M)
-            save_checkpoint(gen_F, opt_gen, filename=config.CHECKPOINT_GEN_F)
-            save_checkpoint(disc_M, opt_disc, filename=config.CHECKPOINT_CRITIC_M)
-            save_checkpoint(disc_F, opt_disc, filename=config.CHECKPOINT_CRITIC_F)
+            save_checkpoint(gen_M, opt_gen, filename=GEN_M_filename)
+            save_checkpoint(gen_F, opt_gen, filename=GEN_F_filename)
+            save_checkpoint(disc_M, opt_disc, filename=DISC_M_filename)
+            save_checkpoint(disc_F, opt_disc, filename=DISC_F_filename)
 
 
 if __name__ == "__main__":
