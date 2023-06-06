@@ -25,5 +25,6 @@ SAVE_OBJ = True
 SAVE_RATE = 100 # Save every SAVE_RATE batches
 FOLD_SHAPE = 'plane'
 PLANE_SIZE = 1
+DISC_WIDTH_REDUCER = 5 #factor must be a power of 2
 
 transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)

@@ -2,18 +2,20 @@ import torch.nn as nn
 import torch.utils.data
 import torch.nn.functional as F
 from utils.pointnet_utils import PointNetEncoder
+import config
 
 class Discriminator(nn.Module):
     def __init__(self, k=2):
         super(Discriminator, self).__init__()
         channel = 3
+        r = config.DISC_WIDTH_REDUCER
         self.feat = PointNetEncoder(global_feat=True, feature_transform=True, channel=channel)
-        self.fc1 = nn.Linear(1024, 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, k)
+        self.fc1 = nn.Linear(1024, int(512/r))
+        self.fc2 = nn.Linear(int(512/r), int(256/r))
+        self.fc3 = nn.Linear(int(256/r), k)
         self.dropout = nn.Dropout(p=0.4)
-        self.bn1 = nn.BatchNorm1d(512)
-        self.bn2 = nn.BatchNorm1d(256)
+        self.bn1 = nn.BatchNorm1d(int(512/r))
+        self.bn2 = nn.BatchNorm1d(int(256/r))
         self.relu = nn.ReLU()
 
     def forward(self, x):
