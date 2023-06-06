@@ -88,12 +88,12 @@ class FoldNet_Encoder(nn.Module):
 class FoldNet_Decoder(nn.Module):
     def __init__(self):
         super(FoldNet_Decoder, self).__init__()
-        self.x1 = -1
-        self.x2 = 1
-        self.p = 32
+        self.x1 = -10
+        self.x2 = 10
+        self.p = 45
 
-        self.m = config.N_POINTS
-        self.shape = 'sphere'
+        self.m = 45 * 45
+        self.shape = 'plane'
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = utils.create_sphere(self.m)
         self.gaussian = utils.create_gaussian(self.m)
@@ -127,7 +127,7 @@ class FoldNet_Decoder(nn.Module):
             y = np.linspace(*self.meshgrid[1])
             points = np.array(list(itertools.product(x, y)))
         elif self.shape == 'sphere':
-            points = self.sphere #var that might be interessting to look at later
+            points = self.sphere * 100000 #var that might be interessting to look at later
         elif self.shape == 'gaussian':
             points = self.gaussian
         points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
