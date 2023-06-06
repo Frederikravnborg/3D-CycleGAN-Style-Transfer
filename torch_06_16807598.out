@@ -1,0 +1,67 @@
+=> Saving checkpoint
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 16807598: <torch_gpu_06> in cluster <dcc> Exited
+
+Job <torch_gpu_06> was submitted from host <n-62-30-1> by user <s214617> in cluster <dcc> at Mon Jun  5 16:46:44 2023
+Job was executed on host(s) <16*n-62-12-23>, in queue <gpua100>, as user <s214617> in cluster <dcc> at Mon Jun  5 22:22:41 2023
+</zhome/52/b/167847> was used as the home directory.
+</zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git> was used as the working directory.
+Started at Mon Jun  5 22:22:41 2023
+Terminated at Mon Jun  5 22:23:19 2023
+Results reported at Mon Jun  5 22:23:19 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/sh
+#BSUB -J torch_gpu_06
+#BSUB -o torch_06_%J.out
+#BSUB -e torch_06_%J.err
+#BSUB -q gpua100
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -n 1,16
+#BSUB -u s214617@dtu.dk
+#BSUB -B
+#BSUB -R "rusage[mem=2G]"
+#BSUB -R "span[hosts=1]"
+#BSUB -W 1440
+# end of BSUB options
+
+# load a scipy module
+# replace VERSION and uncomment
+module load scipy/1.10.1-python-3.9.16
+
+# activate the virtual environment
+# NOTE: needs to have been built with the same SciPy version above!
+source 02466/bin/activate
+
+python train.py
+
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time :                                   230.82 sec.
+    Max Memory :                                 2646 MB
+    Average Memory :                             2527.33 MB
+    Total Requested Memory :                     32768.00 MB
+    Delta Memory :                               30122.00 MB
+    Max Swap :                                   -
+    Max Processes :                              18
+    Max Threads :                                35
+    Run time :                                   39 sec.
+    Turnaround time :                            20195 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <torch_06_16807598.err> for stderr output of this job.
+

@@ -1,7 +1,7 @@
 #!/bin/sh
-#BSUB -J torch_gpu
-#BSUB -o torch_%J.out
-#BSUB -e torch_%J.err
+#BSUB -J torch_gpu_08
+#BSUB -o torch_08_%J.out
+#BSUB -e torch_08_%J.err
 #BSUB -q gpua100
 #BSUB -gpu "num=1:mode=exclusive_process"
 #BSUB -n 1,16
