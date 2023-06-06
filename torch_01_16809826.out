@@ -1,0 +1,235 @@
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+=> Saving checkpoint
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 16809826: <torch_gpu_01> in cluster <dcc> Exited
+
+Job <torch_gpu_01> was submitted from host <n-62-30-1> by user <s214617> in cluster <dcc> at Tue Jun  6 10:01:08 2023
+Job was executed on host(s) <12*n-62-20-14>, in queue <gpuv100>, as user <s214617> in cluster <dcc> at Tue Jun  6 10:04:13 2023
+</zhome/52/b/167847> was used as the home directory.
+</zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git> was used as the working directory.
+Started at Tue Jun  6 10:04:13 2023
+Terminated at Tue Jun  6 10:30:29 2023
+Results reported at Tue Jun  6 10:30:29 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/sh
+#BSUB -J torch_gpu_01
+#BSUB -o torch_01_%J.out
+#BSUB -e torch_01_%J.err
+#BSUB -q gpuv100
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -n 1,16
+#BSUB -u s214617@dtu.dk
+#BSUB -B
+#BSUB -R "rusage[mem=2G]"
+#BSUB -R "span[hosts=1]"
+#BSUB -W 1440
+# end of BSUB options
+
+# load a scipy module
+# replace VERSION and uncomment
+module load scipy/1.10.1-python-3.9.16
+
+# activate the virtual environment
+# NOTE: needs to have been built with the same SciPy version above!
+source 02466/bin/activate
+
+python train.py
+
+------------------------------------------------------------
+
+TERM_OWNER: job killed by owner.
+Exited with exit code 130.
+
+Resource usage summary:
+
+    CPU time :                                   10124.67 sec.
+    Max Memory :                                 3955 MB
+    Average Memory :                             3646.15 MB
+    Total Requested Memory :                     24576.00 MB
+    Delta Memory :                               20621.00 MB
+    Max Swap :                                   16 MB
+    Max Processes :                              18
+    Max Threads :                                54
+    Run time :                                   1576 sec.
+    Turnaround time :                            1761 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <torch_01_16809826.err> for stderr output of this job.
+
