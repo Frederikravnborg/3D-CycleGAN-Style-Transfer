@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.utils.data
 import torch.nn.functional as F
 from utilities.pointnet_utils import PointNetEncoder
+import config
 
 class Discriminator(nn.Module):
     def __init__(self, k=2):
