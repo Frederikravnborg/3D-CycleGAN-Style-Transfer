@@ -92,7 +92,7 @@ class FoldNet_Decoder(nn.Module):
         self.x2 = 10
         self.p = 45
 
-        self.m = 45 * 45
+        self.m = 2048
         self.shape = config.FOLD_SHAPE
         self.meshgrid = [[-self.x1, self.x2, self.p], [-self.x1, self.x2, self.p]]
         self.sphere = utils.create_sphere(self.m)
