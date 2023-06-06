@@ -7,7 +7,7 @@ import torch
 import os
 from datetime import datetime
 from load_data import ObjDataset
-from utils.utils import save_checkpoint, load_checkpoint
+from utils.utilities import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim

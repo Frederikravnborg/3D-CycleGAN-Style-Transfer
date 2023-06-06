@@ -7,6 +7,7 @@ import itertools
 import config
 import utils.foldingnet_model_utils as utils
 
+
 class ChamferLoss(nn.Module):
     def __init__(self):
         super(ChamferLoss, self).__init__()
