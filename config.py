@@ -1,21 +1,25 @@
 import torch
 from torchvision import transforms
+from datetime import datetime
+currentDateAndTime = datetime.now()
+currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train"
+TRAIN_DIR = "data/train_test_10"
 VAL_DIR = "data/val"
-BATCH_SIZE = 32
+BATCH_SIZE = 2
 LEARNING_RATE = 1e-3
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
-NUM_WORKERS = 14
+NUM_WORKERS = 0
 NUM_EPOCHS = 600
 LOAD_MODEL = False
 SAVE_MODEL = True
-CHECKPOINT_GEN_M = "saved_models/genM.pth.tar"
-CHECKPOINT_GEN_F = "saved_models/genF.pth.tar"
-CHECKPOINT_CRITIC_M = "saved_models/criticM.pth.tar"
-CHECKPOINT_CRITIC_F = "saved_models/criticF.pth.tar"
+f'output/loss_{currentTime}.csv'
+CHECKPOINT_GEN_M = f"saved_models/genM_{currentTime}.pth.tar"
+CHECKPOINT_GEN_F = f"saved_models/genF_{currentTime}.pth.tar"
+CHECKPOINT_DISC_M = f"saved_models/discM_{currentTime}.pth.tar"
+CHECKPOINT_DISC_F = f"saved_models/discF_{currentTime}.pth.tar"
 N_POINTS = 2048
 MAX_DISTANCE = torch.tensor(1.0428)
 SAVE_OBJ = True

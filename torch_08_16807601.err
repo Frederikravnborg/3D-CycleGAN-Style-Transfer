@@ -1,24 +1,0 @@
-Loaded dependency [numpy/1.24.2-python-3.9.16-openblas-0.3.23]: openblas/0.3.23
-Loaded dependency [python3/3.9.16]: gcc/11.3.0-binutils-2.38
-Loaded dependency [numpy/1.24.2-python-3.9.16-openblas-0.3.23]: python3/3.9.16
-Loaded dependency [scipy/1.10.1-python-3.9.16]: numpy/1.24.2-python-3.9.16-openblas-0.3.23
-Loaded module: scipy/1.10.1-python-3.9.16
-
-Loading scipy/1.10.1-python-3.9.16
-  Loading requirement: openblas/0.3.23 gcc/11.3.0-binutils-2.38 python3/3.9.16
-    numpy/1.24.2-python-3.9.16-openblas-0.3.23
-  0%|          | 0/10 [00:00<?, ?it/s]  0%|          | 0/10 [00:25<?, ?it/s, M_fake=nan, M_real=0.525] 10%|█         | 1/10 [00:25<03:49, 25.45s/it, M_fake=nan, M_real=0.525] 10%|█         | 1/10 [00:26<03:49, 25.45s/it, M_fake=nan, M_real=0.524] 20%|██        | 2/10 [00:26<01:27, 10.89s/it, M_fake=nan, M_real=0.524] 20%|██        | 2/10 [00:26<01:27, 10.89s/it, M_fake=nan, M_real=0.523] 30%|███       | 3/10 [00:26<00:43,  6.24s/it, M_fake=nan, M_real=0.523] 30%|███       | 3/10 [00:27<00:43,  6.24s/it, M_fake=nan, M_real=0.526] 40%|████      | 4/10 [00:27<00:24,  4.05s/it, M_fake=nan, M_real=0.526] 40%|████      | 4/10 [00:28<00:24,  4.05s/it, M_fake=nan, M_real=0.526] 50%|█████     | 5/10 [00:28<00:14,  2.84s/it, M_fake=nan, M_real=0.526] 50%|█████     | 5/10 [00:28<00:14,  2.84s/it, M_fake=nan, M_real=0.525] 60%|██████    | 6/10 [00:28<00:08,  2.11s/it, M_fake=nan, M_real=0.525] 60%|██████    | 6/10 [00:29<00:08,  2.11s/it, M_fake=nan, M_real=0.525] 70%|███████   | 7/10 [00:29<00:04,  1.65s/it, M_fake=nan, M_real=0.525] 70%|███████   | 7/10 [00:30<00:04,  1.65s/it, M_fake=nan, M_real=0.525] 80%|████████  | 8/10 [00:30<00:02,  1.35s/it, M_fake=nan, M_real=0.525] 80%|████████  | 8/10 [00:31<00:02,  1.35s/it, M_fake=nan, M_real=0.524] 90%|█████████ | 9/10 [00:31<00:01,  1.15s/it, M_fake=nan, M_real=0.524] 90%|█████████ | 9/10 [00:31<00:01,  1.15s/it, M_fake=nan, M_real=0.524]100%|██████████| 10/10 [00:31<00:00,  1.08it/s, M_fake=nan, M_real=0.524]100%|██████████| 10/10 [00:31<00:00,  3.15s/it, M_fake=nan, M_real=0.524]
-Traceback (most recent call last):
-  File "/zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git/train.py", line 233, in <module>
-    main()
-  File "/zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git/train.py", line 226, in main
-    save_checkpoint(gen_M, opt_gen, filename=config.CHECKPOINT_GEN_M)
-  File "/zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git/utils/utils.py", line 12, in save_checkpoint
-    torch.save(checkpoint, filename)
-  File "/zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git/02466/lib/python3.9/site-packages/torch/serialization.py", line 440, in save
-    with _open_zipfile_writer(f) as opened_zipfile:
-  File "/zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git/02466/lib/python3.9/site-packages/torch/serialization.py", line 315, in _open_zipfile_writer
-    return container(name_or_buffer)
-  File "/zhome/52/b/167847/Desktop/02466/PointClouds/Fagprojekt_Git/02466/lib/python3.9/site-packages/torch/serialization.py", line 288, in __init__
-    super().__init__(torch._C.PyTorchFileWriter(str(name)))
-RuntimeError: Parent directory saved_models does not exist.
