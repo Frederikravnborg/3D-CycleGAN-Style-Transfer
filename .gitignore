@@ -183,5 +183,8 @@ log/classification/2023-04-18_17-04/logs/pointnet_model 2.txt
 
 #checkpoints
 .tar
+.csv
+.obj
+.sh
 
 .DS_Store
