@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def visualize_loss():
-    filename = "output/loss_06.05.10.59.18.csv"
+    filename = "output/loss_06.05.17.54.17.csv"
 
     # read data from csv file using pandas
     meta = pd.read_csv(filename, nrows=1)
