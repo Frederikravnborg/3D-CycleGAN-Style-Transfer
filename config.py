@@ -1,5 +1,4 @@
 import torch
-from torchvision import transforms
 from datetime import datetime
 currentDateAndTime = datetime.now()
 currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
@@ -13,11 +12,17 @@ BATCH_SIZE = 2
 LEARNING_RATE = 1e-4
 NUM_WORKERS = 0
 MAX_DISTANCE = torch.tensor(1.0428)
-transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)
 
+
+
+# GAN:
+TRAIN_GAN = False
+GAN_NUM_EPOCHS = 4
 LOAD_MODEL = False
 SAVE_MODEL = True
-
+SAVE_OBJ = True
+SAVE_RATE = 100 # Save every SAVE_RATE batches
+DISC_WIDTH_REDUCER = 1 #factor must be a power of 2
 CHECKPOINT_GEN_M = f"saved_models/genM_{currentTime}.pth.tar"
 CHECKPOINT_GEN_F = f"saved_models/genF_{currentTime}.pth.tar"
 CHECKPOINT_DISC_M = f"saved_models/discM_{currentTime}.pth.tar"
@@ -33,16 +38,8 @@ CHECKPOINT_FOLD_F = f"pre_saved_models/genF_{currentTime}.pth.tar"
 timestamp = "06.06.19.04.34_50"
 SAVEDMODEL_GEN_M = f"pre_saved_models/genM_{timestamp}.pth.tar"
 SAVEDMODEL_GEN_F = f"pre_saved_models/genF_{timestamp}.pth.tar"
-
-
+FOLD_SHAPE = 'sphere'
 LAMBDA_CYCLE = 10
 PLANE_SIZE = 1
-DISC_WIDTH_REDUCER = 1 #factor must be a power of 2
 
-# GAN:
-TRAIN_GAN = False
-GAN_NUM_EPOCHS = 4
-SAVE_OBJ = True
-SAVE_RATE = 100 # Save every SAVE_RATE batches
-FOLD_SHAPE = 'sphere'
-PLANE_SIZE = 1
+

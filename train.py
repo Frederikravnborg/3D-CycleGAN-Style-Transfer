@@ -16,6 +16,8 @@ from tqdm import tqdm
 from pointnet_model import Discriminator
 from foldingnet_model import Generator
 import trimesh
+from torchvision import transforms
+
 
 
 def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
@@ -230,19 +232,19 @@ def main():
             opt_disc,
             config.LEARNING_RATE,
         )
-
+    transform = transforms.Lambda(lambda x: x / config.MAX_DISTANCE)
     # define train dataset
     dataset = ObjDataset(
         root_male=config.TRAIN_DIR + "/male", 
         root_female=config.TRAIN_DIR + "/female",
-        transform=config.transforms,
+        transform=transform,
         n_points=config.N_POINTS
     )
     # define validation dataset
     val_dataset = ObjDataset(
         root_male=config.VAL_DIR + "/male",
         root_female=config.VAL_DIR + "/female",
-        transform=config.transforms,
+        transform=transform,
         n_points=config.N_POINTS
     )
 
