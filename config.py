@@ -37,7 +37,7 @@ SAVEDMODEL_GEN_F = f"pre_saved_models/genF_{timestamp}.pth.tar"
 
 LAMBDA_CYCLE = 10
 PLANE_SIZE = 1
-DISC_WIDTH_REDUCER = 5 #factor must be a power of 2
+DISC_WIDTH_REDUCER = 1 #factor must be a power of 2
 
 # GAN:
 TRAIN_GAN = False
