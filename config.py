@@ -16,6 +16,12 @@ MAX_DISTANCE = torch.tensor(1.0428)
 transform = transforms.Lambda(lambda x: x / MAX_DISTANCE)
 
 LOAD_MODEL = False
+timestamp = ""
+SAVEDMODEL_GEN_M = f"saved_models/genM_{timestamp}.pth.tar"
+SAVEDMODEL_GEN_F = f"saved_models/genF_{timestamp}.pth.tar"
+SAVEDMODEL_DISC_M = f"saved_models/discM_{timestamp}.pth.tar"
+SAVEDMODEL_DISC_F = f"saved_models/discF_{timestamp}.pth.tar"
+
 SAVE_MODEL = True
 CHECKPOINT_GEN_M = f"saved_models/genM_{currentTime}.pth.tar"
 CHECKPOINT_GEN_F = f"saved_models/genF_{currentTime}.pth.tar"

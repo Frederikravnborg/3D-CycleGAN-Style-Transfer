@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def visualize_loss():
-    filename = "output/loss_06.05.17.54.17.csv"
+    filename = "output/loss_06.07.04.46.52.csv"
 
     # read data from csv file using pandas
     meta = pd.read_csv(filename, nrows=1)
@@ -20,9 +20,9 @@ def visualize_loss():
     step = 0
     for i in range (len(epoch)):
         indexes = data.index.get_indexer(data.query(f'epoch == {step}').index)
-        G_loss.append(np.log(data['G_loss'][indexes].mean()))
+        G_loss.append(data['G_loss'][indexes].mean())
         cycle_loss.append(data['cycle_loss'][indexes].mean())
-        D_loss.append(np.log(data['D_loss'][indexes].mean()))
+        D_loss.append(data['D_loss'][indexes].mean())
         step += 1
 
     # generate 2 plots side by side
