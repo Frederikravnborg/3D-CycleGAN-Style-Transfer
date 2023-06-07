@@ -23,6 +23,10 @@ SAVEDMODEL_DISC_M = f"saved_models/discM_{timestamp}.pth.tar"
 SAVEDMODEL_DISC_F = f"saved_models/discF_{timestamp}.pth.tar"
 
 SAVE_MODEL = True
+
+CHECKPOINT_FOLD_F = f"pre_saved_models/genF_fold_{currentTime}.pth.tar"
+CHECKPOINT_FOLD_M = f"pre_saved_models/genM_fold_{currentTime}.pth.tar"
+
 CHECKPOINT_GEN_M = f"saved_models/genM_{currentTime}.pth.tar"
 CHECKPOINT_GEN_F = f"saved_models/genF_{currentTime}.pth.tar"
 CHECKPOINT_DISC_M = f"saved_models/discM_{currentTime}.pth.tar"
@@ -32,6 +36,7 @@ CHECKPOINT_DISC_F = f"saved_models/discF_{currentTime}.pth.tar"
 TRAIN_FOLD = True
 FOLD_NUM_EPOCH = 4
 FOLD_SAVE_OBJ = True
+LOAD_FOLD_MODEL = False
 
 LAMBDA_CYCLE = 10
 FOLD_SHAPE = 'plane'
@@ -45,4 +50,3 @@ SAVE_OBJ = True
 SAVE_RATE = 100 # Save every SAVE_RATE batches
 FOLD_SHAPE = 'plane'
 PLANE_SIZE = 1
-

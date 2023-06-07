@@ -29,8 +29,8 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
         # Train Generators
         with torch.cuda.amp.autocast(): #Necessary for float16
             # Generate fake images
-            _, _, female_cycle_loss = gen_F(female)
-            _, _, male_cycle_loss = gen_M(male)
+            fake_female, _, female_cycle_loss = gen_F(female)
+            fake_male, _, male_cycle_loss = gen_M(male)
 
             # Compute generator losses
             cycle_loss = (
@@ -46,14 +46,13 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
         # save point clouds every SAVE_RATE iterations
         if config.FOLD_SAVE_OBJ and idx % config.SAVE_RATE == 0:
 
-            female_vertices = female[0].detach().cpu().numpy()
-            female = trimesh.Trimesh(vertices=female_vertices)
-            print(folder_name)
-            female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
+            female_vertices = fake_female[0].detach().cpu().numpy()
+            fake_female = trimesh.Trimesh(vertices=female_vertices)
+            fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
             
-            male_vertices = male[0].detach().cpu().numpy()
-            male = trimesh.Trimesh(vertices=male_vertices)
-            male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
+            male_vertices = fake_male[0].detach().cpu().numpy()
+            fake_male = trimesh.Trimesh(vertices=male_vertices)
+            fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
 
         # update progress bar
         loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
@@ -189,6 +188,20 @@ def main():
         GEN_F_filename = config.CHECKPOINT_GEN_F
         DISC_M_filename = config.CHECKPOINT_DISC_M
         DISC_F_filename = config.CHECKPOINT_DISC_F
+
+    if config.LOAD_FOLD_MODEL:
+        load_checkpoint(
+            config.CHECKPOINT_FOLD_M,
+            gen_M,
+            opt_gen,
+            config.LEARNING_RATE,
+        )
+        load_checkpoint(
+            config.CHECKPOINT_FOLD_F,
+            gen_F,
+            opt_gen,
+            config.LEARNING_RATE,
+        )
 
     # load previously trained model if LOAD_MODEL is True
     if config.LOAD_MODEL:
