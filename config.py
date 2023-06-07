@@ -25,12 +25,12 @@ CHECKPOINT_DISC_F = f"saved_models/discF_{currentTime}.pth.tar"
 
 # FoldingNet:
 TRAIN_FOLD = True
-FOLD_NUM_EPOCH = 1
+FOLD_NUM_EPOCH = 6
 FOLD_SAVE_OBJ = True
-LOAD_FOLD_MODEL = True
+LOAD_FOLD_MODEL = False
 CHECKPOINT_FOLD_M = f"pre_saved_models/genM_{currentTime}.pth.tar"
 CHECKPOINT_FOLD_F = f"pre_saved_models/genF_{currentTime}.pth.tar"
-timestamp = "06.06.19.04.34"
+timestamp = "06.06.19.04.34_50"
 SAVEDMODEL_GEN_M = f"pre_saved_models/genM_{timestamp}.pth.tar"
 SAVEDMODEL_GEN_F = f"pre_saved_models/genF_{timestamp}.pth.tar"
 

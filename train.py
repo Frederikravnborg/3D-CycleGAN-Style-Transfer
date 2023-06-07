@@ -184,10 +184,11 @@ def main():
     mse = nn.MSELoss() #Adverserial loss
 
     if config.SAVE_MODEL:
-        GEN_M_filename = config.CHECKPOINT_GEN_M
-        GEN_F_filename = config.CHECKPOINT_GEN_F
+        GEN_M_filename = config.CHECKPOINTGEN_F_filename = config.CHECKPOINT_GEN_F
         DISC_M_filename = config.CHECKPOINT_DISC_M
         DISC_F_filename = config.CHECKPOINT_DISC_F
+        PRE_GEN_M_filename = config.CHECKPOINT_FOLD_M
+        PRE_GEN_F_filename = config.CHECKPOINT_FOLD_F
 
     if config.LOAD_FOLD_MODEL:
         load_checkpoint(
@@ -277,9 +278,12 @@ def main():
                 epoch,
                 folder_name
             )
-    if config.SAVE_MODEL:
-            save_checkpoint(gen_M, opt_gen, filename="pre_" + GEN_M_filename)
-            save_checkpoint(gen_F, opt_gen, filename="pre_" + GEN_F_filename)
+
+            if config.SAVE_MODEL and epoch % 50 == 0 and epoch !=0:
+                    PRE_GEN_M_filename = PRE_GEN_M_filename[:-8] + f"_E{epoch}.pth.tar"
+                    PRE_GEN_F_filename = PRE_GEN_F_filename[:-8] + f"_E{epoch}.pth.tar"
+                    save_checkpoint(gen_M, opt_gen, filename=PRE_GEN_M_filename)
+                    save_checkpoint(gen_F, opt_gen, filename=PRE_GEN_F_filename)
 
     # create folder to save generated point clouds in
     folder_name = f"saved_pcds/{currentTime}"
