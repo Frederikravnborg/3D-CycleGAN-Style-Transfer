@@ -1,0 +1,41 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.9.16",
+    "heartbeatAt": "2023-06-08T06:17:52.957528",
+    "startedAt": "2023-06-08T06:17:46.163920",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/import wandb.py",
+    "git": {
+        "remote": "https://github.com/Frederikravnborg/Fagprojekt_Git.git",
+        "commit": "481d5abfd0966ae633ca484ec50f400034310a4a"
+    },
+    "email": "Frederik@ravnborg.fr",
+    "root": "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git",
+    "host": "FredMac.local",
+    "username": "frederikravnborg",
+    "executable": "/Users/frederikravnborg/opt/anaconda3/envs/02466/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2400,
+        "min": 2400,
+        "max": 2400
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2400,
+            "min": 2400,
+            "max": 2400
+        }
+    ],
+    "disk": {
+        "total": 233.46913528442383,
+        "used": 194.0432586669922
+    },
+    "memory": {
+        "total": 8.0
+    }
+}

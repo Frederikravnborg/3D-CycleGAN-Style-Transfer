@@ -17,8 +17,29 @@ from pointnet_model import Discriminator
 from foldingnet_model import Generator
 import trimesh
 from torchvision import transforms
+import wandb
 
-
+# start a new wandb run to track this script
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="Fagprojekt",
+    
+    # track hyperparameters and run metadata
+    config={
+    "BATCH_SIZE": config.BATCH_SIZE,
+    "LEARNING_RATE": config.LEARNING_RATE,
+    "TRAIN_GAN": config.TRAIN_GAN,
+    "GAN_NUM_EPOCHS": config.GAN_NUM_EPOCHS,
+    "LOAD_MODEL": config.LOAD_MODEL,
+    "SAVE_MODEL": config.SAVE_MODEL,
+    "DISC_WIDTH_REDUCER": config.DISC_WIDTH_REDUCER,
+    "TRAIN_FOLD": config.TRAIN_FOLD,
+    "FOLD_NUM_EPOCH": config.FOLD_NUM_EPOCH,
+    "LOAD_FOLD_MODEL": config.LOAD_FOLD_MODEL,
+    "FOLD_SHAPE": config.FOLD_SHAPE,
+    "LAMBDA_CYCLE": config.LAMBDA_CYCLE,
+    }
+)
 
 def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
     loop = tqdm(loader, leave=True) #Progress bar
@@ -46,7 +67,7 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
         g_scaler.update() #update scaler
 
         # save point clouds every SAVE_RATE iterations
-        if config.FOLD_SAVE_OBJ and idx % config.SAVE_RATE == 0:
+        if config.FOLD_SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0:
 
             female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)
             fake_female = trimesh.Trimesh(vertices=female_vertices)
@@ -144,7 +165,7 @@ def train_fn(
         g_scaler.update() #update scaler
 
         # save point clouds every SAVE_RATE iterations
-        if config.SAVE_OBJ and idx % config.SAVE_RATE == 0:
+        if config.SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0:
 
             fake_female_vertices = fake_female[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
