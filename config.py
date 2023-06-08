@@ -5,7 +5,7 @@ currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 # Training Loop:
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train_test_100"
+TRAIN_DIR = "data/train_test_10"
 VAL_DIR = "data/val"
 N_POINTS = 2048
 BATCH_SIZE = 2
@@ -16,8 +16,8 @@ MAX_DISTANCE = torch.tensor(1.0428)
 
 
 # GAN:
-TRAIN_GAN = False
-GAN_NUM_EPOCHS = 4
+TRAIN_GAN = True
+GAN_NUM_EPOCHS = 1
 LOAD_MODEL = False
 SAVE_MODEL = True
 SAVE_OBJ = True
@@ -30,7 +30,7 @@ CHECKPOINT_DISC_F = f"saved_models/discF_{currentTime}.pth.tar"
 
 # FoldingNet:
 TRAIN_FOLD = True
-FOLD_NUM_EPOCH = 6
+FOLD_NUM_EPOCH = 1
 FOLD_SAVE_OBJ = True
 LOAD_FOLD_MODEL = False 
 CHECKPOINT_FOLD_M = f"pre_saved_models/genM_{currentTime}.pth.tar"

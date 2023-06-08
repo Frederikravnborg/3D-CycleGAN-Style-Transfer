@@ -1,25 +1,29 @@
 import matplotlib.pyplot as plt
-import pyntcloud as PyntCloud
+#import pyntcloud as PyntCloud
 import pandas as pd
 import numpy as np
 import torch
 import matplotlib.colors as colors
 import trimesh
 import os
+from utilities.foldingnet_model_utils import create_sphere
+
+
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-female = trimesh.load("/data/train/female/SPRING0014.obj")
-quit()
+#female = trimesh.load("/data/train/female/SPRING0014.obj")
+
 def visualize_point_cloud(pcd):
     my_cmap = plt.get_cmap('hsv')
     # Convert it to a numpy array
     #points = np.asarray(pcd)
-    points = pcd.detach().numpy()
+    #points = pcd.detach().numpy()
+    points = pcd
 
     # Plot it using matplotlib with tiny points and constrained axes
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    ax.scatter(points[0,:], points[1,:], points[2,:], s=0.1, cmap=my_cmap)
+    ax.scatter(points[:,0], points[:,1], points[:,2], s=0.1, cmap=my_cmap)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
@@ -29,6 +33,15 @@ def visualize_point_cloud(pcd):
     #ax.set_ylim(-1,1) # Set y-axis range
     #ax.set_zlim(-1,1) # Set z-axis range
     plt.show()
+
+#visualize sphere
+sphere = create_sphere(2048)
+print(sphere.shape)
+visualize_point_cloud(sphere)
+
+
+quit()
+
 
 
 def save_cloud_rgb(cloud, filename):
