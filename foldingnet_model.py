@@ -156,7 +156,7 @@ class Generator(nn.Module):
     def forward(self, input):
         feature = self.encoder(input)
         output = self.decoder(feature)
-        loss = self.loss(input, output)
+        loss = self.loss(output, input)
         return output.transpose(2,1), feature, loss
 
     def parameters(self):
