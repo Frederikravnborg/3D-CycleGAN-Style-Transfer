@@ -67,15 +67,17 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
         g_scaler.update() #update scaler
 
         # save point clouds every SAVE_RATE iterations
-        if config.FOLD_SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0:
+        if config.FOLD_SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0 and idx == 0:
 
             female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)
             fake_female = trimesh.Trimesh(vertices=female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
+            wandb.log({f"FOLD_female_epoch_{epoch}": wandb.Object3D(female_vertices) })
             
             male_vertices = fake_male[0].detach().cpu().numpy().transpose(1,0)
             fake_male = trimesh.Trimesh(vertices=male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
+            wandb.log({f"FOLD_male_epoch_{epoch}": wandb.Object3D(male_vertices) })
 
         # update progress bar
         loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
@@ -165,19 +167,31 @@ def train_fn(
         g_scaler.update() #update scaler
 
         # save point clouds every SAVE_RATE iterations
-        if config.SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0:
+        if config.SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0 and idx == 0:
 
             fake_female_vertices = fake_female[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
-            
+            # wandb.log({f"fake_female_epoch_{epoch}": fake_female})
+            wandb.log({f"fake_female_epoch_{epoch}": wandb.Object3D(fake_female_vertices) })
+
             fake_male_vertices = fake_male[0].detach().cpu().numpy()
             fake_male = trimesh.Trimesh(vertices=fake_male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
+            wandb.log({f"fake_male_epoch_{epoch}": wandb.Object3D(fake_male_vertices) })
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
            f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
+        wandb.log({
+    "idx": idx,
+    "D_loss": D_loss,
+    "loss_G_M": loss_G_M,
+    "loss_G_F": loss_G_F,
+    "cycle_loss": cycle_loss,
+    "G_loss": G_loss,
+    "epoch": epoch
+})
         
         # update progress bar
         loop.set_postfix(M_real=M_reals / (idx + 1), M_fake=M_fakes / (idx + 1), epoch=epoch)
@@ -202,12 +216,11 @@ def main():
         betas=(0.5, 0.999),
     )
 
-    # define loss functions for cycle loss and adverserial loss
-    L1 = nn.L1Loss() #Cycle consistency loss
     mse = nn.MSELoss() #Adverserial loss
 
     if config.SAVE_MODEL:
-        GEN_M_filename = config.CHECKPOINTGEN_F_filename = config.CHECKPOINT_GEN_F
+        GEN_M_filename = config.CHECKPOINT_GEN_M
+        GEN_F_filename = config.CHECKPOINT_GEN_F
         DISC_M_filename = config.CHECKPOINT_DISC_M
         DISC_F_filename = config.CHECKPOINT_DISC_F
         PRE_GEN_M_filename = config.CHECKPOINT_FOLD_M
@@ -337,7 +350,8 @@ def main():
             save_checkpoint(gen_F, opt_gen, filename=GEN_F_filename)
             save_checkpoint(disc_M, opt_disc, filename=DISC_M_filename)
             save_checkpoint(disc_F, opt_disc, filename=DISC_F_filename)
-
+    
+    wandb.finish()
 
 if __name__ == "__main__":
     main()

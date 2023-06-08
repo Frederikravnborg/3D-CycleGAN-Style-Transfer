@@ -1,0 +1,64 @@
+wandb_version: 1
+
+BATCH_SIZE:
+  desc: null
+  value: 2
+LEARNING_RATE:
+  desc: null
+  value: 0.0001
+TRAIN_GAN:
+  desc: null
+  value: true
+GAN_NUM_EPOCHS:
+  desc: null
+  value: 2
+LOAD_MODEL:
+  desc: null
+  value: false
+SAVE_MODEL:
+  desc: null
+  value: true
+DISC_WIDTH_REDUCER:
+  desc: null
+  value: 1
+TRAIN_FOLD:
+  desc: null
+  value: false
+FOLD_NUM_EPOCH:
+  desc: null
+  value: 6
+LOAD_FOLD_MODEL:
+  desc: null
+  value: false
+FOLD_SHAPE:
+  desc: null
+  value: sphere
+LAMBDA_CYCLE:
+  desc: null
+  value: 10
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.16
+    cli_version: 0.15.4
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1686216781.893916
+    t:
+      1:
+      - 1
+      - 41
+      - 55
+      2:
+      - 1
+      - 41
+      - 55
+      3:
+      - 2
+      - 16
+      - 23
+      4: 3.9.16
+      5: 0.15.4
+      8:
+      - 5
