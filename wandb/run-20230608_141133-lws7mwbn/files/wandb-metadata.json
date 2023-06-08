@@ -1,0 +1,50 @@
+{
+    "os": "Windows-10-10.0.22621-SP0",
+    "python": "3.9.6",
+    "heartbeatAt": "2023-06-08T12:11:35.571196",
+    "startedAt": "2023-06-08T12:11:33.463401",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\Lachl\\Documents\\GitHub\\Fagprojekt_Git\\train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/Frederikravnborg/Fagprojekt_Git.git",
+        "commit": "4670c792368232fdf8f4b20c73af9baf1d6313a3"
+    },
+    "email": "LachlanHouston111@gmail.com",
+    "root": "C:/Users/Lachl/Documents/GitHub/Fagprojekt_Git",
+    "host": "DESKTOP-TDRNGUG",
+    "username": "Lachl",
+    "executable": "C:\\Users\\Lachl\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1910.0,
+        "min": 0.0,
+        "max": 2112.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1910.0,
+            "min": 0.0,
+            "max": 2112.0
+        }
+    ],
+    "disk": {
+        "total": 236.28808212280273,
+        "used": 222.5318374633789
+    },
+    "gpu": "GeForce GTX 1050",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "GeForce GTX 1050",
+            "memory_total": 2147483648
+        }
+    ],
+    "memory": {
+        "total": 7.918956756591797
+    }
+}

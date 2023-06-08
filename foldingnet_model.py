@@ -159,5 +159,5 @@ class Generator(nn.Module):
         loss = self.loss(output, input)
         return output.transpose(2,1), feature, loss
 
-    def parameters(self):
+    def get_parameters(self):
         return list(self.encoder.parameters()) + list(self.decoder.parameters())
