@@ -38,3 +38,9 @@
 2023-06-09 12:53:46,733 - Model - INFO - Save model...
 2023-06-09 12:53:46,733 - Model - INFO - Saving at log_PointNet_cls/classification/2023-06-09_12-42/checkpoints/best_model.pth
 2023-06-09 12:53:46,847 - Model - INFO - Epoch 8 (8/300):
+2023-06-09 12:55:25,151 - Model - INFO - Test Accuracy: 0.7406250000000001
+2023-06-09 12:55:25,152 - Model - INFO - Best Accuracy: 0.7453125
+2023-06-09 12:55:25,152 - Model - INFO - Epoch 9 (9/300):
+2023-06-09 12:57:01,475 - Model - INFO - Test Accuracy: 0.5418402777777778
+2023-06-09 12:57:01,475 - Model - INFO - Best Accuracy: 0.7453125
+2023-06-09 12:57:01,475 - Model - INFO - Epoch 10 (10/300):
