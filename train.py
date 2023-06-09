@@ -208,12 +208,12 @@ def main():
     opt_disc = optim.Adam(
         list(disc_M.parameters()) + list(disc_F.parameters()),
         lr=(config.LEARNING_RATE*config.DISC_LR_FACTOR),
-        betas=(0.9, 0.999),
+        betas=(0.5, 0.999),
     )
     opt_gen = optim.Adam(
         list(gen_F.parameters()) + list(gen_M.parameters()),
         lr=config.LEARNING_RATE,
-        betas=(0.9, 0.999),
+        betas=(0.5, 0.999),
     )
 
     mse = nn.MSELoss() #Adverserial loss
