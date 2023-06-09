@@ -67,17 +67,17 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
         g_scaler.update() #update scaler
 
         # save point clouds every SAVE_RATE iterations
-        if config.FOLD_SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0 and idx == 0:
+        if config.FOLD_SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
 
             female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)
             fake_female = trimesh.Trimesh(vertices=female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
-            wandb.log({f"FOLD_female_epoch_{epoch}": wandb.Object3D(female_vertices) })
+            wandb.log({f"FOLD_female": wandb.Object3D(female_vertices) })
             
             male_vertices = fake_male[0].detach().cpu().numpy().transpose(1,0)
             fake_male = trimesh.Trimesh(vertices=male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
-            wandb.log({f"FOLD_male_epoch_{epoch}": wandb.Object3D(male_vertices) })
+            wandb.log({f"FOLD_male": wandb.Object3D(male_vertices) })
 
         # update progress bar
         loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
@@ -167,18 +167,18 @@ def train_fn(
         g_scaler.update() #update scaler
 
         # save point clouds every SAVE_RATE iterations
-        if config.SAVE_OBJ and (epoch+1) % config.SAVE_RATE == 0 and idx == 0:
+        if config.SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
 
             fake_female_vertices = fake_female[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
             # wandb.log({f"fake_female_epoch_{epoch}": fake_female})
-            wandb.log({f"fake_female_epoch_{epoch}": wandb.Object3D(fake_female_vertices) })
+            wandb.log({f"fake_female": wandb.Object3D(fake_female_vertices) })
 
             fake_male_vertices = fake_male[0].detach().cpu().numpy()
             fake_male = trimesh.Trimesh(vertices=fake_male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
-            wandb.log({f"fake_male_epoch_{epoch}": wandb.Object3D(fake_male_vertices) })
+            wandb.log({f"fake_male": wandb.Object3D(fake_male_vertices) })
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
