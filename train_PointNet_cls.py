@@ -21,7 +21,7 @@ sys.path.append(os.path.join(ROOT_DIR, 'models'))
 def parse_args():
     '''PARAMETERS'''
     parser = argparse.ArgumentParser('training')
-    parser.add_argument('--use_cpu', action='store_true',       default=False, help='use cpu mode')
+    parser.add_argument('--use_cpu', action='store_true',       default=True, help='use cpu mode')
     parser.add_argument('--gpu', type=str,                      default=config.DEVICE, help='specify gpu device')
     parser.add_argument('--batch_size', type=int,               default=32, help='batch size in training')
     parser.add_argument('--model',                              default='pointnet_model_cls', help='model name [default: pointnet_model]')

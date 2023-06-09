@@ -5,24 +5,26 @@ import torch.utils.data
 from torch.autograd import Variable
 import numpy as np
 import torch.nn.functional as F
+import config
 
+r = config.DISC_WIDTH_REDUCER
 
 class STN3d(nn.Module):
     def __init__(self, channel):
         super(STN3d, self).__init__()
-        self.conv1 = torch.nn.Conv1d(channel, 64, 1)
-        self.conv2 = torch.nn.Conv1d(64, 128, 1)
-        self.conv3 = torch.nn.Conv1d(128, 1024, 1)
-        self.fc1 = nn.Linear(1024, 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, 9)
+        self.conv1 = torch.nn.Conv1d(channel, int(64/r), 1)
+        self.conv2 = torch.nn.Conv1d(int(64/r), int(128/r), 1)
+        self.conv3 = torch.nn.Conv1d(int(128/r), int(1024/r), 1)
+        self.fc1 = nn.Linear(int(1024/r), int(512/r))
+        self.fc2 = nn.Linear(int(512/r), int(256/r))
+        self.fc3 = nn.Linear(int(256/r), 9)
         self.relu = nn.ReLU()
 
-        self.bn1 = nn.BatchNorm1d(64)
-        self.bn2 = nn.BatchNorm1d(128)
-        self.bn3 = nn.BatchNorm1d(1024)
-        self.bn4 = nn.BatchNorm1d(512)
-        self.bn5 = nn.BatchNorm1d(256)
+        self.bn1 = nn.BatchNorm1d(int(64/r))
+        self.bn2 = nn.BatchNorm1d(int(128/r))
+        self.bn3 = nn.BatchNorm1d(int(1024/r))
+        self.bn4 = nn.BatchNorm1d(int(512/r))
+        self.bn5 = nn.BatchNorm1d(int(256/r))
 
     def forward(self, x):
         batchsize = x.size()[0] # Get the batch size from the input tensor
@@ -30,7 +32,7 @@ class STN3d(nn.Module):
         x = F.relu(self.bn2(self.conv2(x))) # Apply the second convolutional layer, batch normalization and relu activation
         x = F.relu(self.bn3(self.conv3(x))) # Apply the third convolutional layer, batch normalization and relu activation
         x = torch.max(x, 2, keepdim=True)[0] # Apply max pooling along the second dimension (feature dimension)
-        x = x.view(-1, 1024) # Reshape the tensor to have a size of (batchsize, 1024)
+        x = x.view(-1, int(1024/r)) # Reshape the tensor to have a size of (batchsize, 1024)
 
         x = F.relu(self.bn4(self.fc1(x))) # Apply the first fully connected layer, batch normalization and relu activation
         x = F.relu(self.bn5(self.fc2(x))) # Apply the second fully connected layer, batch normalization and relu activation
@@ -45,21 +47,21 @@ class STN3d(nn.Module):
         return x # Return the output tensor
 
 class STNkd(nn.Module):
-    def __init__(self, k=64):
+    def __init__(self, k=int(64/r)):
         super(STNkd, self).__init__()
-        self.conv1 = torch.nn.Conv1d(k, 64, 1)
-        self.conv2 = torch.nn.Conv1d(64, 128, 1)
-        self.conv3 = torch.nn.Conv1d(128, 1024, 1)
-        self.fc1 = nn.Linear(1024, 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, k * k)
+        self.conv1 = torch.nn.Conv1d(k, int(64/r), 1)
+        self.conv2 = torch.nn.Conv1d(int(64/r), int(128/r), 1)
+        self.conv3 = torch.nn.Conv1d(int(128/r), int(1024/r), 1)
+        self.fc1 = nn.Linear(int(1024/r), int(512/r))
+        self.fc2 = nn.Linear(int(512/r), int(256/r))
+        self.fc3 = nn.Linear(int(256/r), k * k)
         self.relu = nn.ReLU()
 
-        self.bn1 = nn.BatchNorm1d(64)
-        self.bn2 = nn.BatchNorm1d(128)
-        self.bn3 = nn.BatchNorm1d(1024)
-        self.bn4 = nn.BatchNorm1d(512)
-        self.bn5 = nn.BatchNorm1d(256)
+        self.bn1 = nn.BatchNorm1d(int(64/r))
+        self.bn2 = nn.BatchNorm1d(int(128/r))
+        self.bn3 = nn.BatchNorm1d(int(1024/r))
+        self.bn4 = nn.BatchNorm1d(int(512/r))
+        self.bn5 = nn.BatchNorm1d(int(256/r))
 
         self.k = k
 
@@ -69,7 +71,7 @@ class STNkd(nn.Module):
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
         x = torch.max(x, 2, keepdim=True)[0]
-        x = x.view(-1, 1024)
+        x = x.view(-1, int(1024/r))
 
         x = F.relu(self.bn4(self.fc1(x)))
         x = F.relu(self.bn5(self.fc2(x)))
@@ -88,16 +90,16 @@ class PointNetEncoder(nn.Module):
     def __init__(self, global_feat=True, feature_transform=False, channel=3):
         super(PointNetEncoder, self).__init__()
         self.stn = STN3d(channel)
-        self.conv1 = torch.nn.Conv1d(channel, 64, 1)
-        self.conv2 = torch.nn.Conv1d(64, 128, 1)
-        self.conv3 = torch.nn.Conv1d(128, 1024, 1)
-        self.bn1 = nn.BatchNorm1d(64)
-        self.bn2 = nn.BatchNorm1d(128)
-        self.bn3 = nn.BatchNorm1d(1024)
+        self.conv1 = torch.nn.Conv1d(channel, int(64/r), 1)
+        self.conv2 = torch.nn.Conv1d(int(64/r), int(128/r), 1)
+        self.conv3 = torch.nn.Conv1d(int(128/r), int(1024/r), 1)
+        self.bn1 = nn.BatchNorm1d(int(64/r))
+        self.bn2 = nn.BatchNorm1d(int(128/r))
+        self.bn3 = nn.BatchNorm1d(int(1024/r))
         self.global_feat = global_feat
         self.feature_transform = feature_transform
         if self.feature_transform:
-            self.fstn = STNkd(k=64)
+            self.fstn = STNkd(k=int(64/r))
 
     def forward(self, x):
         B, D, N = x.size()
@@ -124,11 +126,11 @@ class PointNetEncoder(nn.Module):
         x = F.relu(self.bn2(self.conv2(x)))
         x = self.bn3(self.conv3(x))
         x = torch.max(x, 2, keepdim=True)[0]
-        x = x.view(-1, 1024)
+        x = x.view(-1, int(1024/r))
         if self.global_feat:
             return x, trans, trans_feat
         else:
-            x = x.view(-1, 1024, 1).repeat(1, 1, N)
+            x = x.view(-1, int(1024/r), 1).repeat(1, 1, N)
             return torch.cat([x, pointfeat], 1), trans, trans_feat
 
 
