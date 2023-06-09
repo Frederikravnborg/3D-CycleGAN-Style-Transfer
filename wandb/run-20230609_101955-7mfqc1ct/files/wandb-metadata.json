@@ -1,0 +1,42 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.9.16",
+    "heartbeatAt": "2023-06-09T08:19:56.398362",
+    "startedAt": "2023-06-09T08:19:55.661362",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/beheard/GitHub/Fagprojekt_Git/train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/Frederikravnborg/Fagprojekt_Git.git",
+        "commit": "c440152fe26e0d4a5540acadb76b3bc9ee2d97d3"
+    },
+    "email": "s214617@student.dtu.dk",
+    "root": "/Users/beheard/GitHub/Fagprojekt_Git",
+    "host": "emils-mbp-2.students.clients.local",
+    "username": "beheard",
+    "executable": "/Users/beheard/opt/anaconda3/envs/venvPointCloud/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2400,
+        "min": 2400,
+        "max": 2400
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2400,
+            "min": 2400,
+            "max": 2400
+        }
+    ],
+    "disk": {
+        "total": 460.4317207336426,
+        "used": 423.0784568786621
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

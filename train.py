@@ -121,7 +121,7 @@ def train_fn(
             D_F_loss = D_F_real_loss + D_F_fake_loss #Sum of loss
 
             # define total discriminator loss as the average of the two
-            D_loss = (D_M_loss + D_F_loss) / 2
+            D_loss = (D_M_loss + D_F_loss) / 2 
 
         # update of weights
         opt_disc.zero_grad() #compute zero gradients
@@ -207,13 +207,13 @@ def main():
     # define optimizers for Discriminators and Generators
     opt_disc = optim.Adam(
         list(disc_M.parameters()) + list(disc_F.parameters()),
-        lr=config.LEARNING_RATE,
-        betas=(0.5, 0.999),
+        lr=(config.LEARNING_RATE*config.DISC_LR_FACTOR),
+        betas=(0.9, 0.999),
     )
     opt_gen = optim.Adam(
         list(gen_F.parameters()) + list(gen_M.parameters()),
         lr=config.LEARNING_RATE,
-        betas=(0.5, 0.999),
+        betas=(0.9, 0.999),
     )
 
     mse = nn.MSELoss() #Adverserial loss
