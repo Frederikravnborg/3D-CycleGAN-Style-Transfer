@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 import warnings
 import torch
 import trimesh
+import glob
 warnings.filterwarnings("ignore")
 
 # Define a custom dataset class that inherits from Dataset
@@ -14,9 +15,10 @@ class ObjDataset(Dataset):
         self.root_male = root_male
         self.transform = transform
         self.n_points = n_points
-
-        self.female_pcds = os.listdir(root_female)
-        self.male_pcds = os.listdir(root_male)
+        self.female_pcds = glob.glob(os.path.join(root_female, '*.obj'))
+        # self.female_pcds = os.listdir(root_female)
+        self.male_pcds = glob.glob(os.path.join(root_male, '*.obj'))
+        # self.male_pcds = os.listdir(root_male)
         self.length_dataset = max(len(self.female_pcds), len(self.male_pcds))
         self.female_len = len(self.female_pcds)
         self.male_len = len(self.male_pcds)
@@ -29,17 +31,11 @@ class ObjDataset(Dataset):
         female_pcd = self.female_pcds[index % self.female_len]
         male_pcd = self.male_pcds[index % self.male_len]
 
-        female_path = os.path.join(self.root_female, female_pcd)
-        male_path = os.path.join(self.root_male, male_pcd)
-
-        female_pcd = trimesh.load(female_path)
-        male_pcd = trimesh.load(male_path)
+        female_pcd = trimesh.load(female_pcd)
+        male_pcd = trimesh.load(male_pcd)
 
         female_pcd = female_pcd.sample(self.n_points)
         male_pcd = male_pcd.sample(self.n_points)
-
-        # female_pcd = female_pcd.vertices
-        # male_pcd = male_pcd.vertices
 
         # transform from numpy to tensor
         female_pcd = torch.from_numpy(female_pcd)
