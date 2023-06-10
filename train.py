@@ -41,7 +41,7 @@ wandb.init(
     }
 )
 
-def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
+def train_fold(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
     loop = tqdm(loader, leave=True) #Progress bar
 
     # loop through the data loader
@@ -50,21 +50,19 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
         male = male.to(config.DEVICE).float()
 
         # Train Generators
-        with torch.cuda.amp.autocast(): #Necessary for float16
-            # Generate fake images
-            fake_female, _, female_cycle_loss = gen_F(female)
-            fake_male, _, male_cycle_loss = gen_M(male)
+        # Generate fake images
+        fake_female, _, female_cycle_loss = gen_F(female)
+        fake_male, _, male_cycle_loss = gen_M(male)
 
-            # Compute generator losses
-            cycle_loss = (
-                (female_cycle_loss + male_cycle_loss) * config.LAMBDA_CYCLE
-            )
+        # Compute generator losses
+        cycle_loss = (
+            (female_cycle_loss + male_cycle_loss) * config.LAMBDA_CYCLE
+        )
         
         # update of weights
         opt_gen.zero_grad()  #compute zero gradients
-        g_scaler.scale(cycle_loss).backward() #backpropagate
-        g_scaler.step(opt_gen) #update weights
-        g_scaler.update() #update scaler
+        cycle_loss.backward()
+        opt_gen.step()
 
         # save point clouds every SAVE_RATE iterations
         if config.FOLD_SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
@@ -83,7 +81,7 @@ def train_fold(gen_M, gen_F, loader, opt_gen, g_scaler, epoch, folder_name):
 
 # define the training function
 def train_fn(
-    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, d_scaler, g_scaler, epoch, currentTime, folder_name
+    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, epoch, currentTime, folder_name
 ):
     # initialize variables to keep track of discriminator outputs
     M_reals = 0
@@ -97,73 +95,64 @@ def train_fn(
         male = male.to(config.DEVICE).float()
 
         # Train Discriminators H and Z
-        with torch.cuda.amp.autocast(): #Necessary for float16
-            """  FEMALE -> MALE  """
-            fake_male, _, _ = gen_M(female) #Creating fake input
-            D_M_real = disc_M(torch.transpose(male,1,2)) #Giving discriminator real input
-            D_M_fake = disc_M(fake_male.detach()) #Giving discriminator fake input
-            M_reals += D_M_real.mean().item()
-            M_fakes += D_M_fake.mean().item()
-            # error between discriminator output and expected output
-            D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real)) #MSE of D_M_real, expect 1
-            D_M_fake_loss = mse(D_M_fake, torch.zeros_like(D_M_fake)) #MSE of D_M_fake, expect 0
-            D_M_loss = D_M_real_loss + D_M_fake_loss #Sum of loss
+        """  FEMALE -> MALE  """
+        fake_male, _, _ = gen_M(female) #Creating fake input
+        D_M_real = disc_M(torch.transpose(male,1,2))[0] #Giving discriminator real input
+        D_M_fake = disc_M(fake_male.detach())[0] #Giving discriminator fake input
+        # error between discriminator output and expected output
+        D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real)) #MSE of D_M_real, expect 1
+        D_M_fake_loss = mse(D_M_fake, torch.zeros_like(D_M_fake)) #MSE of D_M_fake, expect 0
+        D_M_loss = D_M_real_loss + D_M_fake_loss #Sum of loss
 
-            """  MALE -> FEMALE  """
-            fake_female, _, _ = gen_F(male)
-            #fake_female = fake_female.transpose(2,1)
-            D_F_real = disc_F(torch.transpose(female,1,2))
-            D_F_fake = disc_F(fake_female.detach())
-            # error between discriminator output and expected output
-            D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real)) #MSE of D_F_real, expect 1
-            D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake)) #MSE of D_F_fake, expect 0
-            D_F_loss = D_F_real_loss + D_F_fake_loss #Sum of loss
+        """  MALE -> FEMALE  """
+        fake_female, _, _ = gen_F(male)
+        D_F_real = disc_F(torch.transpose(female,1,2))[0]
+        D_F_fake = disc_F(fake_female.detach())[0]
+        # error between discriminator output and expected output
+        D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real)) #MSE of D_F_real, expect 1
+        D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake)) #MSE of D_F_fake, expect 0
+        D_F_loss = D_F_real_loss + D_F_fake_loss #Sum of loss
 
-            # define total discriminator loss as the average of the two
-            D_loss = (D_M_loss + D_F_loss) / 2 
+        # define total discriminator loss as the average of the two
+        D_loss = (D_M_loss + D_F_loss) / 2 
 
         # update of weights
         opt_disc.zero_grad() #compute zero gradients
-        d_scaler.scale(D_loss).backward() #backpropagate
-        d_scaler.step(opt_disc) #update weights
-        d_scaler.update() #update scaler
+        D_loss.backward()
+        opt_disc.step()
 
         # Train Generators H and Z
-        with torch.cuda.amp.autocast(): #Necessary for float16
-            # adversarial loss for both generators
-            D_M_fake = disc_M(fake_male) #fake_male generated by gen_M
-            D_F_fake = disc_F(fake_female) #fake_female generated by gen_F
-            #adversarial loss for male
-            loss_G_M = mse(D_M_fake, torch.ones_like(D_M_fake)) #Real = 1, trick discriminator
-            #adversarial loss for female
-            loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake)) #Real = 1, trick discriminator
+        # adversarial loss for both generators
+        D_M_fake = disc_M(fake_male)[0] #fake_male generated by gen_M
+        D_F_fake = disc_F(fake_female)[0] #fake_female generated by gen_F
+        #adversarial loss for male
+        loss_G_M = mse(D_M_fake, torch.ones_like(D_M_fake)) #Real = 1, trick discriminator
+        #adversarial loss for female
+        loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake)) #Real = 1, trick discriminator
 
-            # cycle loss
-            fake_male = fake_male.transpose(2,1)
-            fake_female = fake_female.transpose(2,1)
-            cycle_female, _, cycle_female_loss = gen_F(fake_male)
-            cycle_male, _, cycle_male_loss = gen_M(fake_female)
-            # cycle_female_loss = l1(female, cycle_female.transpose(2,1))
-            # cycle_male_loss = l1(male, cycle_male.transpose(2,1))
+        # cycle loss
+        fake_male = fake_male.transpose(2,1)
+        fake_female = fake_female.transpose(2,1)
+        _, _, cycle_female_loss = gen_F(fake_male)
+        _, _, cycle_male_loss = gen_M(fake_female)
 
-            # cycle loss scaled by lambda
-            cycle_loss = (
-                cycle_female_loss * config.LAMBDA_CYCLE
-                + cycle_male_loss * config.LAMBDA_CYCLE
-            )
+        # cycle loss scaled by lambda
+        cycle_loss = (
+            cycle_female_loss * config.LAMBDA_CYCLE
+            + cycle_male_loss * config.LAMBDA_CYCLE
+        )
 
-            # add all generator losses together to obtain full generator loss
-            G_loss = (
-                loss_G_F
-                + loss_G_M
-                + cycle_loss
-            )
+        # add all generator losses together to obtain full generator loss
+        G_loss = (
+            loss_G_F
+            + loss_G_M
+            + cycle_loss
+        )
 
         # update of weights
         opt_gen.zero_grad()  #compute zero gradients
-        g_scaler.scale(G_loss).backward() #backpropagate
-        g_scaler.step(opt_gen) #update weights
-        g_scaler.update() #update scaler
+        G_loss.backward()
+        opt_gen.step()
 
         # save point clouds every SAVE_RATE iterations
         if config.SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
@@ -193,7 +182,7 @@ def train_fn(
 })
         
         # update progress bar
-        loop.set_postfix(M_real=M_reals / (idx + 1), M_fake=M_fakes / (idx + 1), epoch=epoch)
+        loop.set_postfix(D_loss = D_loss.item(), G_loss = G_loss.item(), epoch=epoch)
 
 
 def main():
@@ -284,10 +273,6 @@ def main():
     # define dataloader for train and validation dataset
     loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
     val_loader = DataLoader( val_dataset, batch_size=config.BATCH_SIZE, shuffle=True, pin_memory=True)
-    
-    # scalers to run in float 16. Handles overflow and underflow
-    g_scaler = torch.cuda.amp.GradScaler() 
-    d_scaler = torch.cuda.amp.GradScaler()
 
     #create csv file to store losses
     currentDateAndTime = datetime.now()
@@ -309,7 +294,6 @@ def main():
                 gen_F,
                 loader,
                 opt_gen,
-                g_scaler,
                 epoch,
                 folder_name
             )
@@ -336,8 +320,6 @@ def main():
                 opt_disc,
                 opt_gen,
                 mse,
-                d_scaler,
-                g_scaler,
                 epoch,
                 currentTime,
                 folder_name

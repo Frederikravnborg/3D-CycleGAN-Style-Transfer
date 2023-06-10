@@ -1,0 +1,50 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.10.10",
+    "heartbeatAt": "2023-06-10T08:46:00.534428",
+    "startedAt": "2023-06-10T08:46:00.015599",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\Users\\Lachl\\Documents\\GitHub\\Fagprojekt\\train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/Frederikravnborg/Fagprojekt_Git.git",
+        "commit": "2b1934ac80d80a662f866549b6296c0cf5ee8245"
+    },
+    "email": "LachlanHouston111@gmail.com",
+    "root": "C:/Users/Lachl/Documents/GitHub/Fagprojekt",
+    "host": "DESKTOP-DEREC0S",
+    "username": "Lachl",
+    "executable": "C:\\Users\\Lachl\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 3600.0,
+        "min": 0.0,
+        "max": 3600.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3600.0,
+            "min": 0.0,
+            "max": 3600.0
+        }
+    ],
+    "disk": {
+        "total": 930.8828086853027,
+        "used": 546.2409133911133
+    },
+    "gpu": "NVIDIA GeForce RTX 2080",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 2080",
+            "memory_total": 8589934592
+        }
+    ],
+    "memory": {
+        "total": 15.913795471191406
+    }
+}

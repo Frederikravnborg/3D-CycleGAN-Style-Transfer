@@ -5,7 +5,7 @@ currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 # Training Loop:
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train"
+TRAIN_DIR = "data/train_test_10"
 VAL_DIR = "data/val"
 N_POINTS = 2048
 BATCH_SIZE = 2
