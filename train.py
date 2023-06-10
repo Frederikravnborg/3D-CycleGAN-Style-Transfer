@@ -18,6 +18,7 @@ from foldingnet_model import Generator
 import trimesh
 from torchvision import transforms
 import wandb
+import numpy as np
 
 # start a new wandb run to track this script
 wandb.init(
@@ -38,7 +39,8 @@ wandb.init(
     "LOAD_FOLD_MODEL": config.LOAD_FOLD_MODEL,
     "FOLD_SHAPE": config.FOLD_SHAPE,
     "LAMBDA_CYCLE": config.LAMBDA_CYCLE,
-    }
+    },
+    mode = "online" if config.USE_WANDB else "disabled"
 )
 
 def train_fold(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
@@ -226,19 +228,19 @@ def main():
         load_checkpoint(config.CHECKPOINT_DISC_F, disc_F, opt_disc, config.LEARNING_RATE,)
     
     # define transform to normalize point clouds
-    transform = transforms.Lambda(lambda x: x / config.MAX_DISTANCE)
+    transform = transforms.Lambda(lambda x: (x-np.mean(x, axis=0)) / config.MAX_DISTANCE)
     # define train dataset
     dataset = ObjDataset(
         root_male=config.TRAIN_DIR + "/male", 
         root_female=config.TRAIN_DIR + "/female",
-        transform=transform,
+        transform=None,
         n_points=config.N_POINTS
     )
     # define validation dataset
     val_dataset = ObjDataset(
         root_male=config.VAL_DIR + "/male",
         root_female=config.VAL_DIR + "/female",
-        transform=transform,
+        transform=None,
         n_points=config.N_POINTS
     )
 
