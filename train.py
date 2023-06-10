@@ -215,45 +215,17 @@ def main():
         PRE_GEN_F_filename = config.CHECKPOINT_FOLD_F
 
     if config.LOAD_FOLD_MODEL:
-        load_checkpoint(
-            config.SAVEDMODEL_GEN_M,
-            gen_M,
-            opt_gen,
-            config.LEARNING_RATE,
-        )
-        load_checkpoint(
-            config.SAVEDMODEL_GEN_F,
-            gen_F,
-            opt_gen,
-            config.LEARNING_RATE,
-        )
+        load_checkpoint(config.SAVEDMODEL_GEN_M, gen_M, opt_gen, config.LEARNING_RATE,)
+        load_checkpoint(config.SAVEDMODEL_GEN_F, gen_F, opt_gen, config.LEARNING_RATE,)
 
     # load previously trained model if LOAD_MODEL is True
     if config.LOAD_MODEL:
-        load_checkpoint(
-            config.CHECKPOINT_GEN_M,
-            gen_M,
-            opt_gen,
-            config.LEARNING_RATE,
-        )
-        load_checkpoint(
-            config.CHECKPOINT_GEN_F,
-            gen_F,
-            opt_gen,
-            config.LEARNING_RATE,
-        )
-        load_checkpoint(
-            config.CHECKPOINT_DISC_M,
-            disc_M,
-            opt_disc,
-            config.LEARNING_RATE,
-        )
-        load_checkpoint(
-            config.CHECKPOINT_DISC_F,
-            disc_F,
-            opt_disc,
-            config.LEARNING_RATE,
-        )
+        load_checkpoint(config.CHECKPOINT_GEN_M, gen_M, opt_gen, config.LEARNING_RATE,)
+        load_checkpoint(config.CHECKPOINT_GEN_F, gen_F, opt_gen, config.LEARNING_RATE,)
+        load_checkpoint(config.CHECKPOINT_DISC_M, disc_M, opt_disc, config.LEARNING_RATE,)
+        load_checkpoint(config.CHECKPOINT_DISC_F, disc_F, opt_disc, config.LEARNING_RATE,)
+    
+    # define transform to normalize point clouds
     transform = transforms.Lambda(lambda x: x / config.MAX_DISTANCE)
     # define train dataset
     dataset = ObjDataset(
@@ -290,12 +262,12 @@ def main():
     if config.TRAIN_FOLD:
         for epoch in range(config.FOLD_NUM_EPOCH):
             train_fold(
-                gen_M,
-                gen_F,
-                loader,
-                opt_gen,
-                epoch,
-                folder_name
+                gen_M = gen_M,
+                gen_F = gen_F,
+                loader = loader,
+                opt_gen = opt_gen,
+                epoch = epoch,
+                folder_name = folder_name
             )
 
             if config.SAVE_MODEL and epoch % 50 == 0 and epoch !=0:
@@ -312,17 +284,17 @@ def main():
     # train the model
         for epoch in range(config.GAN_NUM_EPOCHS):
             train_fn(
-                disc_M,
-                disc_F,
-                gen_F,
-                gen_M,
-                loader,
-                opt_disc,
-                opt_gen,
-                mse,
-                epoch,
-                currentTime,
-                folder_name
+                disc_M = disc_M,
+                disc_F = disc_F,
+                gen_F = gen_F,
+                gen_M = gen_M,
+                loader = loader,
+                opt_disc = opt_disc,
+                opt_gen = opt_gen,
+                mse = mse,
+                epoch = epoch,
+                currentTime = currentTime,
+                folder_name = folder_name
             )
 
         # save model for every epoch 

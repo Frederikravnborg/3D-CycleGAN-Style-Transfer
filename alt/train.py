@@ -10,7 +10,8 @@ import config
 import torch.optim as optim
 from utils import save_checkpoint, load_checkpoint, ChamferLoss
 from Generator import ReconstructionNet as Generator_Fold
-from Discriminator import get_model as Discriminator_Point
+# from Discriminator import get_model as Discriminator_Point
+from pointnet_model import Discriminator as Discriminator_Point
 import wandb
 import trimesh
 
@@ -26,16 +27,13 @@ wandb.init(
     "BATCH_SIZE": config.BATCH_SIZE,
     "LEARNING_RATE": config.LEARNING_RATE,
     "GAN_NUM_EPOCHS": config.NUM_EPOCHS,
-
-    }
+    },
+    mode = 'online' if config.USE_WANDB else 'disabled'
 )
 
 
 
 def train_one_epoch(disc_M, disc_FM, gen_M, gen_FM, loader, opt_disc, opt_gen, mse, chamferloss, return_loss, save_pcl=False):
-    best_G_loss = 1e10
-    best_D_loss = 1e10
-    D_correct = 0
     train_loop = tqdm(loader, leave=True)
     
     for idx, data in enumerate(train_loop):
@@ -127,9 +125,9 @@ def train_one_epoch(disc_M, disc_FM, gen_M, gen_FM, loader, opt_disc, opt_gen, m
                 print(cycle_man.shape)
 
                 print("Saving pointclouds")
-                wandb.log({'original_male': wandb.Object3D(original_man.transpose(-2,1).cpu().numpy()),
-                        'fake_female': wandb.Object3D(female_male.detach().transpose(-2,1).cpu().numpy()),
-                        'cycle_male': wandb.Object3D(cycle_man.detach().transpose(-2,1).cpu().numpy())})
+                wandb.log({'male_OG': wandb.Object3D(original_man.transpose(-2,1).cpu().numpy()),
+                        'female_fake': wandb.Object3D(female_male.detach().transpose(-2,1).cpu().numpy()),
+                        'male_cyc': wandb.Object3D(cycle_man.detach().transpose(-2,1).cpu().numpy())})
                 
                 root = os.listdir("./Saved_pointclouds/")
                 m = len([i for i in root if f'male_{config.START_SHAPE}' in i]) // 3
@@ -150,9 +148,9 @@ def train_one_epoch(disc_M, disc_FM, gen_M, gen_FM, loader, opt_disc, opt_gen, m
                 cycle_woman = cycle_female[0]
 
 
-                wandb.log({'original_female': wandb.Object3D(original_woman.transpose(-2,1).cpu().numpy()),
-                        'fake_male':wandb.Object3D(male_female.detach().transpose(-2,1).cpu().numpy()),
-                        'cycle_female':wandb.Object3D(cycle_woman.detach().transpose(-2,1).cpu().numpy())})
+                wandb.log({'female_OG': wandb.Object3D(original_woman.transpose(-2,1).cpu().numpy()),
+                        'male_fake':wandb.Object3D(male_female.detach().transpose(-2,1).cpu().numpy()),
+                        'female_cyc':wandb.Object3D(cycle_woman.detach().transpose(-2,1).cpu().numpy())})
                 
                 root = os.listdir("./Saved_pointclouds/")
                 w = len([i for i in root if f'woman_{config.START_SHAPE}' in i]) // 3
@@ -174,10 +172,9 @@ def train_one_epoch(disc_M, disc_FM, gen_M, gen_FM, loader, opt_disc, opt_gen, m
 
 def main():
     args_gen = config.get_parser_gen()
-    #args_disc = config.get_parser_disc()
 
-    disc_M = Discriminator_Point(k=2, normal_channel=False).to(config.DEVICE)
-    disc_FM = Discriminator_Point(k=2, normal_channel=False).to(config.DEVICE)
+    disc_M = Discriminator_Point(k=2).to(config.DEVICE)
+    disc_FM = Discriminator_Point(k=2).to(config.DEVICE)
     gen_M = Generator_Fold(args_gen).to(config.DEVICE)
     gen_FM = Generator_Fold(args_gen).to(config.DEVICE)
     
@@ -218,15 +215,7 @@ def main():
             root_female=config.TRAIN_DIR + "/female",
             root_male=config.TRAIN_DIR + "/male",
             transform=config.transform
-        )
-    elif args_gen.dataset == 'dummy_dataset':
-        dataset = PointCloudDataset(
-            root_female=config.DUMMY_TRAIN_DIR + "/female",
-            root_male=config.DUMMY_TRAIN_DIR + "/male",
-            transform=config.transform
-        )
-    #load test dataset
-    
+        )    
 
     loader = DataLoader(dataset,
             batch_size=config.BATCH_SIZE,
@@ -236,7 +225,6 @@ def main():
             collate_fn=config.collate_fn
             )
 
-    best_epoch_loss = 1e10
     for epoch in range(config.NUM_EPOCHS):
         if config.save_pointclouds:
             save_pcl = True if epoch % config.save_pointclouds == 0 else False

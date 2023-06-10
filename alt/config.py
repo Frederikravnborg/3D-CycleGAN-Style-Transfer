@@ -4,8 +4,7 @@ import argparse
 #from utils import isqrt
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-DUMMY_TRAIN_DIR = "data/dummy"
-TRAIN_DIR = "data/train"
+TRAIN_DIR = "data/train_test_10"
 VAL_DIR = "data/val"
 FURTHEST_DISTANCE = 1.1048446043276023
 SAMPLE_POINTS = 2048
@@ -14,19 +13,15 @@ BATCH_SIZE = 5
 LEARNING_RATE = 1e-4
 LAMBDA_CYCLE = 10
 NUM_WORKERS = 0
-NUM_EPOCHS = 10
+NUM_EPOCHS = 1
 save_pointclouds = 1                    # Number of epochs between saving intermediate pointclouds as .pt files
-DATASET = 'dummy_dataset'                       # Choose between 'dataset' or 'dummy_dataset'
+DATASET = 'dataset'                       # Choose between 'dataset' or 'dummy_dataset'
 START_SHAPE = 'sphere'                     # Can be 'plane', 'sphere' or 'gaussian'
 LOAD_MODEL = False
 SAVE_MODEL = True
 RETURN_LOSS = True
 
-
-'''
-WANDB variables:
-'''
-WANDB_mode = 'disabled'                               # Can be 'offline or 'disabled'
+USE_WANDB = False
 
 
 

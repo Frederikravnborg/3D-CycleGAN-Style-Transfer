@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 import config as c
 import os
 import trimesh as tr
+import glob
 
 class PointCloudDataset(Dataset):
 
@@ -13,9 +14,10 @@ class PointCloudDataset(Dataset):
         self.root_male = root_male
         self.transform = transform
         self.sample_points = c.SAMPLE_POINTS
-
-        self.object_female = os.listdir(root_female)
-        self.object_male = os.listdir(root_male)
+        self.object_female = glob.glob(os.path.join(root_female, '*.obj'))
+        # self.object_female = os.listdir(root_female)
+        self.object_male = glob.glob(os.path.join(root_male, '*.obj'))
+        # self.object_male = os.listdir(root_male)
         self.length_dataset = max(len(self.object_female), len(self.object_male))
         self.male_len = len(self.object_male)
         self.female_len = len(self.object_female)
@@ -34,13 +36,13 @@ class PointCloudDataset(Dataset):
         female_obj = self.object_female[idx % self.female_len]
 
         #create path to the indexed objects
-        male_path = os.path.join(self.root_male, male_obj)
-        female_path = os.path.join(self.root_female, female_obj)
+        # male_path = os.path.join(self.root_male, male_obj)
+        # female_path = os.path.join(self.root_female, female_obj)
        
        # load meshes 
        
-        male_file = tr.load(male_path)
-        female_file = tr.load(female_path)
+        male_file = tr.load(male_obj)
+        female_file = tr.load(female_obj)
        
         #sample points from meshes
         
