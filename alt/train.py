@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import os
 import config
 import torch.optim as optim
-from utils import save_checkpoint, load_checkpoint, ChamferLoss, visualize
+from utils import save_checkpoint, load_checkpoint, ChamferLoss
 from Generator import ReconstructionNet as Generator_Fold
 from Discriminator import get_model as Discriminator_Point
 import wandb

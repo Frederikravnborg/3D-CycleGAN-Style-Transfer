@@ -4,7 +4,6 @@ import torch.nn.parallel
 import config
 import copy
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
 from dataloader_dataset import PointCloudDataset
 
 def save_checkpoint(epoch, models : list, optimizers, losses, filename="my_checkpoint.pth.tar"):
@@ -85,45 +84,7 @@ class CrossEntropyLoss(nn.Module):
         return loss
 
 
-def visualize(cloud,id,gender):
-    name = f"Visualization of {gender} pointcloud {id}"
-    points = cloud.numpy() #takes tensor makes it into np.array [x,y,z] koordinates
-    # Creating figure
-    fig = plt.figure()
-    ax = plt.axes(projection ="3d")
 
-    x,y,z = points[:,0], points[:,1], points[:,2]
-    # Add x, y gridlines
-    ax.grid(b = True, color ='grey',
-            linestyle ='-.', linewidth = 0.3,
-            alpha = 0.8)
-
-
-    # Creating color map
-    my_cmap = plt.get_cmap('cool')#plt.get_cmap('hsv')
-
-    # Creating plot
-    sctt = ax.scatter3D(x, y, z,
-                        alpha = 0.5,
-                        c = (x + y + z),
-                        cmap = my_cmap,
-                        marker = 'o',
-                        s=0.5)
-
-    plt.title(str(name))
-    ax.set_xlabel('X-axis', fontweight ='bold')
-    ax.set_ylabel('Y-axis', fontweight ='bold')
-    ax.set_zlabel('Z-axis', fontweight ='bold')
-    ax.view_init(elev=20,azim=-160,roll=0)
-    ax.set_box_aspect((1,1,1)) # Constrain the axes
-    ax.set_proj_type('ortho') # Use orthographic projection
-    ax.set_xlim(-0.75,0.75) # Set x-axis range
-    ax.set_ylim(-0.75,0.75) # Set y-axis range
-    ax.set_zlim(-0.75,0.75) # Set z-axis range
-    #fig.colorbar(sctt, ax = ax, shrink = 0.5, aspect = 5)
-
-    # show plot
-    plt.show()
 
 
 def isqrt(n):
