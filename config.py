@@ -5,8 +5,8 @@ currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 # Training Loop:
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train_test_10"
-VAL_DIR = "data/val"
+TRAIN_DIR = "data/train_test_100"
+VAL_DIR = "data/train_test_10"
 N_POINTS = 2048
 BATCH_SIZE = 2
 LEARNING_RATE = 1e-4
@@ -43,4 +43,9 @@ FOLD_SHAPE = 'sphere'
 LAMBDA_CYCLE = 10
 PLANE_SIZE = 1
 
+# PointNet classifier:
+POINT_NUM_EPOCHS = 2
+POINT_BATCH_SIZE = 2
+POINT_LR = 1e-4
+POINT_DECAY_RATE = 1e-4
 

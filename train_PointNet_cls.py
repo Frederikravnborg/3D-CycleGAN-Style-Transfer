@@ -5,9 +5,6 @@ import torch.nn as nn
 import numpy as np
 import datetime
 import logging
-import importlib
-import shutil
-import argparse
 import config
 from pathlib import Path
 from tqdm import tqdm
@@ -19,24 +16,6 @@ from pointnet_model_cls import get_model, get_loss
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
-
-def parse_args():
-    '''PARAMETERS'''
-    parser = argparse.ArgumentParser('training')
-    parser.add_argument('--gpu', type=str,                      default=config.DEVICE, help='specify gpu device')
-    parser.add_argument('--batch_size', type=int,               default=4, help='batch size in training')
-    parser.add_argument('--model',                              default='pointnet_model_cls', help='model name [default: pointnet_model]')
-    parser.add_argument('--num_category',                       default=2, type=int, choices=[10, 40],  help='training on ModelNet10/40')
-    parser.add_argument('--epoch',                              default=3, type=int, help='number of epoch in training')
-    parser.add_argument('--learning_rate',                      default=1e-4, type=float, help='learning rate in training')
-    parser.add_argument('--num_point', type=int,                default=2048, help='Point Number')
-    parser.add_argument('--optimizer', type=str,                default='Adam', help='optimizer for training')
-    parser.add_argument('--log_dir', type=str,                  default=None, help='experiment root')
-    parser.add_argument('--decay_rate', type=float,             default=1e-4, help='decay rate')
-    parser.add_argument('--use_normals', action='store_true',   default=False, help='use normals')
-    parser.add_argument('--process_data', action='store_true',  default=False, help='save data offline')
-    parser.add_argument('--use_uniform_sample',action='store_true',default=False, help='use uniform sampiling')
-    return parser.parse_args()
 
 
 def inplace_relu(m):
@@ -89,7 +68,6 @@ def test(model, loader, num_class=2):
     mean_correct = []
     class_acc = np.zeros((num_class, 3))
     classifier = model.eval()
-    print("length: ", len(loader))
     
     for batch_id, (female, male) in tqdm(enumerate(loader), total=len(loader)):
         ### FEMALE ###
@@ -127,13 +105,13 @@ def test(model, loader, num_class=2):
     return class_acc
 
 
-def main(args):
+def main():
     def log_string(str):
         logger.info(str)
         print(str)
 
     '''HYPER PARAMETER'''
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+    os.environ["CUDA_VISIBLE_DEVICES"] = config.DEVICE
 
     '''CREATE DIR'''
     timestr = str(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
@@ -141,10 +119,7 @@ def main(args):
     exp_dir.mkdir(exist_ok=True)
     exp_dir = exp_dir.joinpath('classification')
     exp_dir.mkdir(exist_ok=True)
-    if args.log_dir is None:
-        exp_dir = exp_dir.joinpath(timestr)
-    else:
-        exp_dir = exp_dir.joinpath(args.log_dir)
+    exp_dir = exp_dir.joinpath(timestr)
     exp_dir.mkdir(exist_ok=True)
     checkpoints_dir = exp_dir.joinpath('checkpoints/')
     checkpoints_dir.mkdir(exist_ok=True)
@@ -152,16 +127,14 @@ def main(args):
     log_dir.mkdir(exist_ok=True)
 
     '''LOG'''
-    args = parse_args()
     logger = logging.getLogger("Model")
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler = logging.FileHandler('%s/%s.txt' % (log_dir, args.model))
+    file_handler = logging.FileHandler('%s.txt' % log_dir)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     log_string('PARAMETER ...')
-    log_string(args)
 
     '''DATA LOADING'''
     transform = transforms.Lambda(lambda x: x / config.MAX_DISTANCE)
@@ -181,8 +154,8 @@ def main(args):
     )
 
     # define dataloader for train and validation dataset
-    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=True)
+    loader = DataLoader(dataset, batch_size=config.POINT_BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
+    val_loader = DataLoader(val_dataset, batch_size=config.POINT_BATCH_SIZE, shuffle=True, pin_memory=True)
     
     '''MODEL LOADING'''
     num_class = 2
@@ -196,30 +169,27 @@ def main(args):
         criterion = criterion.cuda()
 
     try:
-        checkpoint = torch.load(str(exp_dir) + '/checkpoints/best_model.pth')
-        start_epoch = checkpoint['epoch']
+        # exp_dir is defined as Path('./log_PointNet_cls/')
+        checkpoint = torch.load("log_PointNet_cls/saved_model_cls/best_model.pth")
         classifier.load_state_dict(checkpoint['model_state_dict'])
         log_string('Use pretrain model')
     except:
         log_string('No existing model, starting training from scratch...')
-        start_epoch = 0
 
-    if args.optimizer == 'Adam':
-        optimizer = torch.optim.Adam(
-            classifier.parameters(),
-            lr=args.learning_rate,
-            betas=(0.9, 0.999),
-            eps=1e-08,
-            weight_decay=args.decay_rate
-        )
-    else:
-        optimizer = torch.optim.SGD(classifier.parameters(), lr=0.01, momentum=0.9)
+    optimizer = torch.optim.Adam(
+        classifier.parameters(),
+        lr=config.POINT_LR,
+        betas=(0.9, 0.999),
+        eps=1e-08,
+        weight_decay=config.POINT_DECAY_RATE
+    )
+
 
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.7)
     best_class_acc = 0.0
 
     '''TRANING'''
-    for epoch in range(args.epoch):
+    for epoch in range(config.POINT_NUM_EPOCHS):
         accuracy = train(epoch=epoch,
                          loader=loader, 
                          classifier=classifier, 
@@ -249,8 +219,5 @@ def main(args):
                 torch.save(state, savepath)
 
 
-
 if __name__ == '__main__':
-    args = parse_args()
-
-    main(args)
+    main()
