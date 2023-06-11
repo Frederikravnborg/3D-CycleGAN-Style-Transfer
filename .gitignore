@@ -192,3 +192,4 @@ wandb/
 *.tar
 
 
+wandb/latest-run

@@ -43,6 +43,13 @@ wandb.init(
     },
     mode = "online" if config.USE_WANDB else "disabled"
 )
+wandb.define_metric("epoch_step")
+wandb.define_metric("fake_female", step_metric = "epoch_step")
+wandb.define_metric("fake_male", step_metric = "epoch_step")
+wandb.define_metric("OG_male", step_metric = "epoch_step")
+wandb.define_metric("OG_female", step_metric = "epoch_step")
+wandb.define_metric("cycle_male", step_metric = "epoch_step")
+wandb.define_metric("cycle_female", step_metric = "epoch_step")
 
 def train_fold(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
     loop = tqdm(loader, leave=True) #Progress bar
@@ -160,12 +167,18 @@ def train_fn(
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
             # wandb.log({f"fake_female_epoch_{epoch}": fake_female})
-            wandb.log({f"fake_female": wandb.Object3D(fake_female_vertices) }, step = epoch)
+            wandb.log({"epoch_step": epoch, 
+                       "fake_female": wandb.Object3D(fake_female_vertices),
+                       "OG_male": wandb.Object3D(male[0].detach().cpu().numpy()),
+                       "cycle_male": wandb.Object3D(cycle_male.transpose(2,1)[0].detach().cpu().numpy())})
 
             fake_male_vertices = fake_male.transpose(2,1)[0].detach().cpu().numpy()
             fake_male = trimesh.Trimesh(vertices=fake_male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
-            wandb.log({f"fake_male": wandb.Object3D(fake_male_vertices) }, step = epoch)
+            wandb.log({"epoch_step": epoch, 
+                       "fake_male": wandb.Object3D(fake_male_vertices),
+                       "OG_female": wandb.Object3D(female[0].detach().cpu().numpy()),
+                       "cycle_female": wandb.Object3D(cycle_female.transpose(2,1)[0].detach().cpu().numpy())})
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
