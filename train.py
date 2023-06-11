@@ -84,7 +84,7 @@ def train_fold(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
 
 # define the training function
 def train_fn(
-    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, epoch, currentTime, folder_name
+    disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, epoch, currentTime, folder_name, chamfer_loss
 ):
     # initialize variables to keep track of discriminator outputs
     M_reals = 0
@@ -134,10 +134,11 @@ def train_fn(
         loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake)) #Real = 1, trick discriminator
 
         # cycle loss
-        _, _, cycle_female_loss = gen_M(fake_female.transpose(2,1))
-        _, _, cycle_male_loss = gen_F(fake_male.transpose(2,1))
-        # = ChamferLoss(cycle_female, female)
-        # = ChamferLoss(cycle_male, male)
+        cycle_male, _, _ = gen_M(fake_female.transpose(2,1))
+        cycle_female, _, _ = gen_F(fake_male.transpose(2,1))
+
+        cycle_male_loss = chamfer_loss(cycle_male, male)
+        cycle_female_loss = chamfer_loss(cycle_female, female)
 
         # add all generator losses together to obtain full generator loss
         G_loss = (
@@ -200,7 +201,8 @@ def main():
         lr=config.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
-
+    
+    chamfer_loss = ChamferLoss()
     mse = nn.MSELoss() #Adverserial loss
 
     if config.SAVE_MODEL:
@@ -291,7 +293,8 @@ def main():
                 mse = mse,
                 epoch = epoch,
                 currentTime = currentTime,
-                folder_name = folder_name
+                folder_name = folder_name,
+                chamfer_loss = chamfer_loss
             )
 
         # save model for every epoch 
