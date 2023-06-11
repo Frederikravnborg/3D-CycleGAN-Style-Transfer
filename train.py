@@ -28,17 +28,18 @@ wandb.init(
     # track hyperparameters and run metadata
     config={
     "BATCH_SIZE": config.BATCH_SIZE,
-    "LEARNING_RATE": config.LEARNING_RATE,
-    "TRAIN_GAN": config.TRAIN_GAN,
     "GAN_NUM_EPOCHS": config.GAN_NUM_EPOCHS,
+    "LAMBDA_CYCLE": config.LAMBDA_CYCLE,
+    "LEARNING_RATE": config.LEARNING_RATE,
+    "DISC_LR_FACTOR": config.DISC_LR_FACTOR,
+    "DISC_WIDTH_REDUCER": config.DISC_WIDTH_REDUCER,
+    "FOLD_SHAPE": config.FOLD_SHAPE,
+    "TRAIN_GAN": config.TRAIN_GAN,
     "LOAD_MODEL": config.LOAD_MODEL,
     "SAVE_MODEL": config.SAVE_MODEL,
-    "DISC_WIDTH_REDUCER": config.DISC_WIDTH_REDUCER,
     "TRAIN_FOLD": config.TRAIN_FOLD,
     "FOLD_NUM_EPOCH": config.FOLD_NUM_EPOCH,
     "LOAD_FOLD_MODEL": config.LOAD_FOLD_MODEL,
-    "FOLD_SHAPE": config.FOLD_SHAPE,
-    "LAMBDA_CYCLE": config.LAMBDA_CYCLE,
     },
     mode = "online" if config.USE_WANDB else "disabled"
 )
