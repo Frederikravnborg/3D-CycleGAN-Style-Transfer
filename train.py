@@ -134,7 +134,7 @@ def train_fn(
         loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake)) #Real = 1, trick discriminator
 
         # cycle loss
-        _, _, cycle_female_loss = gen_F(fake_female.transpose(2,1))
+        _, _, cycle_female_loss = gen_M(fake_female.transpose(2,1))
         _, _, cycle_male_loss = gen_F(fake_male.transpose(2,1))
         # = ChamferLoss(cycle_female, female)
         # = ChamferLoss(cycle_male, male)
