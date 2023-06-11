@@ -137,8 +137,8 @@ def train_fn(
         cycle_male, _, _ = gen_M(fake_female.transpose(2,1))
         cycle_female, _, _ = gen_F(fake_male.transpose(2,1))
 
-        cycle_male_loss = chamfer_loss(cycle_male, male)
-        cycle_female_loss = chamfer_loss(cycle_female, female)
+        cycle_male_loss = chamfer_loss(cycle_male.transpose(2,1), male)
+        cycle_female_loss = chamfer_loss(cycle_female.transpose(2,1), female)
 
         # add all generator losses together to obtain full generator loss
         G_loss = (
