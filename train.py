@@ -14,7 +14,7 @@ import torch.optim as optim
 import config
 from tqdm import tqdm
 from pointnet_model import Discriminator
-from foldingnet_model import Generator
+from foldingnet_model import Generator, ChamferLoss
 import trimesh
 from torchvision import transforms
 import wandb
@@ -134,22 +134,17 @@ def train_fn(
         loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake)) #Real = 1, trick discriminator
 
         # cycle loss
-        fake_male = fake_male.transpose(2,1)
-        fake_female = fake_female.transpose(2,1)
-        _, _, cycle_female_loss = gen_F(fake_male)
-        _, _, cycle_male_loss = gen_M(fake_female)
-
-        # cycle loss scaled by lambda
-        cycle_loss = (
-            cycle_female_loss * config.LAMBDA_CYCLE
-            + cycle_male_loss * config.LAMBDA_CYCLE
-        )
+        _, _, cycle_female_loss = gen_F(fake_female.transpose(2,1))
+        _, _, cycle_male_loss = gen_F(fake_male.transpose(2,1))
+        # = ChamferLoss(cycle_female, female)
+        # = ChamferLoss(cycle_male, male)
 
         # add all generator losses together to obtain full generator loss
         G_loss = (
             loss_G_F
             + loss_G_M
-            + cycle_loss
+            + cycle_female_loss * config.LAMBDA_CYCLE
+            + cycle_male_loss * config.LAMBDA_CYCLE
         )
 
         # update of weights
@@ -160,26 +155,25 @@ def train_fn(
         # save point clouds every SAVE_RATE iterations
         if config.SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
 
-            fake_female_vertices = fake_female[0].detach().cpu().numpy()
+            fake_female_vertices = fake_female.transpose(2,1)[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
             # wandb.log({f"fake_female_epoch_{epoch}": fake_female})
             wandb.log({f"fake_female": wandb.Object3D(fake_female_vertices) }, step = epoch)
 
-            fake_male_vertices = fake_male[0].detach().cpu().numpy()
+            fake_male_vertices = fake_male.transpose(2,1)[0].detach().cpu().numpy()
             fake_male = trimesh.Trimesh(vertices=fake_male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
             wandb.log({f"fake_male": wandb.Object3D(fake_male_vertices) }, step = epoch)
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
-           f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
+           f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{G_loss},{epoch}\n')
         wandb.log({
     "idx": idx,
     "D_loss": D_loss,
     "loss_G_M": loss_G_M,
     "loss_G_F": loss_G_F,
-    "cycle_loss": cycle_loss,
     "G_loss": G_loss,
     "epoch": epoch
 })
