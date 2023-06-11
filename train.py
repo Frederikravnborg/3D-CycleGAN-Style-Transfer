@@ -29,6 +29,7 @@ wandb.init(
     config={
     "BATCH_SIZE": config.BATCH_SIZE,
     "LEARNING_RATE": config.LEARNING_RATE,
+    "DISC_LR_FACTOR": config.DISC_LR_FACTOR,
     "TRAIN_GAN": config.TRAIN_GAN,
     "GAN_NUM_EPOCHS": config.GAN_NUM_EPOCHS,
     "LOAD_MODEL": config.LOAD_MODEL,
