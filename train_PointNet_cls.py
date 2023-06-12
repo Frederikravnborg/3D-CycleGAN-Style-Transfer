@@ -216,10 +216,11 @@ def main():
 
         with torch.no_grad():
             class_acc = test(classifier.eval(), val_loader)
-
             if (class_acc >= best_class_acc):
                 best_class_acc = class_acc
                 best_epoch = epoch + 1
+            wandb.log({"Test_acc": class_acc}, commit=False)
+            wandb.log({"Best_acc": best_class_acc}, commit=False)
             log_string(f'Test Accuracy: {class_acc}')
             log_string(f'Best Accuracy: {best_class_acc}')
 
@@ -235,6 +236,6 @@ def main():
                 }
                 torch.save(state, savepath)
 
-
+    wandb.finish()
 if __name__ == '__main__':
     main()
