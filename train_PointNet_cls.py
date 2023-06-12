@@ -12,10 +12,29 @@ from torchvision import transforms
 from load_data import ObjDataset
 from torch.utils.data import DataLoader
 from pointnet_model_cls import get_model, get_loss
+import logging
+import wandb
+logging.basicConfig(level=logging.INFO)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="Fagprojekt",
+    
+    # track hyperparameters and run metadata
+    config={
+    "POINT_BATCH_SIZE": config.POINT_BATCH_SIZE,
+    "POINT_NUM_EPOCHS": config.POINT_NUM_EPOCHS,
+    "POINT_LR": config.POINT_LR
+    },
+    mode = "online" if config.USE_WANDB else "disabled"
+)
+
+
 
 
 def inplace_relu(m):
@@ -35,16 +54,16 @@ def train(epoch, loader, classifier, criterion, optimizer, scheduler):
         female = torch.Tensor(female)
         female = female.transpose(2, 1)
         targetF = torch.zeros(len(female))
-        if config.DEVICE == "cuda":
-            female, targetF = female.cuda(), targetF.cuda()
+
+        female, targetF = female.to(device).float(), targetF.to(device).float()
 
         ### MALE ###
         male = male.data.numpy()
         male = torch.Tensor(male)
         male = male.transpose(2, 1)
         targetM = torch.ones(len(male))
-        if config.DEVICE == 'cuda':
-            male, targetM = male.cuda(), targetM.cuda()
+        
+        male, targetM = male.to(device).float(), targetM.to(device).float()
 
         predF, trans_featF = classifier(female)
         predM, trans_featM = classifier(male)
@@ -62,6 +81,7 @@ def train(epoch, loader, classifier, criterion, optimizer, scheduler):
         loss.backward()
         optimizer.step()
     acc = np.mean(mean_correct)
+    wandb.log({"train_acc": acc})
     return acc
 
 def test(model, loader, num_class=2):
@@ -72,15 +92,15 @@ def test(model, loader, num_class=2):
     for batch_id, (female, male) in tqdm(enumerate(loader), total=len(loader)):
         ### FEMALE ###
         targetF = torch.zeros(len(female))
-        if config.DEVICE == "cuda":
-            female, targetF = female.cuda(), targetF.cuda()
+
+        female, targetF = female.to(device), targetF.to(device)
         female = female.transpose(2, 1)
         predF, _ = classifier(female)
 
         ### MALE ###
         targetM = torch.ones(len(male))
-        if config.DEVICE == "cuda":
-            male, targetM = male.cuda(), targetM.cuda()
+
+        male, targetM = male.to(device), targetM.to(device)
         male = male.transpose(2, 1)
         predM, _ = classifier(male)
 
@@ -110,8 +130,6 @@ def main():
         logger.info(str)
         print(str)
 
-    '''HYPER PARAMETER'''
-    os.environ["CUDA_VISIBLE_DEVICES"] = config.DEVICE
 
     '''CREATE DIR'''
     timestr = str(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
@@ -164,9 +182,8 @@ def main():
     criterion = torch.nn.MSELoss()
     classifier.apply(inplace_relu)
 
-    if config.DEVICE == "cuda":
-        classifier = classifier.cuda()
-        criterion = criterion.cuda()
+    classifier = classifier.to(device)
+    criterion = criterion.to(device)
 
     try:
         # exp_dir is defined as Path('./log_PointNet_cls/')
