@@ -1,3 +1,8 @@
+"""
+Training for CycleGAN
+Code partly based on Aladdin Persson <aladdin.persson at hotmail dot com>
+"""
+
 import torch
 import os
 from datetime import datetime
@@ -310,11 +315,11 @@ def main():
             )
 
         # save model for every epoch 
-        if config.SAVE_MODEL:
-            save_checkpoint(gen_M, opt_gen, filename=GEN_M_filename)
-            save_checkpoint(gen_F, opt_gen, filename=GEN_F_filename)
-            save_checkpoint(disc_M, opt_disc, filename=DISC_M_filename)
-            save_checkpoint(disc_F, opt_disc, filename=DISC_F_filename)
+        if config.SAVE_MODEL and (epoch == 299 or epoch==599 or epoch==899 or epoch==1199):
+            save_checkpoint(gen_M, opt_gen, filename=GEN_M_filename+f"E{epoch+1}")
+            save_checkpoint(gen_F, opt_gen, filename=GEN_F_filename+f"E{epoch+1}")
+            # save_checkpoint(disc_M, opt_disc, filename=DISC_M_filename+f"E{epoch+1}")
+            # save_checkpoint(disc_F, opt_disc, filename=DISC_F_filename+f"E{epoch+1}")
     
     wandb.finish()
 
