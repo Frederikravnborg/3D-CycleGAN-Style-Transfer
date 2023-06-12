@@ -191,7 +191,7 @@ def train_fn(
     "D_loss": D_loss,
     "loss_G_M": loss_G_M,
     "loss_G_F": loss_G_F,
-    "cycle_loss": cycle_loss
+    "cycle_loss": cycle_loss,
     "G_loss": G_loss,
     "epoch_step": epoch
 }, commit=False)
