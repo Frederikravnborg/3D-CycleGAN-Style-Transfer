@@ -5,22 +5,22 @@ currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 # Training Loop:
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train_test_10"
-VAL_DIR = "data/train_test_10"
+TRAIN_DIR = "data/train"
+VAL_DIR = "dat/val"
 N_POINTS = 2048
-BATCH_SIZE = 2
+BATCH_SIZE = 32
 LEARNING_RATE = 1e-4
-DISC_LR_FACTOR = 0.01
-NUM_WORKERS = 0
+DISC_LR_FACTOR = 1
+NUM_WORKERS = 12
 MAX_DISTANCE = torch.tensor(1.0428)
-USE_WANDB = False
+USE_WANDB = True
 
 
 
 # GAN:
-TRAIN_GAN = True
-GAN_NUM_EPOCHS = 5
-LOAD_MODEL = False
+TRAIN_GAN = False
+GAN_NUM_EPOCHS = 0
+LOAD_MODEL = True
 SAVE_MODEL = True
 SAVE_OBJ = True
 SAVE_RATE = 1 # Save pair of pcds every SAVE_RATE epochs
@@ -32,7 +32,7 @@ CHECKPOINT_DISC_F = f"saved_models/discF_{currentTime}.pth.tar"
 
 # FoldingNet:
 TRAIN_FOLD = False
-FOLD_NUM_EPOCH = 6
+FOLD_NUM_EPOCH = 0
 FOLD_SAVE_OBJ = True
 LOAD_FOLD_MODEL = False 
 CHECKPOINT_FOLD_M = f"pre_saved_models/genM_{currentTime}.pth.tar"
@@ -41,7 +41,7 @@ timestamp = "06.06.19.04.34_50"
 SAVEDMODEL_GEN_M = f"pre_saved_models/genM_{timestamp}.pth.tar"
 SAVEDMODEL_GEN_F = f"pre_saved_models/genF_{timestamp}.pth.tar"
 FOLD_SHAPE = 'sphere'
-LAMBDA_CYCLE = 10
+LAMBDA_CYCLE = 1120
 PLANE_SIZE = 1
 
 # PointNet classifier:
