@@ -80,12 +80,12 @@ def train_fold(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
             female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)
             fake_female = trimesh.Trimesh(vertices=female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
-            wandb.log({f"FOLD_female": wandb.Object3D(female_vertices) }, step = epoch)
+            wandb.log({f"FOLD_female": wandb.Object3D(female_vertices) })
             
             male_vertices = fake_male[0].detach().cpu().numpy().transpose(1,0)
             fake_male = trimesh.Trimesh(vertices=male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
-            wandb.log({f"FOLD_male": wandb.Object3D(male_vertices) }, step = epoch)
+            wandb.log({f"FOLD_male": wandb.Object3D(male_vertices) })
         # update progress bar
         loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
 
@@ -166,19 +166,16 @@ def train_fn(
             fake_female_vertices = fake_female.transpose(2,1)[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
-            # wandb.log({f"fake_female_epoch_{epoch}": fake_female})
-            wandb.log({"epoch_step": epoch, 
-                       "fake_female": wandb.Object3D(fake_female_vertices),
-                       "OG_male": wandb.Object3D(male[0].detach().cpu().numpy()),
-                       "cycle_male": wandb.Object3D(cycle_male.transpose(2,1)[0].detach().cpu().numpy())})
+            wandb.log({"fake_female": wandb.Object3D(fake_female_vertices), "epoch_step": epoch})
+            wandb.log({"OG_male": wandb.Object3D(male[0].detach().cpu().numpy()), "epoch_step": epoch}, commit=False)
+            wandb.log({"cycle_male": wandb.Object3D(cycle_male.transpose(2,1)[0].detach().cpu().numpy()), "epoch_step": epoch}, commit=False)
 
             fake_male_vertices = fake_male.transpose(2,1)[0].detach().cpu().numpy()
             fake_male = trimesh.Trimesh(vertices=fake_male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
-            wandb.log({"epoch_step": epoch, 
-                       "fake_male": wandb.Object3D(fake_male_vertices),
-                       "OG_female": wandb.Object3D(female[0].detach().cpu().numpy()),
-                       "cycle_female": wandb.Object3D(cycle_female.transpose(2,1)[0].detach().cpu().numpy())})
+            wandb.log({"fake_male": wandb.Object3D(fake_male_vertices), "epoch_step": epoch}, commit=False)
+            wandb.log({"OG_female": wandb.Object3D(female[0].detach().cpu().numpy()), "epoch_step": epoch}, commit=False)
+            wandb.log({"cycle_female": wandb.Object3D(cycle_female.transpose(2,1)[0].detach().cpu().numpy()), "epoch_step": epoch}, commit=False)
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
@@ -189,8 +186,8 @@ def train_fn(
     "loss_G_M": loss_G_M,
     "loss_G_F": loss_G_F,
     "G_loss": G_loss,
-    "epoch": epoch
-})
+    "epoch_step": epoch
+}, commit=False)
         
         # update progress bar
         loop.set_postfix(D_loss = D_loss.item(), G_loss = G_loss.item(), epoch=epoch)
