@@ -85,7 +85,7 @@ def train_fold(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
             male_vertices = fake_male[0].detach().cpu().numpy().transpose(1,0)
             fake_male = trimesh.Trimesh(vertices=male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
-            wandb.log({f"FOLD_male": wandb.Object3D(male_vertices) })
+            wandb.log({f"FOLD_male": wandb.Object3D(male_vertices) }, commit=False)
         # update progress bar
         loop.set_postfix(epoch=epoch, cycle_loss=cycle_loss.item())
 
