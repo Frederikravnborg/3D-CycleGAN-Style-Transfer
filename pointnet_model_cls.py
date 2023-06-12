@@ -5,7 +5,7 @@ from utilities.pointnet_utils import PointNetEncoder
 import config
 from utilities.pointnet_utils import feature_transform_regularizer
 import numpy as np
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class get_model(nn.Module):
     def __init__(self, k=2):
