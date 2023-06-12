@@ -1,17 +1,15 @@
 import os
 import sys
 import torch
-import torch.nn as nn
 import numpy as np
 import datetime
 import logging
 import config
 from pathlib import Path
 from tqdm import tqdm
-from torchvision import transforms
 from load_data import ObjDataset
 from torch.utils.data import DataLoader
-from pointnet_model_cls import get_model, get_loss
+from pointnet_model_cls import get_model
 import logging
 import wandb
 logging.basicConfig(level=logging.INFO)
@@ -21,6 +19,7 @@ ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# initialize wandb
 wandb.init(
     # set the wandb project where this run will be logged
     project="Fagprojekt",
@@ -36,13 +35,13 @@ wandb.init(
 
 
 
-
+# define relu function to be used as activation function
 def inplace_relu(m):
     classname = m.__class__.__name__
     if classname.find('ReLU') != -1:
         m.inplace=True
 
-def train(epoch, loader, classifier, criterion, optimizer, scheduler):
+def train(loader, classifier, criterion, optimizer, scheduler):
     mean_correct = []
     classifier = classifier.train()
 
@@ -65,13 +64,13 @@ def train(epoch, loader, classifier, criterion, optimizer, scheduler):
         
         male, targetM = male.to(device).float(), targetM.to(device).float()
 
-        predF, trans_featF = classifier(female)
-        predM, trans_featM = classifier(male)
+        predF, _ = classifier(female)
+        predM, _ = classifier(male)
         pred = torch.cat((predF, predM))
-        trans_feat = torch.cat((trans_featF, trans_featM))
         target = torch.cat((targetF, targetM))
+        target = torch.from_numpy(np.array([[1-a, a] for a in target])).transpose(1,0)
 
-        loss = criterion(pred, target.long().unsqueeze(0).transpose(0, 1).float())
+        loss = criterion(pred.transpose(1,0), target)
         pred_choice = pred.data.max(1)[1]
 
         correct = pred_choice.eq(target.long().data).cpu().sum()
@@ -80,8 +79,8 @@ def train(epoch, loader, classifier, criterion, optimizer, scheduler):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
     acc = np.mean(mean_correct)
-    wandb.log({"train_acc": acc})
     return acc
 
 def test(model, loader, num_class=2):
@@ -92,14 +91,12 @@ def test(model, loader, num_class=2):
     for batch_id, (female, male) in tqdm(enumerate(loader), total=len(loader)):
         ### FEMALE ###
         targetF = torch.zeros(len(female))
-
         female, targetF = female.to(device), targetF.to(device)
         female = female.transpose(2, 1)
         predF, _ = classifier(female)
 
         ### MALE ###
         targetM = torch.ones(len(male))
-
         male, targetM = male.to(device), targetM.to(device)
         male = male.transpose(2, 1)
         predM, _ = classifier(male)
@@ -131,7 +128,7 @@ def main():
         print(str)
 
 
-    '''CREATE DIR'''
+    # create directory for saving logs and models
     timestr = str(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
     exp_dir = Path('./log_PointNet_cls/')
     exp_dir.mkdir(exist_ok=True)
@@ -144,7 +141,7 @@ def main():
     log_dir = exp_dir.joinpath('logs/')
     log_dir.mkdir(exist_ok=True)
 
-    '''LOG'''
+    # handle logging
     logger = logging.getLogger("Model")
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -154,20 +151,18 @@ def main():
     logger.addHandler(file_handler)
     log_string('PARAMETER ...')
 
-    '''DATA LOADING'''
-    transform = transforms.Lambda(lambda x: x / config.MAX_DISTANCE)
     # define train dataset
     dataset = ObjDataset(
         root_male=config.TRAIN_DIR + "/male", 
         root_female=config.TRAIN_DIR + "/female",
-        transform=transform,
+        transform=None,
         n_points=config.N_POINTS
     )
     # define validation dataset
     val_dataset = ObjDataset(
         root_male=config.VAL_DIR + "/male",
         root_female=config.VAL_DIR + "/female",
-        transform=transform,
+        transform=None,
         n_points=config.N_POINTS
     )
 
@@ -175,16 +170,14 @@ def main():
     loader = DataLoader(dataset, batch_size=config.POINT_BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=config.POINT_BATCH_SIZE, shuffle=True, pin_memory=True)
     
-    '''MODEL LOADING'''
+
     num_class = 2
 
-    classifier = get_model(num_class)
-    criterion = torch.nn.MSELoss()
+    classifier = get_model(num_class).to(device)
+    criterion = torch.nn.MSELoss().to(device)
     classifier.apply(inplace_relu)
 
-    classifier = classifier.to(device)
-    criterion = criterion.to(device)
-
+    # load pretrained model if there is one
     try:
         # exp_dir is defined as Path('./log_PointNet_cls/')
         checkpoint = torch.load("log_PointNet_cls/saved_model_cls/best_model.pth")
@@ -196,41 +189,41 @@ def main():
     optimizer = torch.optim.Adam(
         classifier.parameters(),
         lr=config.POINT_LR,
-        betas=(0.9, 0.999),
+        betas=(0.5, 0.999),
         eps=1e-08,
         weight_decay=config.POINT_DECAY_RATE
     )
 
 
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.7)
-    best_class_acc = 0.0
+    best_test_acc = 0.0
 
-    '''TRANING'''
+    # train and test loop
     for epoch in range(config.POINT_NUM_EPOCHS):
-        accuracy = train(epoch=epoch,
-                         loader=loader, 
-                         classifier=classifier, 
+        train_acc = train(loader = loader, 
+                         classifier = classifier, 
                          criterion = criterion, 
                          optimizer = optimizer, 
                          scheduler = scheduler)
+        wandb.log({"train_acc": train_acc})
 
         with torch.no_grad():
-            class_acc = test(classifier.eval(), val_loader)
-            if (class_acc >= best_class_acc):
-                best_class_acc = class_acc
+            test_acc = test(classifier.eval(), val_loader)
+            if (test_acc >= best_test_acc):
+                best_test_acc = test_acc
                 best_epoch = epoch + 1
-            wandb.log({"Test_acc": class_acc}, commit=False)
-            wandb.log({"Best_acc": best_class_acc}, commit=False)
-            log_string(f'Test Accuracy: {class_acc}')
-            log_string(f'Best Accuracy: {best_class_acc}')
+            wandb.log({"Test_acc": test_acc}, commit=False)
+            wandb.log({"Best_acc": best_test_acc}, commit=False)
+            log_string(f'Test Accuracy: {test_acc}')
+            log_string(f'Best Accuracy: {best_test_acc}')
 
-            if (class_acc >= best_class_acc):
+            if (test_acc >= best_test_acc):
                 logger.info('Save model...')
                 savepath = str(checkpoints_dir) + '/best_model.pth'
                 log_string('Saving at %s' % savepath)
                 state = {
                     'epoch': best_epoch,
-                    'class_acc': class_acc,
+                    'test_acc': test_acc,
                     'model_state_dict': classifier.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                 }
