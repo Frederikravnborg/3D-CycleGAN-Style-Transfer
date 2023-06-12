@@ -142,13 +142,20 @@ def train_fn(
         cycle_male_loss = chamfer_loss(cycle_male.transpose(2,1), male)
         cycle_female_loss = chamfer_loss(cycle_female.transpose(2,1), female)
 
+
+        cycle_loss = (
+            (cycle_female_loss + cycle_male_loss) 
+            * config.LAMBDA_CYCLE
+        )
+
+
         # add all generator losses together to obtain full generator loss
         G_loss = (
             loss_G_F
             + loss_G_M
-            + cycle_female_loss * config.LAMBDA_CYCLE
-            + cycle_male_loss * config.LAMBDA_CYCLE
+            + cycle_loss
         )
+
 
         # update of weights
         opt_gen.zero_grad()  #compute zero gradients
@@ -174,12 +181,12 @@ def train_fn(
 
         # save idx, D_loss, G_loss, mse, L1 in csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
-           f.write(f'{idx},{D_loss},{loss_G_M},{loss_G_F},{G_loss},{epoch}\n')
+           f.write(f'{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
         wandb.log({
-    "idx": idx,
     "D_loss": D_loss,
     "loss_G_M": loss_G_M,
     "loss_G_F": loss_G_F,
+    "cycle_loss": cycle_loss
     "G_loss": G_loss,
     "epoch_step": epoch
 }, commit=False)
@@ -257,7 +264,7 @@ def main():
     # save loss in csv file
     with open(f'output/loss_{currentTime}.csv', 'w') as f: 
         f.write(f"meta:{config.TRAIN_DIR=},{config.BATCH_SIZE=},{config.GAN_NUM_EPOCHS=},{config.LEARNING_RATE=},{config.LAMBDA_CYCLE},{config.GAN_NUM_EPOCHS},{config.LOAD_MODEL=},{config.N_POINTS=}\n")
-        f.write('idx,D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch\n')
+        f.write('D_loss,G_M_loss,G_F_loss,cycle_loss,G_loss,epoch\n')
 
     # create folder to save generated point clouds in
     folder_name = f"pre_saved_models/pcds/{currentTime}"
