@@ -1,6 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
+from load_data import ObjDataset
+from torch.utils.data import DataLoader
+import config
+from tqdm import tqdm
+import config
 
 def visualize_loss():
     filename = "output/loss_06.07.15.18.59.csv"
@@ -37,6 +41,71 @@ def visualize_loss():
     ax2.set(xlabel='Epoch', ylabel='Loss', title='discriminator loss')
     plt.show()
 
+# Function that takes Chamfer Loss for all combinations of generated models, and real models
+def visualize_chamfer_loss(val_loader, gen_loader):
+    meshes = []
+    gen_meshes = []
+
+    loop = tqdm(val_loader, leave=True) #Progress bar
+    gen_loop = tqdm(gen_loader, leave=True) #Progress bar
+
+    for _, (female, male) in enumerate(loop):
+        female = female.to(config.DEVICE)
+        male = male.to(config.DEVICE)
+
+        meshes.append(female)
+
+    for _, (gen_female, gen_male) in enumerate(gen_loop):
+        gen_female = gen_female.to(config.DEVICE)
+        gen_male = gen_male.to(config.DEVICE)
+
+        gen_meshes.append(gen_female)
+
+
+    
+
+    # loop through the data loader
+    
+    
+    return meshes, gen_meshes
+
+
 
 if __name__ == '__main__':
-    visualize_loss()
+
+    # define validation dataset
+    val_dataset = ObjDataset(
+        root_male= config.VAL_DIR + "/male",
+        root_female= config.VAL_DIR + "/female",
+        transform=None,
+        n_points=config.N_POINTS
+    )
+    gen_dataset = ObjDataset(
+        root_male= "data/val/generated_male",
+        root_female= "data/val/generated_female",
+        transform=None,
+        n_points=config.N_POINTS
+    )
+
+    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=True, pin_memory=True)
+    gen_loader = DataLoader(gen_dataset, batch_size=1, shuffle=True, pin_memory=True)
+
+    meshes = []
+    gen_meshes = []
+
+    loop = tqdm(val_loader, leave=True) #Progress bar
+    gen_loop = tqdm(gen_loader, leave=True) #Progress bar
+
+    #for _, (female, male) in enumerate(loop):
+    #    female = female.to(config.DEVICE)
+    #    male = male.to(config.DEVICE)
+
+    #    meshes.append(female)
+
+    for _, (gen_female, gen_male) in enumerate(gen_loop):
+        gen_female = gen_female.to(config.DEVICE)
+        gen_male = gen_male.to(config.DEVICE)
+
+        gen_meshes.append(gen_female[1:])
+    
+    print("hi")
