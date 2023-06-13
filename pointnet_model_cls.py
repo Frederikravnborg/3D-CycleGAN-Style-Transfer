@@ -31,8 +31,8 @@ class get_model(nn.Module):
         x = self.fc3(x)
         # return torch.sigmoid(x)
 
-        x = F.log_softmax(x, dim=1)
-        # x = F.softmax(x, dim=1)
+        # x = F.log_softmax(x, dim=1)
+        x = F.softmax(x, dim=1)
         return x, trans_feat
 
 class get_loss(torch.nn.Module):

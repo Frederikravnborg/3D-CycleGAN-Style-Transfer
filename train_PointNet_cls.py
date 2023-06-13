@@ -166,7 +166,7 @@ def main():
 
     num_class = 2
 
-    classifier = get_model(1).to(device) # 1 for binary classification in stead of 1
+    classifier = get_model(k=2).to(device) # 1 for binary classification in stead of 1
     # criterion = torch.nn.MSELoss().to(device)
     # criterion = get_loss().to(device)
     # cross entropy loss for classification
