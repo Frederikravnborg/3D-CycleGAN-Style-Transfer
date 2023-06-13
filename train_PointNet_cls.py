@@ -63,7 +63,7 @@ def train(loader, classifier, criterion, optimizer, scheduler):
 
         pred, trans_feat = classifier(persons)
 
-        loss = criterion(pred.transpose(1,0).squeeze(), target.squeeze())
+        loss = criterion(pred.squeeze(), target.squeeze().long())
         loss.backward()
 
         pred_choice = pred.data.max(1)[1]
