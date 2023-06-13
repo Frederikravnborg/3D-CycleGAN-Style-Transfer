@@ -23,14 +23,6 @@ class ChamferLoss(nn.Module):
         ry = yy.unsqueeze(1).expand_as(zz)
         P = (rx.transpose(2, 1) + ry - 2 * zz)
         return P
-
-    #def forward(self, preds, gts):
-    #    P = self.batch_pairwise_dist(gts, preds)
-    #    mins, _ = torch.min(P, 1)
-    #    loss_1 = torch.sum(mins)
-    #    mins, _ = torch.min(P, 2)
-    #    loss_2 = torch.sum(mins)
-    #    return loss_1 + loss_2
     
     def forward(self, preds, gts):
         P = self.batch_pairwise_dist(gts, preds)
@@ -154,10 +146,10 @@ class Generator(nn.Module):
         self.loss = ChamferLoss()
 
     def forward(self, input):
-        feature = self.encoder(input)
-        output = self.decoder(feature)
+        codeword = self.encoder(input)
+        output = self.decoder(codeword)
         loss = self.loss(output, input)
-        return output.transpose(2,1), feature, loss
+        return output.transpose(2,1), codeword, loss
 
     def get_parameters(self):
         return list(self.encoder.parameters()) + list(self.decoder.parameters())
