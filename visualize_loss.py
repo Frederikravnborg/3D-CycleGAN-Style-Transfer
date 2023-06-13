@@ -3,7 +3,13 @@ import matplotlib.pyplot as plt
 from load_data import ObjDataset
 from torch.utils.data import DataLoader
 import config
+from foldingnet_model import ChamferLoss
 from tqdm import tqdm
+import trimesh
+import torch
+import numpy as np
+import glob
+import os
 import config
 
 def visualize_loss():
@@ -81,31 +87,40 @@ if __name__ == '__main__':
         n_points=config.N_POINTS
     )
     gen_dataset = ObjDataset(
-        root_male= "data/val/generated_male",
-        root_female= "data/val/generated_female",
+        root_male= config.VAL_DIR + "/generated_male",
+        root_female= config.VAL_DIR + "/generated_female",
         transform=None,
         n_points=config.N_POINTS
     )
 
-    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=True, pin_memory=True)
-    gen_loader = DataLoader(gen_dataset, batch_size=1, shuffle=True, pin_memory=True)
+    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, pin_memory=True)
 
     meshes = []
     gen_meshes = []
 
+    real_pcds = glob.glob(os.path.join("data/val/female", '*.obj'))
+
     loop = tqdm(val_loader, leave=True) #Progress bar
-    gen_loop = tqdm(gen_loader, leave=True) #Progress bar
 
     #for _, (female, male) in enumerate(loop):
-    #    female = female.to(config.DEVICE)
-    #    male = male.to(config.DEVICE)
+    #    female = female.float()
+    #    temp = female.detach().cpu().numpy()
+    #    meshes.append(temp[0])
 
-    #    meshes.append(female)
+    for i in range(306):
+        gen_female = trimesh.load(f"data/val/generated_female/female_{i}.obj")
 
-    for _, (gen_female, gen_male) in enumerate(gen_loop):
-        gen_female = gen_female.to(config.DEVICE)
-        gen_male = gen_male.to(config.DEVICE)
+        gen_temp = gen_female.vertices
+        #gen_temp = np.asarray(gen_temp)
 
-        gen_meshes.append(gen_female[1:])
+        gen_meshes.append(gen_temp)
+    
+    print("hi")
+
+    loss = ChamferLoss()
+    gen_loss = np.zeros((len(gen_meshes), len(gen_meshes)))
+
+    
+    gen_loss[i, x] = loss(torch.Tensor(gen_meshes), torch.Tensor(gen_meshes))
     
     print("hi")

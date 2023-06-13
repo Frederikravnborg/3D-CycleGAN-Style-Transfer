@@ -14,8 +14,8 @@ class ChamferLoss(nn.Module):
         self.use_cuda = torch.cuda.is_available()
 
     def batch_pairwise_dist(self, x, y):
-        bs, num_points_x, points_dim = x.size()
-        _, num_points_y, _ = y.size()
+        #bs, num_points_x, points_dim = x.size()
+        #_, num_points_y, _ = y.size()
         xx = x.pow(2).sum(dim=-1)
         yy = y.pow(2).sum(dim=-1)
         zz = torch.bmm(x, y.transpose(2, 1))
