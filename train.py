@@ -1,8 +1,3 @@
-"""
-Training for CycleGAN
-Code partly based on Aladdin Persson <aladdin.persson at hotmail dot com>
-"""
-
 import torch
 import os
 from datetime import datetime

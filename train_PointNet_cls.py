@@ -9,7 +9,7 @@ from pathlib import Path
 from tqdm import tqdm
 from load_data import ObjDataset
 from torch.utils.data import DataLoader
-from pointnet_model_cls import get_model
+from pointnet_model_cls import get_model, get_loss
 import logging
 import wandb
 logging.basicConfig(level=logging.INFO)
@@ -48,6 +48,8 @@ def train(loader, classifier, criterion, optimizer, scheduler):
     scheduler.step()
 
     for batch_id, (female, male) in tqdm(enumerate(loader), total=len(loader), smoothing=0.9):
+        optimizer.zero_grad()
+
         ### FEMALE ###
         female = female.data.numpy()
         female = torch.Tensor(female)
@@ -64,20 +66,21 @@ def train(loader, classifier, criterion, optimizer, scheduler):
         
         male, targetM = male.to(device).float(), targetM.to(device).float()
 
-        predF, _ = classifier(female)
-        predM, _ = classifier(male)
+        predF, trans_featF = classifier(female)
+        predM, trans_featM = classifier(male)
         pred = torch.cat((predF, predM))
-        target = torch.cat((targetF, targetM))
-        target = torch.from_numpy(np.array([[1-a, a] for a in target])).transpose(1,0)
+        target = torch.cat((targetF, targetM)).unsqueeze(0)
+        trans_feat = torch.cat((trans_featF, trans_featM))
+        # target = torch.from_numpy(np.array([[1-a, a] for a in target])).transpose(1,0)
 
-        loss = criterion(pred.transpose(1,0), target)
+        loss = criterion(pred.transpose(1,0).squeeze(), target.squeeze().long(), trans_feat)
+        loss.backward()
+
         pred_choice = pred.data.max(1)[1]
 
         correct = pred_choice.eq(target.long().data).cpu().sum()
         mean_correct.append(correct.item() / float(female.size()[0] + male.size()[0]))
         
-        optimizer.zero_grad()
-        loss.backward()
         optimizer.step()
 
     acc = np.mean(mean_correct)
@@ -173,8 +176,11 @@ def main():
 
     num_class = 2
 
-    classifier = get_model(num_class).to(device)
-    criterion = torch.nn.MSELoss().to(device)
+    classifier = get_model(1).to(device) # 1 for binary classification in stead of 1
+    criterion = # torch.nn.MSELoss().to(device)
+    criterion = get_loss().to(device)
+    ### brug binary cross entropy loss eller get_loss
+
     classifier.apply(inplace_relu)
 
     # load pretrained model if there is one
@@ -182,10 +188,11 @@ def main():
         # exp_dir is defined as Path('./log_PointNet_cls/')
         checkpoint = torch.load("log_PointNet_cls/saved_model_cls/best_model.pth")
         classifier.load_state_dict(checkpoint['model_state_dict'])
-        log_string('Use pretrain model')
+        log_string('Use pretrained model')
     except:
         log_string('No existing model, starting training from scratch...')
 
+    # define optimizer for PointNet classifier
     optimizer = torch.optim.Adam(
         classifier.parameters(),
         lr=config.POINT_LR,
@@ -194,20 +201,23 @@ def main():
         weight_decay=config.POINT_DECAY_RATE
     )
 
-
+    # define learning rate scheduler 
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.7)
     best_test_acc = 0.0
 
     # train and test loop
     for epoch in range(config.POINT_NUM_EPOCHS):
+        # train one epoch and log training accuracy
         train_acc = train(loader = loader, 
-                         classifier = classifier, 
-                         criterion = criterion, 
-                         optimizer = optimizer, 
-                         scheduler = scheduler)
+                          classifier = classifier, 
+                          criterion = criterion, 
+                          optimizer = optimizer, 
+                          scheduler = scheduler)
         wandb.log({"train_acc": train_acc})
 
+        # disable gradient computation when testing
         with torch.no_grad():
+            # test one epoch and log test accuracy
             test_acc = test(classifier.eval(), val_loader)
             if (test_acc >= best_test_acc):
                 best_test_acc = test_acc
@@ -216,7 +226,8 @@ def main():
             wandb.log({"Best_acc": best_test_acc}, commit=False)
             log_string(f'Test Accuracy: {test_acc}')
             log_string(f'Best Accuracy: {best_test_acc}')
-
+            
+            # save model if test accuracy is the best so far
             if (test_acc >= best_test_acc):
                 logger.info('Save model...')
                 savepath = str(checkpoints_dir) + '/best_model.pth'

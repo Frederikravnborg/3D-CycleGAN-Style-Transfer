@@ -31,8 +31,8 @@ class get_model(nn.Module):
         x = self.fc3(x)
         # return torch.sigmoid(x)
 
-        # x = F.log_softmax(x, dim=1)
-        x = F.softmax(x, dim=1)
+        x = F.log_softmax(x, dim=1)
+        # x = F.softmax(x, dim=1)
         return x, trans_feat
 
 class get_loss(torch.nn.Module):
@@ -41,7 +41,7 @@ class get_loss(torch.nn.Module):
         self.mat_diff_loss_scale = mat_diff_loss_scale
 
     def forward(self, pred, target, trans_feat):
-        loss = F.nll_loss(pred, target)
+        loss = F.nll_loss(pred.squeeze(), target.squeeze().long())
         mat_diff_loss = feature_transform_regularizer(trans_feat)
 
         total_loss = loss + mat_diff_loss * self.mat_diff_loss_scale
