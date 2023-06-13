@@ -44,36 +44,26 @@ def inplace_relu(m):
 def train(loader, classifier, criterion, optimizer, scheduler):
     mean_correct = []
     classifier = classifier.train()
-
     scheduler.step()
 
     for batch_id, (female, male) in tqdm(enumerate(loader), total=len(loader), smoothing=0.9):
         optimizer.zero_grad()
 
         ### FEMALE ###
-        female = female.data.numpy()
-        female = torch.Tensor(female)
-        female = female.transpose(2, 1)
-        targetF = torch.zeros(len(female))
-
-        female, targetF = female.to(device).float(), targetF.to(device).float()
+        female = torch.Tensor(female.data.numpy()).transpose(2,1).to(device).float()
+        targetF = torch.zeros(len(female)).to(device).float()
 
         ### MALE ###
-        male = male.data.numpy()
-        male = torch.Tensor(male)
-        male = male.transpose(2, 1)
-        targetM = torch.ones(len(male))
-        
-        male, targetM = male.to(device).float(), targetM.to(device).float()
+        male = torch.Tensor(male.data.numpy()).transpose(2,1).to(device).float()
+        targetM = torch.ones(len(male)).to(device).float()
 
-        predF, trans_featF = classifier(female)
-        predM, trans_featM = classifier(male)
-        pred = torch.cat((predF, predM))
-        target = torch.cat((targetF, targetM)).unsqueeze(0)
-        trans_feat = torch.cat((trans_featF, trans_featM))
+        persons = torch.cat((female, male))
+        target = torch.cat((targetF, targetM))
         # target = torch.from_numpy(np.array([[1-a, a] for a in target])).transpose(1,0)
 
-        loss = criterion(pred.transpose(1,0).squeeze(), target.squeeze().long(), trans_feat)
+        pred, trans_feat = classifier(persons)
+
+        loss = criterion(pred.transpose(1,0).squeeze(), target.squeeze())
         loss.backward()
 
         pred_choice = pred.data.max(1)[1]
@@ -177,9 +167,10 @@ def main():
     num_class = 2
 
     classifier = get_model(1).to(device) # 1 for binary classification in stead of 1
-    criterion = # torch.nn.MSELoss().to(device)
-    criterion = get_loss().to(device)
-    ### brug binary cross entropy loss eller get_loss
+    # criterion = torch.nn.MSELoss().to(device)
+    # criterion = get_loss().to(device)
+    # cross entropy loss for classification
+    criterion = torch.nn.CrossEntropyLoss().to(device)
 
     classifier.apply(inplace_relu)
 

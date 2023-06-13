@@ -193,3 +193,4 @@ wandb/
 
 
 wandb/latest-run
+*.obj
