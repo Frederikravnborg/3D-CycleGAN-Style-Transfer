@@ -4,6 +4,8 @@ import numpy as np
 import trimesh
 import matplotlib.pyplot as plt
 from matplotlib import colors
+import glob
+import os
 
 
 def color_pcd(pcd):
@@ -66,7 +68,7 @@ def color_pcd(pcd):
 
 
 
-def visual_pcd(path, axislim=0.6, dotsize=50, border=0.5):
+def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
     pcd = trimesh.load(path)
     pcd = torch.from_numpy(pcd.vertices).float()
     color_per_point = color_pcd(pcd)
@@ -86,11 +88,16 @@ def visual_pcd(path, axislim=0.6, dotsize=50, border=0.5):
     ax.set_zticks([])
     plt.axis('off')
     plt.show()
+
     
 
 if __name__ == "__main__":
-    path = "./data/val/generated_female/female_200.obj"
-    visual_pcd(path, dotsize=50, border=0.5)
+    root_female = "./data/val/generated_female/"
+    root_male = "./data/val/generated_male/"
+    female_paths = glob.glob(os.path.join(root_female, '*.obj'))
+    male_paths = glob.glob(os.path.join(root_male, '*.obj'))
+
+    visual_pcd(male_paths[0])
 
 
 
