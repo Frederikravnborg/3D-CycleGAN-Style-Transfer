@@ -68,40 +68,77 @@ def color_pcd(pcd):
 
 
 
-def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
-    pcd = trimesh.load(path)
-    pcd = torch.from_numpy(pcd.vertices).float()
-    color_per_point = color_pcd(pcd)
-    pcd = pcd.squeeze().cpu()
-    if pcd.requires_grad:
-        pcd = pcd.detach()
-    fig = plt.figure()
-    ax = fig.add_subplot(projection="3d")
-    ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
-    ax.set_xlim3d(-axislim, axislim)
-    ax.set_ylim3d(-axislim, axislim)
-    ax.set_zlim3d(-axislim, axislim)
-    ax.set_box_aspect((1, 1, 1))
-    ax.view_init(elev=20, azim=-170, roll=0)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_zticks([])
-    plt.axis('off')
+# def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
+#     pcd = trimesh.load(path)
+#     pcd = torch.from_numpy(pcd.vertices).float()
+#     color_per_point = color_pcd(pcd)
+#     pcd = pcd.squeeze().cpu()
+#     if pcd.requires_grad:
+#         pcd = pcd.detach()
+#     fig = plt.figure()
+#     ax = fig.add_subplot(projection="3d")
+#     ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
+#     ax.set_xlim3d(-axislim, axislim)
+#     ax.set_ylim3d(-axislim, axislim)
+#     ax.set_zlim3d(-axislim, axislim)
+#     ax.set_box_aspect((1, 1, 1))
+#     ax.view_init(elev=20, azim=-170, roll=0)
+#     ax.set_xticks([])
+#     ax.set_yticks([])
+#     ax.set_zticks([])
+#     plt.axis('off')
+#     plt.show()
+
+    
+
+# if __name__ == "__main__":
+#     path = "./results_pcd/Pretrain_Foldingnet/"
+#     epoch = 10
+#     gender = 0
+#     gender_path = ["female" if gender == 0 else "male"][0]
+#     root = f"epoch_{epoch}_{gender_path}_0.obj"
+
+
+def visual_pcd(path, gender):
+    axislim=0.6
+    dotsize=20
+    border=0.2
+    step_size = 2
+    num_per_row = 5
+    num_row = 4
+    num_pcds = num_per_row * num_row 
+    fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
+    fig.subplots_adjust(hspace=0.1, wspace=0.1)
+    
+    for epoch in range(num_pcds):
+        current_path = f"{path}/epoch_{epoch*step_size}_{'female' if gender == 0 else 'male'}_0.obj"
+        
+        pcd = trimesh.load(current_path)
+        pcd = torch.from_numpy(pcd.vertices).float()
+        color_per_point = color_pcd(pcd)
+        pcd = pcd.squeeze().cpu()
+        if pcd.requires_grad:
+            pcd = pcd.detach()
+        
+        if num_row > 1:
+            ax = axs[epoch // num_per_row, epoch % num_per_row]
+        else:
+            ax = axs[epoch % num_per_row]
+        ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
+        ax.set_xlim3d(-axislim, axislim)
+        ax.set_ylim3d(-axislim, axislim)
+        ax.set_zlim3d(-axislim, axislim)
+        ax.set_box_aspect((1, 1, 1))
+        ax.view_init(elev=20, azim=-170, roll=0)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        ax.set_title(f'Epoch {(epoch*step_size)+1}')
+        ax.axis('off')
+    
     plt.show()
 
-    
-
 if __name__ == "__main__":
-    path = "./results_pcd/Pretrain_Foldingnet/"
-    epoch = 10
+    path = "./results_pcd/1200_E0/"
     gender = 0
-    gender_path = ["female" if gender == 0 else "male"][0]
-    root = f"epoch_{epoch}_{gender_path}_0.obj"
-
-   # visual_pcd(male_paths[0])
-    visual_pcd(path+root)
-
-
-
-
-    
+    visual_pcd(path, gender)
