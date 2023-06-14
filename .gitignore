@@ -185,13 +185,12 @@ log/classification/2023-04-18_17-04/logs/pointnet_model 2.txt
 
 .DS_Store
 
-
-
 wandb/
 *.csv
 *.tar
 
-
+data/
 wandb/latest-run
-*.obj
+saved_pcds/
+pre_saved_models/
 *.txt

@@ -31,7 +31,7 @@ val_dataset = ObjDataset(
     transform=None,
     n_points=config.N_POINTS
 )
-val_loader = DataLoader(val_dataset, batch_size=1, pin_memory=True)
+val_loader = DataLoader(val_dataset, batch_size=10, pin_memory=True)
 
 loop = tqdm(val_loader, leave=True) #Progress bar
 
@@ -40,8 +40,8 @@ for idx, (female, male) in enumerate(loop):
     female = female.to(config.DEVICE).float()
     male = male.to(config.DEVICE).float()
 
-    fake_female, _, _ = gen_F(female)
-    fake_male, _, _ = gen_M(male)
+    fake_female, _, _ = gen_F(male)
+    fake_male, _, _ = gen_M(female)
 
     # Save the generated point clouds through Trimesh
     female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)

@@ -95,7 +95,7 @@ def test(model, loader, num_class=2):
         male, targetM = male.to(device), targetM.to(device)
         male = male.transpose(2, 1)
         predM, _ = classifier(male)
-
+        
         pred = torch.cat((predF, predM))
         target = torch.cat((targetF, targetM))
         pred_choice = pred.data.max(1)[1]
