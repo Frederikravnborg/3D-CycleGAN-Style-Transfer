@@ -99,7 +99,7 @@ def color_pcd(pcd):
 #     root = f"epoch_{epoch}_{gender_path}_0.obj"
 
 
-def visual_pcd(path, gender):
+def visual_pcd_onetype(path, gender):
     axislim=0.6
     dotsize=20
     border=0.2
@@ -142,7 +142,61 @@ def visual_pcd(path, gender):
     
     plt.show()
 
+
+def visual_pcd_pretrain(path, gender):
+    axislim = 0.6
+    dotsize = 20
+    border = 0.2
+    step_size = 5
+    num_per_row = 5
+    num_row = 4
+    num_pcds = num_per_row * num_row 
+    epoch_list = [49, 99, 199, 499, 799, 1199]
+    fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
+    fig.subplots_adjust(hspace=0.4, wspace=0.1)
+    
+    for i in range(3):
+        current_path = path[i]
+        print(f"Processing path {i+1}")
+        for epoch in range(num_per_row):
+            file_path = f"{current_path}epoch_{epoch_list[epoch]}_{'female' if gender == 0 else 'male'}_0.obj"
+
+            pcd = trimesh.load(file_obj=file_path, header=None)
+            pcd = torch.from_numpy(pcd.vertices).float()
+            color_per_point = color_pcd(pcd)
+            pcd = pcd.squeeze().cpu()
+            if pcd.requires_grad:
+                pcd = pcd.detach()
+            
+            if num_row > 1:
+                ax = axs[epoch // num_per_row, epoch % num_per_row]
+            else:
+                ax = axs[epoch % num_per_row]
+                
+            ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point / 255.0, s=dotsize, edgecolors='black', linewidths=border)
+            ax.set_xlim3d(-axislim, axislim)
+            ax.set_ylim3d(-axislim, axislim)
+            ax.set_zlim3d(-axislim, axislim)
+            ax.set_box_aspect((1, 1, 1))
+            ax.view_init(elev=20, azim=-170, roll=0)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.set_zticks([])
+            ax.set_title(f'Epoch {epoch_list[epoch] + 1}')
+            ax.axis('off')
+            print("Plotting completed for epoch", epoch_list[epoch])
+        
+    plt.show()
+
 if __name__ == "__main__":
-    path = "./results_pcd/baseline/"
-    gender = 1
-    visual_pcd(path, gender)
+    path = ["./results_pcd/1200_E25/",
+            "./results_pcd/1200_E50/",
+            "./results_pcd/1200_E75/",
+            "./results_pcd/1200_E100/"]
+    gender = 0
+    visual_pcd_pretrain(path, gender)
+
+# if __name__ == "__main__":
+#     path = "./results_pcd/1200_E25"
+#     gender = 1
+#     visual_pcd_onetype(path, gender)
