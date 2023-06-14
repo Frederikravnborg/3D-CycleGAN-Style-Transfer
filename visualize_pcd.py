@@ -92,12 +92,14 @@ def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
     
 
 if __name__ == "__main__":
-    root_female = "./data/val/generated_female/"
-    root_male = "./data/val/generated_male/"
-    female_paths = glob.glob(os.path.join(root_female, '*.obj'))
-    male_paths = glob.glob(os.path.join(root_male, '*.obj'))
+    path = "./results_pcd/Pretrain_Foldingnet/"
+    epoch = 10
+    gender = 0
+    gender_path = ["female" if gender == 0 else "male"][0]
+    root = f"epoch_{epoch}_{gender_path}_0.obj"
 
-    visual_pcd(male_paths[0])
+   # visual_pcd(male_paths[0])
+    visual_pcd(path+root)
 
 
 
