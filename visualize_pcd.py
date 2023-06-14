@@ -103,16 +103,19 @@ def visual_pcd(path, gender):
     axislim=0.6
     dotsize=20
     border=0.2
-    step_size = 2
+    step_size = 5
     num_per_row = 5
-    num_row = 4
+    num_row = 2
     num_pcds = num_per_row * num_row 
+    epoch_list = [0,4,9,19,49,99,199,499,799,1199]
     fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
     fig.subplots_adjust(hspace=0.1, wspace=0.1)
     
     for epoch in range(num_pcds):
-        current_path = f"{path}/epoch_{epoch*step_size}_{'female' if gender == 0 else 'male'}_0.obj"
-        
+        # current_path = f"{path}/epoch_{epoch*step_size**2}_{'female' if gender == 0 else 'male'}_0.obj"
+        current_path = f"{path}/epoch_{epoch_list[epoch]}_{'female' if gender == 0 else 'male'}_0.obj"
+
+
         pcd = trimesh.load(current_path)
         pcd = torch.from_numpy(pcd.vertices).float()
         color_per_point = color_pcd(pcd)
@@ -133,12 +136,13 @@ def visual_pcd(path, gender):
         ax.set_xticks([])
         ax.set_yticks([])
         ax.set_zticks([])
-        ax.set_title(f'Epoch {(epoch*step_size)+1}')
+        # ax.set_title(f'Epoch {(epoch*step_size**2)+1}')
+        ax.set_title(f'Epoch {epoch_list[epoch]+1}')
         ax.axis('off')
     
     plt.show()
 
 if __name__ == "__main__":
-    path = "./results_pcd/1200_E0/"
-    gender = 0
+    path = "./results_pcd/baseline/"
+    gender = 1
     visual_pcd(path, gender)
