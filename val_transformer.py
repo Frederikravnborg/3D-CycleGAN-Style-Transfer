@@ -46,9 +46,9 @@ for idx, (female, male) in enumerate(loop):
     # Save the generated point clouds through Trimesh
     female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)
     fake_female = trimesh.Trimesh(vertices=female_vertices)
-    fake_female.export(f"data/val/generated_female/female_{idx}.obj")
+    fake_female.export(f"data/val/generated_female/female_{idx}.obj", header = None)
 
     male_vertices = fake_male[0].detach().cpu().numpy().transpose(1,0)
     fake_male = trimesh.Trimesh(vertices=male_vertices)
-    fake_male.export(f"data/val/generated_male/male_{idx}.obj")
+    fake_male.export(f"data/val/generated_male/male_{idx}.obj", header = None)
 
