@@ -1,6 +1,7 @@
 import os
 import sys
 import torch
+from torch import autograd
 import numpy as np
 import datetime
 import logging
@@ -61,12 +62,13 @@ def train(loader, classifier, criterion, optimizer, scheduler):
         target = torch.cat((targetF, targetM))
         # target = torch.from_numpy(np.array([[1-a, a] for a in target])).transpose(1,0)
 
-        pred, trans_feat = classifier(persons)
+        pred2d, trans_feat = classifier(persons)
+        pred = autograd.Variable(pred2d.data.max(1)[0], requires_grad=True)
 
-        loss = criterion(pred.squeeze(), target.squeeze().long())
+        loss = criterion(pred, target)
         loss.backward()
 
-        pred_choice = pred.data.max(1)[1]
+        pred_choice = pred2d.data.max(1)[1]
 
         correct = pred_choice.eq(target.long().data).cpu().sum()
         mean_correct.append(correct.item() / float(female.size()[0] + male.size()[0]))
@@ -163,10 +165,8 @@ def main():
     loader = DataLoader(dataset, batch_size=config.POINT_BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=config.POINT_BATCH_SIZE, shuffle=True, pin_memory=True)
     
-
-    num_class = 2
-
-    classifier = get_model(k=2).to(device) # 1 for binary classification in stead of 1
+    # define model and move it to GPU
+    classifier = get_model(k=2).to(device) # 1 for binary classification in stead of 2
     # criterion = torch.nn.MSELoss().to(device)
     # criterion = get_loss().to(device)
     # cross entropy loss for classification
