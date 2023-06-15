@@ -1,12 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from load_data import ObjDataset
-from torch.utils.data import DataLoader
-import config
 from tqdm import tqdm
-import trimesh
 import numpy as np
-import config
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -117,19 +112,28 @@ def visualize_chamfer_loss(val_loader, gen_loader):
 
 # load meshes data
 losses = np.load("losses.npy")
+gen_losses = np.load("gen_losses.npy")
+
+# create subplots
+fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
 
 # visualize loss in histogram
-plt.hist(np.mean(losses, axis=1), bins=100)
-plt.xlabel('Chamfer distance')
-plt.ylabel('Frequency')
-plt.title('Chamfer distance between generated meshes')
-plt.show()
+# master title
+fig.suptitle('Chamfer distance between generated and real meshes')
+plt.figure(0)
+axs[0].hist(np.mean(losses, axis=1), bins=100)
+axs[0].set_title('Real meshes')
+axs[0].set_xlabel('Chamfer distance')
+axs[0].set_ylabel('Frequency')
 
-losses = np.load("gen_losses.npy")
+plt.figure(1)
+axs[1].hist(np.mean(gen_losses, axis=1), bins=100, color='orange')
+axs[1].set_title('Generated meshes')
+axs[1].set_xlabel('Chamfer distance')
+axs[1].set_ylabel('Frequency')
+
+plt.show()
 
 # visualize loss in histogram
-plt.hist(np.mean(losses, axis=1), bins=100)
-plt.xlabel('Chamfer distance')
-plt.ylabel('Frequency')
-plt.title('Chamfer distance between generated meshes')
-plt.show()
+
+
