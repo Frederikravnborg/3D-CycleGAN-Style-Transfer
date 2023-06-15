@@ -67,37 +67,50 @@ def color_pcd(pcd):
     return np.array(color_per_point)
 
 
+def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
+    pcd = trimesh.load(path)
+    pcd = torch.from_numpy(pcd.vertices).float()
+    color_per_point = color_pcd(pcd)
+    pcd = pcd.squeeze().cpu()
+    if pcd.requires_grad:
+        pcd = pcd.detach()
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+    ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
+    ax.set_xlim3d(-axislim, axislim)
+    ax.set_ylim3d(-axislim, axislim)
+    ax.set_zlim3d(-axislim, axislim)
+    ax.set_box_aspect((1, 1, 1))
+    ax.view_init(elev=20, azim=-170, roll=0)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    plt.axis('off')
+    plt.show()
 
-# def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
-#     pcd = trimesh.load(path)
-#     pcd = torch.from_numpy(pcd.vertices).float()
-#     color_per_point = color_pcd(pcd)
-#     pcd = pcd.squeeze().cpu()
-#     if pcd.requires_grad:
-#         pcd = pcd.detach()
-#     fig = plt.figure()
-#     ax = fig.add_subplot(projection="3d")
-#     ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
-#     ax.set_xlim3d(-axislim, axislim)
-#     ax.set_ylim3d(-axislim, axislim)
-#     ax.set_zlim3d(-axislim, axislim)
-#     ax.set_box_aspect((1, 1, 1))
-#     ax.view_init(elev=20, azim=-170, roll=0)
-#     ax.set_xticks([])
-#     ax.set_yticks([])
-#     ax.set_zticks([])
-#     plt.axis('off')
-#     plt.show()
-
-    
-
-# if __name__ == "__main__":
-#     path = "./results_pcd/Pretrain_Foldingnet/"
-#     epoch = 10
-#     gender = 0
-#     gender_path = ["female" if gender == 0 else "male"][0]
-#     root = f"epoch_{epoch}_{gender_path}_0.obj"
-
+def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5):
+    pcd = trimesh.load(path)
+    pcd = torch.from_numpy(pcd.vertices).float()
+    color_per_point = color_pcd(pcd)
+    pcd = pcd.squeeze().cpu()
+    if pcd.requires_grad:
+        pcd = pcd.detach()
+    fig, axs = plt.subplots(1, 2, figsize=(15, 5), subplot_kw={'projection': '3d'})
+    fig.subplots_adjust(hspace=0, wspace=0.05)
+    rotations = [120, -145]
+    for i, ax in enumerate(axs):
+        ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
+        ax.set_xlim3d(-axislim, axislim)
+        ax.set_ylim3d(-axislim, axislim)
+        ax.set_zlim3d(-axislim, axislim)
+        ax.set_box_aspect((1, 1, 1))
+        ax.view_init(elev=20, azim=rotations[i], roll=0)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        ax.set_axis_off()
+    fig.suptitle('Generated Female', fontsize=16)
+    plt.show()
 
 def visual_pcd_onetype(path, gender):
     axislim=0.6
@@ -142,20 +155,96 @@ def visual_pcd_onetype(path, gender):
     
     plt.show()
 
+def visual_pcd_mode_collapse(path):
+    axislim=0.6
+    dotsize=20
+    border=0.2
+    num_per_row = 4
+    num_row = 1
+    num_pcds = num_per_row * num_row 
+    epoch_list = [0, 99, 199, 299]
+    fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
+    fig.subplots_adjust(hspace=0.1, wspace=0.1)
+    
+    for epoch in range(num_pcds):
+        current_path = path
+        pcd = trimesh.load(current_path)
+        pcd = torch.from_numpy(pcd.vertices).float()
+        color_per_point = color_pcd(pcd)
+        pcd = pcd.squeeze().cpu()
+        if pcd.requires_grad:
+            pcd = pcd.detach()
+        
+        if num_row > 1:
+            ax = axs[epoch // num_per_row, epoch % num_per_row]
+        else:
+            ax = axs[epoch % num_per_row]
+        ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
+        ax.set_xlim3d(-axislim, axislim)
+        ax.set_ylim3d(-axislim, axislim)
+        ax.set_zlim3d(-axislim, axislim)
+        ax.set_box_aspect((1, 1, 1))
+        ax.view_init(elev=20, azim=-170, roll=0)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        # ax.set_title(f'Epoch {(epoch*step_size**2)+1}')
+        ax.set_title(f'Fake Male {epoch_list[epoch]+1}')
+        ax.axis('off')
+    
+    plt.show()
+
+
+def visual_custom_pcds(paths, titles):
+    axislim=0.6
+    dotsize=20
+    border=0.2
+    num_per_row = 2
+    num_row = 1
+    num_pcds = num_per_row * num_row
+    fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
+    fig.subplots_adjust(hspace=0.1, wspace=0.1)
+    
+    for i in range(num_pcds):
+        current_path = paths[i]
+        pcd = trimesh.load(current_path)
+        pcd = torch.from_numpy(pcd.vertices).float()
+        color_per_point = color_pcd(pcd)
+        pcd = pcd.squeeze().cpu()
+        if pcd.requires_grad:
+            pcd = pcd.detach()
+        
+        if num_row > 1:
+            ax = axs[i // num_per_row, i % num_per_row]
+        else:
+            ax = axs[i % num_per_row]
+        ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c=color_per_point/255.0, s=dotsize, edgecolors='black', linewidths=border)
+        ax.set_xlim3d(-axislim, axislim)
+        ax.set_ylim3d(-axislim, axislim)
+        ax.set_zlim3d(-axislim, axislim)
+        ax.set_box_aspect((1, 1, 1))
+        ax.view_init(elev=20, azim=-170, roll=0)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        ax.set_title(titles[i])
+        ax.axis('off')
+    
+    plt.show()
 
 def visual_pcd_pretrain(path, gender):
     axislim = 0.6
     dotsize = 20
     border = 0.2
     step_size = 5
-    num_per_row = 5
-    num_row = 4
+    epoch_list = [0, 2, 9, 49, 199]
+    num_per_row = len(epoch_list)
+    num_row = len(path)
     num_pcds = num_per_row * num_row 
-    epoch_list = [49, 99, 199, 499, 799, 1199]
     fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
     fig.subplots_adjust(hspace=0.4, wspace=0.1)
     
-    for i in range(3):
+    for i in range(num_row):
         current_path = path[i]
         print(f"Processing path {i+1}")
         for epoch in range(num_per_row):
@@ -169,7 +258,7 @@ def visual_pcd_pretrain(path, gender):
                 pcd = pcd.detach()
             
             if num_row > 1:
-                ax = axs[epoch // num_per_row, epoch % num_per_row]
+                ax = axs[epoch // num_per_row + i, epoch % num_per_row]
             else:
                 ax = axs[epoch % num_per_row]
                 
@@ -181,7 +270,7 @@ def visual_pcd_pretrain(path, gender):
             ax.view_init(elev=20, azim=-170, roll=0)
             ax.set_xticks([])
             ax.set_yticks([])
-            ax.set_zticks([])
+            ax.set_zticks([])            
             ax.set_title(f'Epoch {epoch_list[epoch] + 1}')
             ax.axis('off')
             print("Plotting completed for epoch", epoch_list[epoch])
@@ -189,14 +278,35 @@ def visual_pcd_pretrain(path, gender):
     plt.show()
 
 if __name__ == "__main__":
-    path = ["./results_pcd/1200_E25/",
-            "./results_pcd/1200_E50/",
-            "./results_pcd/1200_E75/",
-            "./results_pcd/1200_E100/"]
-    gender = 0
-    visual_pcd_pretrain(path, gender)
+    '''Pretrain'''
+#     path = ["./results_pcd/1200_E25/",
+#             "./results_pcd/1200_E50/",
+#             "./results_pcd/1200_E75/",
+#             "./results_pcd/1200_E100/"]
+#     gender = 0
+    # visual_pcd_pretrain(path, gender)
 
-# if __name__ == "__main__":
-#     path = "./results_pcd/1200_E25"
-#     gender = 1
-#     visual_pcd_onetype(path, gender)
+    '''One type'''
+    # path = "./results_pcd/baseline"
+    # gender = 0
+    # visual_pcd_onetype(path, gender)
+
+
+    '''Angles'''
+    # path = "./results_pcd/baseline/"
+    # epoch = 460
+    # gender = 1
+    # gender_path = ["female" if gender == 0 else "male"][0]
+    # root = f"epoch_{epoch}_{gender_path}_0.obj"
+    # visual_pcd_angles(path + root)
+
+    '''mode collapse'''
+    # path = "./data/val/generated_male/male_0.obj"
+    # visual_pcd_mode_collapse(path)
+
+    '''custom pcds'''
+    paths = ["./results_pcd/baseline/epoch_460_female_0.obj",
+             "./results_pcd/baseline/epoch_461_female_0.obj"]
+    titles = ["Fake Female (Epoch 460)", "Fake Female (Epoch 461)"]
+    visual_custom_pcds(paths, titles)
+    
