@@ -6,7 +6,21 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 import glob
 import os
+import json
 
+def convert_to_obj(path):
+    # Load the .pts.json file
+    with open(path, 'r') as f:
+        data = json.load(f)
+
+    # Extract the points from the data
+    points = np.array(data)
+
+    # Create a Trimesh object from the points
+    mesh = trimesh.Trimesh(vertices=points)
+
+    # Save the mesh as an .obj file in the same directory
+    mesh.export(path[:-9] + '.obj')
 
 def color_pcd(pcd):
     if pcd.requires_grad:
@@ -109,7 +123,7 @@ def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5):
         ax.set_yticks([])
         ax.set_zticks([])
         ax.set_axis_off()
-    fig.suptitle('Generated Female', fontsize=16)
+    fig.suptitle('Original Male', fontsize=16)
     plt.show()
 
 def visual_pcd_onetype(path, gender):
@@ -120,7 +134,7 @@ def visual_pcd_onetype(path, gender):
     num_per_row = 5
     num_row = 2
     num_pcds = num_per_row * num_row 
-    epoch_list = [0,4,9,19,49,99,199,499,799,1199]
+    epoch_list = [0,1,4,9,19,49,99,199,499,1199]
     fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
     fig.subplots_adjust(hspace=0.1, wspace=0.1)
     
@@ -234,7 +248,7 @@ def visual_custom_pcds(paths, titles):
 
 def visual_pcd_pretrain(path, gender):
     axislim = 0.6
-    dotsize = 20
+    dotsize = 5
     border = 0.2
     step_size = 5
     epoch_list = [0, 2, 9, 49, 199]
@@ -242,11 +256,10 @@ def visual_pcd_pretrain(path, gender):
     num_row = len(path)
     num_pcds = num_per_row * num_row 
     fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
-    fig.subplots_adjust(hspace=0.4, wspace=0.1)
+    fig.subplots_adjust(hspace=0.15, wspace=0)
     
     for i in range(num_row):
         current_path = path[i]
-        print(f"Processing path {i+1}")
         for epoch in range(num_per_row):
             file_path = f"{current_path}epoch_{epoch_list[epoch]}_{'female' if gender == 0 else 'male'}_0.obj"
 
@@ -273,40 +286,44 @@ def visual_pcd_pretrain(path, gender):
             ax.set_zticks([])            
             ax.set_title(f'Epoch {epoch_list[epoch] + 1}')
             ax.axis('off')
-            print("Plotting completed for epoch", epoch_list[epoch])
         
     plt.show()
 
 if __name__ == "__main__":
     '''Pretrain'''
-#     path = ["./results_pcd/1200_E25/",
-#             "./results_pcd/1200_E50/",
-#             "./results_pcd/1200_E75/",
-#             "./results_pcd/1200_E100/"]
-#     gender = 0
+    # path = ["./results_pcd/1200_E25/",
+    #         "./results_pcd/1200_E50/",
+    #         "./results_pcd/1200_E75/",
+    #         "./results_pcd/1200_E100/"]
+    # gender = 1
     # visual_pcd_pretrain(path, gender)
 
     '''One type'''
-    # path = "./results_pcd/baseline"
-    # gender = 0
-    # visual_pcd_onetype(path, gender)
+    path = "./results_pcd/baseline"
+    gender = 0
+    visual_pcd_onetype(path, gender)
 
 
     '''Angles'''
-    # path = "./results_pcd/baseline/"
+    # path = "./results_pcd/baseline/epoch_460_female_0.obj"
     # epoch = 460
     # gender = 1
     # gender_path = ["female" if gender == 0 else "male"][0]
     # root = f"epoch_{epoch}_{gender_path}_0.obj"
-    # visual_pcd_angles(path + root)
+    # visual_pcd_angles(path)
 
     '''mode collapse'''
     # path = "./data/val/generated_male/male_0.obj"
     # visual_pcd_mode_collapse(path)
 
-    '''custom pcds'''
-    paths = ["./results_pcd/baseline/epoch_460_female_0.obj",
-             "./results_pcd/baseline/epoch_461_female_0.obj"]
-    titles = ["Fake Female (Epoch 460)", "Fake Female (Epoch 461)"]
-    visual_custom_pcds(paths, titles)
+    # '''custom pcds'''
+    # paths = ["./results_pcd/baseline/epoch_460_female_0.obj",
+    #          "./results_pcd/baseline/epoch_461_female_0.obj"]
+    
+    # titles = ["Fake Female (Epoch 460)", "Fake Female (Epoch 461)"]
+    # visual_custom_pcds(paths, titles)
+
+    # convert_to_obj("./results_pcd/OG/cycle_male_460.pts.json")
+
+
     
