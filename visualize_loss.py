@@ -172,6 +172,7 @@ if __name__ == '__main__':
                 gen_losses[i][j] = chamfer_loss
     # save losses to npy
     np.save("gen_losses.npy", gen_losses)
+    print("done")
 
     
 
