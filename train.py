@@ -100,7 +100,7 @@ def train(
         """  FEMALE -> MALE  """
         fake_male, _, _ = gen_M(female) #Creating fake input
         D_M_real = disc_M(torch.transpose(male,1,2))[0] #Giving discriminator real input
-        D_M_fake = disc_M(fake_male.detach())[0] #Giving discriminator fake input
+        D_M_fake = disc_M(fake_male)[0] #Giving discriminator fake input
         # error between discriminator output and expected output
         D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real)) #MSE of D_M_real, expect 1
         D_M_fake_loss = mse(D_M_fake, torch.zeros_like(D_M_fake)) #MSE of D_M_fake, expect 0
@@ -109,7 +109,7 @@ def train(
         """  MALE -> FEMALE  """
         fake_female, _, _ = gen_F(male)
         D_F_real = disc_F(torch.transpose(female,1,2))[0]
-        D_F_fake = disc_F(fake_female.detach())[0]
+        D_F_fake = disc_F(fake_female)[0]
         # error between discriminator output and expected output
         D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real)) #MSE of D_F_real, expect 1
         D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake)) #MSE of D_F_fake, expect 0
@@ -146,7 +146,7 @@ def train(
         G_loss = (loss_G_F + loss_G_M + cycle_loss)
 
         opt_gen.zero_grad()  # compute zero gradients
-        G_loss.backward()    # compute loss gradients wrt. to generator parameters
+        G_loss.backward(retain_graph=True)    # compute loss gradients wrt. to generator parameters
         opt_gen.step()       # update generator parameters
 
         # save point clouds every SAVE_RATE iterations

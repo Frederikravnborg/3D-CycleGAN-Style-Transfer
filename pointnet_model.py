@@ -22,9 +22,8 @@ class Discriminator(nn.Module):
     def forward(self, x):
         #x = x.transpose(2, 1)
         #print(x.shape)
-        noise = np.random.normal(0, 0.1, x.shape)
-        noise = torch.from_numpy(noise).float().to(config.DEVICE)
-        x = x + noise
+        #noise = np.random.normal(0, 0.1, x.shape)
+        #noise = torch.from_numpy(noise).float().to(config.DEVICE)
         x, trans, trans_feat = self.feat(x)
         x = F.relu(self.bn1(self.fc1(x)))
         x = F.relu(self.bn2(self.dropout(self.fc2(x))))
