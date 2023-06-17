@@ -102,7 +102,7 @@ def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
     plt.axis('off')
     plt.show()
 
-def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5):
+def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5, name = "noname", save_file = False):
     pcd = trimesh.load(path)
     pcd = torch.from_numpy(pcd.vertices).float()
     color_per_point = color_pcd(pcd)
@@ -123,8 +123,11 @@ def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5):
         ax.set_yticks([])
         ax.set_zticks([])
         ax.set_axis_off()
-    fig.suptitle('Original Male', fontsize=16)
-    plt.show()
+    fig.suptitle(name, fontsize=16)
+    if save_file:
+        plt.savefig(f"./images/{name}", dpi=300)
+    else:
+        plt.show()
 
 def visual_pcd_onetype(path, gender):
     axislim=0.6
@@ -169,7 +172,7 @@ def visual_pcd_onetype(path, gender):
     
     plt.show()
 
-def visual_pcd_mode_collapse(path):
+def visual_pcd_mode_collapse(path, save_file = False):
     axislim=0.6
     dotsize=20
     border=0.2
@@ -203,17 +206,19 @@ def visual_pcd_mode_collapse(path):
         ax.set_yticks([])
         ax.set_zticks([])
         # ax.set_title(f'Epoch {(epoch*step_size**2)+1}')
-        ax.set_title(f'Fake Male {epoch_list[epoch]+1}')
+        ax.set_title(f'Fake Female {epoch_list[epoch]+1}')
         ax.axis('off')
-    
-    plt.show()
+    if save_file:
+        plt.savefig(f"./images/mode_collapse", dpi=300)
+    else:
+        plt.show()
 
 
-def visual_custom_pcds(paths, titles):
+def visual_custom_pcds(paths, titles, name=None, save_file=False):
     axislim=0.6
     dotsize=20
     border=0.2
-    num_per_row = 2
+    num_per_row = len(paths)
     num_row = 1
     num_pcds = num_per_row * num_row
     fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
@@ -243,8 +248,11 @@ def visual_custom_pcds(paths, titles):
         ax.set_zticks([])
         ax.set_title(titles[i])
         ax.axis('off')
-    
-    plt.show()
+    if save_file:
+        plt.savefig(f"./images/{name}", dpi=300)
+    else:
+        plt.show()
+
 
 def visual_pcd_pretrain(path, gender):
     axislim = 0.6
@@ -256,7 +264,7 @@ def visual_pcd_pretrain(path, gender):
     num_row = len(path)
     num_pcds = num_per_row * num_row 
     fig, axs = plt.subplots(num_row, num_per_row, figsize=(20, 8), subplot_kw={'projection': '3d'})
-    fig.subplots_adjust(hspace=0.15, wspace=0)
+    fig.subplots_adjust(hspace=0, wspace=0)
     
     for i in range(num_row):
         current_path = path[i]
@@ -283,10 +291,11 @@ def visual_pcd_pretrain(path, gender):
             ax.view_init(elev=20, azim=-170, roll=0)
             ax.set_xticks([])
             ax.set_yticks([])
-            ax.set_zticks([])            
-            ax.set_title(f'Epoch {epoch_list[epoch] + 1}')
+            ax.set_zticks([])
+            if i == 0:            
+                ax.set_title(f'Epoch {epoch_list[epoch] + 1}')
             ax.axis('off')
-        
+    plt.savefig('./images/pretrain_females.png', dpi=400)
     plt.show()
 
 if __name__ == "__main__":
@@ -295,35 +304,55 @@ if __name__ == "__main__":
     #         "./results_pcd/1200_E50/",
     #         "./results_pcd/1200_E75/",
     #         "./results_pcd/1200_E100/"]
-    # gender = 1
+
+    # gender = 0
     # visual_pcd_pretrain(path, gender)
 
+
     '''One type'''
-    path = "./results_pcd/baseline"
-    gender = 0
-    visual_pcd_onetype(path, gender)
+    # path = "./results_pcd/baseline"
+    # gender = 0
+    # visual_pcd_onetype(path, gender)
+
+
+
+    '''mode collapse'''
+    path = "./data/val/generated_female/female_0.obj"
+    visual_pcd_mode_collapse(path, save_file=True)
+
+    # '''custom pcds'''
+    # paths = [
+    #          "./results_pcd/OG/OG_male_461.obj",
+    #          "./results_pcd/baseline/epoch_461_female_0.obj",
+    #          "./results_pcd/OG/cycle_male_461.obj",
+    #          ]
+    
+    # titles = [" ", " ", " "]
+    # visual_custom_pcds(paths, titles, name="crash_MFM", save_file=True)
 
 
     '''Angles'''
-    # path = "./results_pcd/baseline/epoch_460_female_0.obj"
+    # path = paths[2]
     # epoch = 460
     # gender = 1
     # gender_path = ["female" if gender == 0 else "male"][0]
     # root = f"epoch_{epoch}_{gender_path}_0.obj"
-    # visual_pcd_angles(path)
-
-    '''mode collapse'''
-    # path = "./data/val/generated_male/male_0.obj"
-    # visual_pcd_mode_collapse(path)
-
-    # '''custom pcds'''
-    # paths = ["./results_pcd/baseline/epoch_460_female_0.obj",
-    #          "./results_pcd/baseline/epoch_461_female_0.obj"]
-    
-    # titles = ["Fake Female (Epoch 460)", "Fake Female (Epoch 461)"]
-    # visual_custom_pcds(paths, titles)
-
-    # convert_to_obj("./results_pcd/OG/cycle_male_460.pts.json")
+    # visual_pcd_angles(path, name = "cycle_male_461", save_file=True)
 
 
+    # convert_to_obj("./results_pcd/OG/OG_male_461.pts.json")
+
+
+
+    # # plot row titles alone
+    # texts = ["Pretrained 100 epochs", "Pretrained 75 epochs", "Pretrained 50 epochs", "Pretrained 25 epochs"]
+    # fig, ax = plt.subplots()
+    # for i, text in enumerate(texts):
+    #     ax.text(0, i*2, text, fontsize=8)
+    # ax.set_xlim([-1, 1])
+    # ax.set_ylim([-0.2, len(texts)*2-0.2])
+    # ax.set_xlabel('X Label')
+    # ax.set_ylabel('Y Label')
+    # ax.axis('off')
+    # plt.savefig('./images/xxx', dpi=300)
     

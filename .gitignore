@@ -194,3 +194,7 @@ wandb/latest-run
 saved_pcds/
 pre_saved_models/
 *.txt
+results_pcd/
+images/
+saved_models/
+saved_pcds/

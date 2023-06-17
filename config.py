@@ -5,23 +5,21 @@ currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
 # Training Loop:
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train_test_10"
+TRAIN_DIR = "data/train"
 VAL_DIR = "data/val"
 N_POINTS = 2048
-BATCH_SIZE = 2
+BATCH_SIZE = 32
 LEARNING_RATE = 1e-4
 DISC_LR_FACTOR = 1
-NUM_WORKERS = 0
+NUM_WORKERS = 12
 MAX_DISTANCE = torch.tensor(1.0428)
-USE_WANDB = False
-
-
+USE_WANDB = True
 
 # GAN:
 TRAIN_GAN = True
-GAN_NUM_EPOCHS = 10
+GAN_NUM_EPOCHS = 300
 LOAD_MODEL = False
-SAVE_MODEL = True
+SAVE_MODEL = False
 SAVE_OBJ = True
 SAVE_RATE = 1 # Save pair of pcds every SAVE_RATE epochs
 DISC_WIDTH_REDUCER = 1 #factor must be a power of 2

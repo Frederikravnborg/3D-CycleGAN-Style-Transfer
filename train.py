@@ -99,7 +99,7 @@ def train(
         ####################  TRAIN DISCRIMINATORS  ####################
         """  FEMALE -> MALE  """
         fake_male, _, _ = gen_M(female) #Creating fake input
-        D_M_real = disc_M(torch.transpose(male,1,2))[0] #Giving discriminator real input
+        D_M_real = disc_M(torch.transpose(male,1,2).long())[0] #Giving discriminator real input
         D_M_fake = disc_M(fake_male.detach())[0] #Giving discriminator fake input
         # error between discriminator output and expected output
         D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real)) #MSE of D_M_real, expect 1
@@ -151,7 +151,11 @@ def train(
 
         # save point clouds every SAVE_RATE iterations
         if config.SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
-
+            wandb.log({"D_M_real": D_M_real}, commit=False)
+            wandb.log({"D_M_fake": D_M_fake}, commit=False)
+            wandb.log({"D_F_real": D_F_real}, commit=False)
+            wandb.log({"D_F_fake": D_F_fake}, commit=False)
+            
             fake_female_vertices = fake_female.transpose(2,1)[0].detach().cpu().numpy()
             fake_female = trimesh.Trimesh(vertices=fake_female_vertices)
             fake_female.export(f"{folder_name}/epoch_{epoch}_female_{idx}.obj")
