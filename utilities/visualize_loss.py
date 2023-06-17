@@ -119,16 +119,21 @@ fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
 
 # visualize loss in histogram
 # master title
-fig.suptitle('Chamfer distance between generated and real meshes')
+fig.suptitle('Chamfer distance between generated and real Point Clouds')
 plt.figure(0)
 axs[0].hist(np.mean(losses, axis=1), bins=100)
-axs[0].set_title('Real meshes')
+axs[0].set_title('Real Point Clouds')
 axs[0].set_xlabel('Chamfer distance')
 axs[0].set_ylabel('Frequency')
 
 plt.figure(1)
 axs[1].hist(np.mean(gen_losses, axis=1), bins=100, color='orange')
-axs[1].set_title('Generated meshes')
+#plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+# set x axis to scientific notation
+
+axs[1].ticklabel_format(style='sci', axis='x', scilimits=(-10, 10))
+
+axs[1].set_title('Generated Point Clouds')
 axs[1].set_xlabel('Chamfer distance')
 axs[1].set_ylabel('Frequency')
 
