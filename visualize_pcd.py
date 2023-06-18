@@ -317,18 +317,23 @@ if __name__ == "__main__":
 
 
     '''mode collapse'''
-    path = "./data/val/generated_female/female_0.obj"
-    visual_pcd_mode_collapse(path, save_file=True)
+    # path = "./data/val/generated_female/female_0.obj"
+    # visual_pcd_mode_collapse(path, save_file=True)
 
     # '''custom pcds'''
-    # paths = [
-    #          "./results_pcd/OG/OG_male_461.obj",
-    #          "./results_pcd/baseline/epoch_461_female_0.obj",
-    #          "./results_pcd/OG/cycle_male_461.obj",
-    #          ]
+    paths = [
+             "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git/results_pcd/OG/OG_male_461.obj",
+             "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git/results_pcd/baseline/epoch_460_female_0.obj",
+             "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git/results_pcd/OG/cycle_male_460.obj",
+             ]
+    paths = [
+            "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git/results_pcd/OG/female_0.obj",
+            "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git/results_pcd/baseline/epoch_600_male_0.obj",
+            "/Users/frederikravnborg/Documents/DTU-FredMac/Fagprojekt/Fagprojekt_Git/results_pcd/baseline/epoch_454_female_0.obj" 
+    ]
     
-    # titles = [" ", " ", " "]
-    # visual_custom_pcds(paths, titles, name="crash_MFM", save_file=True)
+    titles = ["OG female", "fake male", "cycle female"]
+    visual_custom_pcds(paths, titles, name="illustration_FMF", save_file=True)
 
 
     '''Angles'''
