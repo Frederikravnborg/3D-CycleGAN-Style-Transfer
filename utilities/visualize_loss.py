@@ -4,7 +4,7 @@ from tqdm import tqdm
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-
+# calculate chamfer distance between two point clouds outside of batches
 def chamfer_distance(x, y, metric='l2', direction='bi'):
     """Chamfer distance between two point clouds
     Parameters
@@ -46,6 +46,7 @@ def chamfer_distance(x, y, metric='l2', direction='bi'):
         
     return chamfer_dist
 
+# function to visualize loss from csv file
 def visualize_loss():
     filename = "output/loss_06.07.15.18.59.csv"
 
@@ -80,65 +81,5 @@ def visualize_loss():
     ax2.legend()
     ax2.set(xlabel='Epoch', ylabel='Loss', title='discriminator loss')
     plt.show()
-
-# Function that takes Chamfer Loss for all combinations of generated models, and real models
-def visualize_chamfer_loss(val_loader, gen_loader):
-    meshes = []
-    gen_meshes = []
-
-    loop = tqdm(val_loader, leave=True) #Progress bar
-    gen_loop = tqdm(gen_loader, leave=True) #Progress bar
-
-    for _, (female, male) in enumerate(loop):
-        female = female.to(config.DEVICE)
-        male = male.to(config.DEVICE)
-
-        meshes.append(female)
-
-    for _, (gen_female, gen_male) in enumerate(gen_loop):
-        gen_female = gen_female.to(config.DEVICE)
-        gen_male = gen_male.to(config.DEVICE)
-
-        gen_meshes.append(gen_female)
-
-
-    
-
-    # loop through the data loader
-    
-    
-    return meshes, gen_meshes
-
-
-# load meshes data
-losses = np.load("losses.npy")
-gen_losses = np.load("gen_losses.npy")
-
-# create subplots
-fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
-
-# visualize loss in histogram
-# master title
-fig.suptitle('Chamfer distance between generated and real Point Clouds')
-plt.figure(0)
-axs[0].hist(np.mean(losses, axis=1), bins=100)
-axs[0].set_title('Real Point Clouds')
-axs[0].set_xlabel('Chamfer distance')
-axs[0].set_ylabel('Frequency')
-
-plt.figure(1)
-axs[1].hist(np.mean(gen_losses, axis=1), bins=100, color='orange')
-#plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-# set x axis to scientific notation
-
-axs[1].ticklabel_format(style='sci', axis='x', scilimits=(-10, 10))
-
-axs[1].set_title('Generated Point Clouds')
-axs[1].set_xlabel('Chamfer distance')
-axs[1].set_ylabel('Frequency')
-
-plt.show()
-
-# visualize loss in histogram
 
 

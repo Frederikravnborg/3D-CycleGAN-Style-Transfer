@@ -5,6 +5,7 @@ import sys
 import config
 import copy
 
+# function for saving model checkpoints
 def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
     print("=> Saving checkpoint")
     checkpoint = {
@@ -13,7 +14,7 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
     }
     torch.save(checkpoint, filename)
 
-
+# function for loading model checkpoints
 def load_checkpoint(checkpoint_file, model, optimizer, lr):
     print("=> Loading checkpoint")
     checkpoint = torch.load(checkpoint_file, map_location='cpu')
@@ -25,7 +26,7 @@ def load_checkpoint(checkpoint_file, model, optimizer, lr):
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
 
-
+# seed everything for reproducibility
 def seed_everything(seed=42):
     os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)

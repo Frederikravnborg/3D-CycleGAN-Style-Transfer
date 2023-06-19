@@ -19,6 +19,7 @@ for i, (female, male) in enumerate(loader):
     female = trimesh.Trimesh(vertices=female_vertices)
     female.export(f"results_pcd/OG/female_{i}.obj")
 
+    # save models
     male_vertices = male.transpose(2,1)[0].detach().cpu().numpy().transpose(1,0)
     male = trimesh.Trimesh(vertices=male_vertices)
     male.export(f"results_pcd/OG/male_{i}.obj")    
