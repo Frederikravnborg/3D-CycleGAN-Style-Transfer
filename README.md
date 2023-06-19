@@ -11,7 +11,8 @@ The results show a successful style transfer between the sexes from the "Body Mo
 - [@LachlanHouston](https://github.com/LachlanHouston)
 - [@jozgu](https://github.com/jozgu)
 
-
+## Link to Dataset
+https://graphics.soe.ucsc.edu/data/BodyModels/
 
 # Acknowledgements
 The training cycle is based on the architecture provided by Aladdin Persson: https://github.com/aladdinpersson.
