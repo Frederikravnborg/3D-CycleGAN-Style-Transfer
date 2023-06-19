@@ -1,8 +1,6 @@
 import torch.nn as nn
-import torch.utils.data
 import torch.nn.functional as F
 from utilities.pointnet_utils import PointNetEncoder
-import numpy as np
 import config
 
 class Discriminator(nn.Module):
@@ -10,26 +8,32 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         channel = 3
         r = config.DISC_WIDTH_REDUCER
-        self.feat = PointNetEncoder(global_feat=True, feature_transform=True, channel=channel)
+
+        # pointnet encoder
+        self.feat = PointNetEncoder(global_feat=True, 
+                                    feature_transform=True, 
+                                    channel=channel)
+        
+        # linear block
         self.fc1 = nn.Linear(1024, int(512/r))
         self.fc2 = nn.Linear(int(512/r), int(256/r))
         self.fc3 = nn.Linear(int(256/r), k)
-        self.dropout = nn.Dropout(p=0.4)
+
+        # dropout layer
+        self.dropout = nn.Dropout(p=0.4)     
+
+        # batch normalization layers                                  
         self.bn1 = nn.BatchNorm1d(int(512/r))
         self.bn2 = nn.BatchNorm1d(int(256/r))
+
+        # activation function
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        #x = x.transpose(2, 1)
-        #print(x.shape)
-        # noise = np.random.normal(0, 0.1, x.shape)
-        # noise = torch.from_numpy(noise).float().to(config.DEVICE)
-        x = x
-        x, trans, trans_feat = self.feat(x)
+        x, _, trans_feat = self.feat(x)
         x = F.relu(self.bn1(self.fc1(x)))
         x = F.relu(self.bn2(self.dropout(self.fc2(x))))
         x = self.fc3(x)
-        # return torch.sigmoid(x)
 
         x = F.softmax(x, dim=1)
         return x, trans_feat

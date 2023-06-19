@@ -1,4 +1,3 @@
-#%%
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,9 +12,7 @@ class ChamferLoss(nn.Module):
         super(ChamferLoss, self).__init__()
         self.use_cuda = torch.cuda.is_available()
 
-    def batch_pairwise_dist(self, x, y):
-        bs, num_points_x, points_dim = x.size()
-        _, num_points_y, _ = y.size()
+    def batch_pairwise_dist(self, x, y): 
         xx = x.pow(2).sum(dim=-1)
         yy = y.pow(2).sum(dim=-1)
         zz = torch.bmm(x, y.transpose(2, 1))
@@ -25,17 +22,17 @@ class ChamferLoss(nn.Module):
         return P
     
     def forward(self, preds, gts):
-        P = self.batch_pairwise_dist(gts, preds)
-        mins, _ = torch.min(P, 1)
-        loss_1 = torch.mean(mins)
-        mins, _ = torch.min(P, 2)
-        loss_2 = torch.mean(mins)
+        P = self.batch_pairwise_dist(gts, preds)        # compute pairwise distance between preds and gts
+        mins, _ = torch.min(P, 1)                       # find the nearest gt point for each pred point
+        loss_1 = torch.mean(mins)                       # take mean across got <-> pred loss
+        mins, _ = torch.min(P, 2)                       # find the nearest pred point for each gt point
+        loss_2 = torch.mean(mins)                       # take mean across pred <-> gt loss
         return (loss_1 + loss_2)
 
-class FoldNet_Encoder(nn.Module):
+class FoldNet_Encoder(nn.Module): ## FoldingNet Encoder
     def __init__(self):
         super(FoldNet_Encoder, self).__init__()
-        self.k = 16
+        self.k = 16 # number of nearest neighbors
         self.n = config.N_POINTS   # input point cloud size
         self.mlp1 = nn.Sequential(
             nn.Conv1d(12, 64, 1),
@@ -68,8 +65,8 @@ class FoldNet_Encoder(nn.Module):
 
     def forward(self, pts):
         pts = pts.transpose(2, 1)               # (batch_size, 3, num_points)
-        idx = utils.knn(pts, k=self.k)
-        x = utils.local_cov(pts, idx)                 # (batch_size, 3, num_points) -> (batch_size, 12, num_points])            
+        idx = utils.knn(pts, k=self.k)          # (batch_size, num_points, k)
+        x = utils.local_cov(pts, idx)           # (batch_size, 3, num_points) -> (batch_size, 12, num_points])            
         x = self.mlp1(x)                        # (batch_size, 12, num_points) -> (batch_size, 64, num_points])
         x = self.graph_layer(x, idx)            # (batch_size, 64, num_points) -> (batch_size, 1024, num_points)
         x = torch.max(x, 2, keepdim=True)[0]    # (batch_size, 1024, num_points) -> (batch_size, 1024, 1)
@@ -88,8 +85,8 @@ class FoldNet_Decoder(nn.Module):
         self.shape = config.FOLD_SHAPE
         self.m = self.p**2 if self.shape == 'plane' else 2048
         self.meshgrid = [[self.x1, self.x2, self.p], [self.x1, self.x2, self.p]]
-        self.sphere = utils.create_sphere(self.m)
-        self.gaussian = utils.create_gaussian(self.m)
+        self.sphere = utils.create_sphere(self.m)       # define sphere point cloud
+        self.gaussian = utils.create_gaussian(self.m)   # define gaussian point cloud
         if self.shape == 'plane':
             self.folding1 = nn.Sequential(
                 nn.Conv1d(512+2, 512, 1),
@@ -120,9 +117,9 @@ class FoldNet_Decoder(nn.Module):
             y = np.linspace(*self.meshgrid[1])
             points = np.array(list(itertools.product(x, y)))
         elif self.shape == 'sphere':
-            points = self.sphere * 1000 #var that might be interessting to look at later
+            points = self.sphere * 1000 # scale up to 1000
         elif self.shape == 'gaussian':
-            points = self.gaussian
+            points = self.gaussian * 1000 # scale up to 1000
         points = np.repeat(points[np.newaxis, ...], repeats=batch_size, axis=0)
         points = torch.tensor(points)
         return points.float()
@@ -141,9 +138,9 @@ class FoldNet_Decoder(nn.Module):
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
-        self.encoder = FoldNet_Encoder()
-        self.decoder = FoldNet_Decoder()
-        self.loss = ChamferLoss()
+        self.encoder = FoldNet_Encoder()                # Define encoder
+        self.decoder = FoldNet_Decoder()                # Define decoder
+        self.loss = ChamferLoss()                       # Define internal loss function
 
     def forward(self, input):
         codeword = self.encoder(input)

@@ -23,7 +23,7 @@ opt_gen = optim.Adam(
 load_checkpoint(M_path, gen_M, opt_gen, config.LEARNING_RATE,)
 load_checkpoint(F_path, gen_F, opt_gen, config.LEARNING_RATE,)
 
-# From data/val/: import pcds through dataloader and transform them through generator
+# from data/val/: import pcds through dataloader and transform them through generator
 # define validation dataset
 val_dataset = ObjDataset(
     root_male=config.VAL_DIR + "/male",
@@ -43,7 +43,7 @@ for idx, (female, male) in enumerate(loop):
     fake_female, _, _ = gen_F(male)
     fake_male, _, _ = gen_M(female)
 
-    # Save the generated point clouds through Trimesh
+    # save the generated point clouds through Trimesh
     female_vertices = fake_female[0].detach().cpu().numpy().transpose(1,0)
     fake_female = trimesh.Trimesh(vertices=female_vertices)
     fake_female.export(f"data/val/generated_female/female_{idx}.obj")

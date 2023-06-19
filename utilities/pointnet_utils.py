@@ -9,6 +9,7 @@ import config
 
 r = config.DISC_WIDTH_REDUCER
 
+# pointnet first T-net transfomer
 class STN3d(nn.Module):
     def __init__(self, channel):
         super(STN3d, self).__init__()
@@ -27,25 +28,27 @@ class STN3d(nn.Module):
         self.bn5 = nn.BatchNorm1d(int(256/r))
 
     def forward(self, x):
-        batchsize = x.size()[0] # Get the batch size from the input tensor
-        x = F.relu(self.bn1(self.conv1(x))) # Apply the first convolutional layer, batch normalization and relu activation
-        x = F.relu(self.bn2(self.conv2(x))) # Apply the second convolutional layer, batch normalization and relu activation
-        x = F.relu(self.bn3(self.conv3(x))) # Apply the third convolutional layer, batch normalization and relu activation
-        x = torch.max(x, 2, keepdim=True)[0] # Apply max pooling along the second dimension (feature dimension)
-        x = x.view(-1, int(1024/r)) # Reshape the tensor to have a size of (batchsize, 1024)
+        batchsize = x.size()[0]                                                 # get the batch size from the input tensor
+        x = F.relu(self.bn1(self.conv1(x)))                                     # apply the first convolutional layer, batch normalization and relu activation
+        x = F.relu(self.bn2(self.conv2(x)))                                     # apply the second convolutional layer, batch normalization and relu activation
+        x = F.relu(self.bn3(self.conv3(x)))                                     # apply the third convolutional layer, batch normalization and relu activation
+        x = torch.max(x, 2, keepdim=True)[0]                                    # apply max pooling along the second dimension (feature dimension)
+        x = x.view(-1, int(1024/r))                                             # reshape the tensor to have a size of (batchsize, 1024)
 
-        x = F.relu(self.bn4(self.fc1(x))) # Apply the first fully connected layer, batch normalization and relu activation
-        x = F.relu(self.bn5(self.fc2(x))) # Apply the second fully connected layer, batch normalization and relu activation
-        x = self.fc3(x) # Apply the third fully connected layer
+        x = F.relu(self.bn4(self.fc1(x)))                                       # apply the first fully connected layer, batch normalization and relu activation
+        x = F.relu(self.bn5(self.fc2(x)))                                       # apply the second fully connected layer, batch normalization and relu activation
+        x = self.fc3(x)                                                         # apply the third fully connected layer
 
-        iden = Variable(torch.from_numpy(np.array([1, 0, 0, 0, 1, 0, 0, 0, 1]).astype(np.float32))).view(1, 9).repeat(
-            batchsize, 1) # Create an identity matrix of size (batchsize, 9)
+        iden = Variable(torch.from_numpy(
+                        np.array([1, 0, 0, 0, 1, 0, 0, 0, 1]
+                        ).astype(np.float32))).view(1, 9).repeat(batchsize, 1)  # create an identity matrix of size (batchsize, 9)
         if x.is_cuda:
-            iden = iden.cuda() # Move the identity matrix to cuda if the input tensor is on cuda
-        x = x + iden # Add the identity matrix to the output of the third fully connected layer
-        x = x.view(-1, 3, 3) # Reshape the tensor to have a size of (batchsize, 3, 3)
-        return x # Return the output tensor
+            iden = iden.cuda()                                                  # move the identity matrix to cuda if the input tensor is on cuda
+        x = x + iden                                                            # add the identity matrix to the output of the third fully connected layer
+        x = x.view(-1, 3, 3)                                                    # reshape the tensor to have a size of (batchsize, 3, 3)
+        return x                                                                # return the output tensor
 
+# pointnet second T-net transfomer
 class STNkd(nn.Module):
     def __init__(self, k=int(64/r)):
         super(STNkd, self).__init__()
@@ -85,7 +88,7 @@ class STNkd(nn.Module):
         x = x.view(-1, self.k, self.k)
         return x
 
-
+# pointnet feature transform network
 class PointNetEncoder(nn.Module):
     def __init__(self, global_feat=True, feature_transform=False, channel=3):
         super(PointNetEncoder, self).__init__()

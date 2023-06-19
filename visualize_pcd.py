@@ -8,6 +8,7 @@ import glob
 import os
 import json
 
+# function for converting from json to obj
 def convert_to_obj(path):
     # Load the .pts.json file
     with open(path, 'r') as f:
@@ -22,6 +23,7 @@ def convert_to_obj(path):
     # Save the mesh as an .obj file in the same directory
     mesh.export(path[:-9] + '.obj')
 
+# function for coloring point clouds
 def color_pcd(pcd):
     if pcd.requires_grad:
         pcd = pcd.detach()
@@ -80,7 +82,7 @@ def color_pcd(pcd):
 
     return np.array(color_per_point)
 
-
+# function for visualizing point clouds
 def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
     pcd = trimesh.load(path)
     pcd = torch.from_numpy(pcd.vertices).float()
@@ -102,6 +104,7 @@ def visual_pcd(path, axislim=0.6, dotsize=20, border=0.5):
     plt.axis('off')
     plt.show()
 
+# function for visualizing point clouds with angles
 def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5, name = "noname", save_file = False):
     pcd = trimesh.load(path)
     pcd = torch.from_numpy(pcd.vertices).float()
@@ -129,6 +132,7 @@ def visual_pcd_angles(path, axislim=0.6, dotsize=20, border=0.5, name = "noname"
     else:
         plt.show()
 
+# function for visualizing multiple point clouds through epochs
 def visual_pcd_onetype(path, gender):
     axislim=0.6
     dotsize=20
@@ -172,7 +176,8 @@ def visual_pcd_onetype(path, gender):
     
     plt.show()
 
-def visual_pcd_mode_collapse(path, save_file = False):
+# function for visualizing generated validation point clouds
+def visual_generated_pcd(path, save_file = False):
     axislim=0.6
     dotsize=20
     border=0.2
@@ -213,7 +218,7 @@ def visual_pcd_mode_collapse(path, save_file = False):
     else:
         plt.show()
 
-
+# function for visualizing pcds
 def visual_custom_pcds(paths, titles, name=None, save_file=False):
     axislim=0.6
     dotsize=20
@@ -253,7 +258,7 @@ def visual_custom_pcds(paths, titles, name=None, save_file=False):
     else:
         plt.show()
 
-
+# function for visualizing pretrained foldingnet point clouds
 def visual_pcd_pretrain(path, gender):
     axislim = 0.6
     dotsize = 5
@@ -318,7 +323,7 @@ if __name__ == "__main__":
 
     '''mode collapse'''
     # path = "./data/val/generated_female/female_0.obj"
-    # visual_pcd_mode_collapse(path, save_file=True)
+    # visual_generated_pcd(path, save_file=True)
 
     # '''custom pcds'''
     paths = [

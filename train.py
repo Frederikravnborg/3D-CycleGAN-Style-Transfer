@@ -11,9 +11,7 @@ from tqdm import tqdm
 from pointnet_model import Discriminator
 from foldingnet_model import Generator, ChamferLoss
 import trimesh
-from torchvision import transforms
 import wandb
-import numpy as np
 
 # start a new wandb run to track this script
 wandb.init(
@@ -47,7 +45,7 @@ wandb.define_metric("cycle_male", step_metric = "epoch_step")
 wandb.define_metric("cycle_female", step_metric = "epoch_step")
 
 def pretrain_FoldingNet(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
-    loop = tqdm(loader, leave=True) #Progress bar
+    loop = tqdm(loader, leave=True) # progress bar
 
     # loop through the data loader
     for idx, (female, male) in enumerate(loop):
@@ -57,16 +55,16 @@ def pretrain_FoldingNet(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
 
         """ TRAIN GENERATORS TO RECONSTRUCT INPUT """
         # Generate reconstructions
-        fake_female, _, female_reconstruction_loss = gen_F(female)
-        fake_male, _, male_reconstruction_loss = gen_M(male)
+        fake_female, _, female_reconstruction_loss = gen_F(female)      # generate fake female from real female
+        fake_male, _, male_reconstruction_loss = gen_M(male)            # generate fake male from real male
 
         # compute generator losses
         reconstruction_loss = (female_reconstruction_loss + male_reconstruction_loss) * config.LAMBDA_CYCLE
         
         # update of weights
-        opt_gen.zero_grad()  #compute zero gradients
-        reconstruction_loss.backward()
-        opt_gen.step()
+        opt_gen.zero_grad()                 # compute zero gradients
+        reconstruction_loss.backward()      # backpropagation
+        opt_gen.step()                      # update weights
 
         # save point clouds every SAVE_RATE iterations
         if config.FOLD_SAVE_OBJ and ((epoch+1) % config.SAVE_RATE == 0 or epoch==0) and idx == 0:
@@ -80,6 +78,7 @@ def pretrain_FoldingNet(gen_M, gen_F, loader, opt_gen, epoch, folder_name):
             fake_male = trimesh.Trimesh(vertices=male_vertices)
             fake_male.export(f"{folder_name}/epoch_{epoch}_male_{idx}.obj")
             wandb.log({f"FOLD_male": wandb.Object3D(male_vertices) }, commit=False)
+        
         # update progress bar
         loop.set_postfix(epoch=epoch, reconstruction_loss=reconstruction_loss.item())
 
@@ -88,7 +87,7 @@ def train(
     disc_M, disc_F, gen_F, gen_M, loader, opt_disc, opt_gen, mse, epoch, currentTime, folder_name, chamfer_loss
 ):
 
-    loop = tqdm(loader, leave=True) #Progress bar
+    loop = tqdm(loader, leave=True) # progress bar
 
     # loop through the data loader
     for idx, (female, male) in enumerate(loop):
@@ -98,22 +97,24 @@ def train(
 
         ####################  TRAIN DISCRIMINATORS  ####################
         """  FEMALE -> MALE  """
-        fake_male, _, _ = gen_M(female) #Creating fake input
-        D_M_real = disc_M(torch.transpose(male,1,2).long())[0] #Giving discriminator real input
-        D_M_fake = disc_M(fake_male.detach())[0] #Giving discriminator fake input
+        fake_male, _, _ = gen_M(female)                             # creating fake male input
+        D_M_real = disc_M(torch.transpose(male,1,2).long())[0]      # giving discriminator real input
+        D_M_fake = disc_M(fake_male.detach())[0]                    # giving discriminator fake input
+
         # error between discriminator output and expected output
-        D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real)) #MSE of D_M_real, expect 1
-        D_M_fake_loss = mse(D_M_fake, torch.zeros_like(D_M_fake)) #MSE of D_M_fake, expect 0
-        D_M_loss = D_M_real_loss + D_M_fake_loss #Sum of loss
+        D_M_real_loss = mse(D_M_real, torch.ones_like(D_M_real))    # MSE of D_M_real, expect 1
+        D_M_fake_loss = mse(D_M_fake, torch.zeros_like(D_M_fake))   # MSE of D_M_fake, expect 0
+        D_M_loss = D_M_real_loss + D_M_fake_loss                    # sum of loss
 
         """  MALE -> FEMALE  """
-        fake_female, _, _ = gen_F(male)
-        D_F_real = disc_F(torch.transpose(female,1,2))[0]
-        D_F_fake = disc_F(fake_female.detach())[0]
+        fake_female, _, _ = gen_F(male)                             # creating fake female input
+        D_F_real = disc_F(torch.transpose(female,1,2))[0]           # giving discriminator real input
+        D_F_fake = disc_F(fake_female.detach())[0]                  # giving discriminator fake input
+
         # error between discriminator output and expected output
-        D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real)) #MSE of D_F_real, expect 1
-        D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake)) #MSE of D_F_fake, expect 0
-        D_F_loss = D_F_real_loss + D_F_fake_loss #Sum of loss
+        D_F_real_loss = mse(D_F_real, torch.ones_like(D_F_real))    # MSE of D_F_real, expect 1
+        D_F_fake_loss = mse(D_F_fake, torch.zeros_like(D_F_fake))   # MSE of D_F_fake, expect 0
+        D_F_loss = D_F_real_loss + D_F_fake_loss                    # sum of loss
 
         # define total discriminator loss as the average of the two
         D_loss = (D_M_loss + D_F_loss) / 2 
@@ -124,12 +125,13 @@ def train(
 
         ####################  TRAIN GENERATORS  ####################
         # adversarial loss for both generators
-        D_M_fake = disc_M(fake_male)[0] #fake_male generated by gen_M
-        D_F_fake = disc_F(fake_female)[0] #fake_female generated by gen_F
+        D_M_fake = disc_M(fake_male)[0]                             #fake_male generated by gen_M
+        D_F_fake = disc_F(fake_female)[0]                           #fake_female generated by gen_F
+
         #adversarial loss for male
-        loss_G_M = mse(D_M_fake, torch.ones_like(D_M_fake)) #Real = 1, trick discriminator
+        loss_G_M = mse(D_M_fake, torch.ones_like(D_M_fake))         # real = 1, trick discriminator
         #adversarial loss for female
-        loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake)) #Real = 1, trick discriminator
+        loss_G_F = mse(D_F_fake, torch.ones_like(D_F_fake))         # real = 1, trick discriminator
 
         # generate cycle-female and cycle-male
         cycle_female, _, _ = gen_F(fake_male.transpose(2,1))
@@ -170,7 +172,7 @@ def train(
             wandb.log({"OG_female": wandb.Object3D(female[0].detach().cpu().numpy()), "epoch_step": epoch}, commit=False)
             wandb.log({"cycle_female": wandb.Object3D(cycle_female.transpose(2,1)[0].detach().cpu().numpy()), "epoch_step": epoch}, commit=False)
 
-        # save idx, D_loss, G_loss, mse, L1 in csv file
+        # save idx and different losses to csv file
         with open(f'output/loss_{currentTime}.csv', 'a') as f: 
            f.write(f'{D_loss},{loss_G_M},{loss_G_F},{cycle_loss},{G_loss},{epoch}\n')
         wandb.log({"D_loss": D_loss, "loss_G_M": loss_G_M, "loss_G_F": loss_G_F,
@@ -182,10 +184,11 @@ def train(
 
 def main():
     # initialize Discriminators and Generators
-    disc_F = Discriminator().to(config.DEVICE)
-    disc_M = Discriminator().to(config.DEVICE)
-    gen_F = Generator().to(config.DEVICE)
-    gen_M = Generator().to(config.DEVICE)
+    disc_F = Discriminator().to(config.DEVICE)                  # female discriminator
+    disc_M = Discriminator().to(config.DEVICE)                  # male discriminator
+
+    gen_F = Generator().to(config.DEVICE)                       # female generator
+    gen_M = Generator().to(config.DEVICE)                       # male generator
 
     # define optimizers for Discriminators and Generators
     opt_disc = optim.Adam(
@@ -199,8 +202,8 @@ def main():
         betas=(0.5, 0.999),
     )
     
-    chamfer_loss = ChamferLoss() #Chamfer loss used for cycle loss
-    mse = nn.MSELoss() # mse loss used for adverserial loss
+    chamfer_loss = ChamferLoss()    # chamfer loss used for cycle loss
+    mse = nn.MSELoss()              # mse loss used for adverserial loss
 
     # save models optionally
     if config.SAVE_MODEL:
@@ -232,7 +235,7 @@ def main():
     # define dataloader for train dataset
     loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS, pin_memory=True)
 
-    #create csv file to store losses
+    # create csv file to store losses
     currentDateAndTime = datetime.now()
     currentTime = currentDateAndTime.strftime("%m.%d.%H.%M.%S")
 
@@ -245,7 +248,7 @@ def main():
     folder_name = f"pre_saved_models/pcds/{currentTime}"
     os.makedirs(folder_name)
 
-    # pretrain FoldingNet generators
+    # pretrain FoldingNet generators optionally
     if config.TRAIN_FOLD:
         for epoch in range(config.FOLD_NUM_EPOCH):
             pretrain_FoldingNet(
@@ -267,7 +270,7 @@ def main():
     folder_name = f"saved_pcds/{currentTime}"
     os.makedirs(folder_name)
 
-    # train the CycleGAN model
+    # train the CycleGAN model optionally
     if config.TRAIN_GAN:
         for epoch in range(config.GAN_NUM_EPOCHS):
             train(
