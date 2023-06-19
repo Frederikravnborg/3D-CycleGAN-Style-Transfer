@@ -98,7 +98,7 @@ def train(
         ####################  TRAIN DISCRIMINATORS  ####################
         """  FEMALE -> MALE  """
         fake_male, _, _ = gen_M(female)                             # creating fake male input
-        D_M_real = disc_M(torch.transpose(male,1,2).long())[0]      # giving discriminator real input
+        D_M_real = disc_M(torch.transpose(male,1,2))[0]             # giving discriminator real input
         D_M_fake = disc_M(fake_male.detach())[0]                    # giving discriminator fake input
 
         # error between discriminator output and expected output
